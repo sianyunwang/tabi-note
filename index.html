@@ -263,7 +263,6 @@
       return null;
     };
 
-    // 手機相簿安全壓縮轉 Base64 (防止 iPhone 高畫質照片撐爆手機記憶體)
     const compressImageToBase64 = (file, maxWidth = 680, quality = 0.72) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -423,7 +422,7 @@
       const [dayModalOpen, setDayModalOpen] = useState(false);
       const [tripModalOpen, setTripModalOpen] = useState(false);
       const [tripManagerOpen, setTripManagerOpen] = useState(false);
-      const [storyItem, setStoryItem] = useState(null); // 9:16 限動圖卡預覽視窗
+      const [storyItem, setStoryItem] = useState(null);
       const [lightbox, setLightbox] = useState(null);
       const [toastMsg, setToastMsg] = useState('');
 
@@ -532,7 +531,7 @@
       };
 
       // ============================================================================
-      // 5. 右側 Leaflet 互動路線地圖同步 (含安全卸載清理)
+      // 5. 右側 Leaflet 互動路線地圖同步
       // ============================================================================
       const mapContainerRef = useRef(null);
       const mapInstanceRef = useRef(null);
@@ -762,7 +761,6 @@
         showToast('📥 已匯出 JSON 備份檔');
       };
 
-      // 一鍵下載整趟「獨立離線紀念冊 HTML」(內嵌所有照片、時間軸與郵戳，無需匯入即可離線雙擊翻閱)
       const handleDownloadOfflineBook = () => {
         if (!activeTrip) return;
         const esc = (s) => String(s || '')
@@ -1377,7 +1375,6 @@
                                     </span>
                                   </div>
 
-                                  {/* 右上角功能按鈕群：含「📲 限動圖卡」 */}
                                   <div className="flex items-center gap-1 flex-wrap" onClick={(e) => e.stopPropagation()}>
                                     <button
                                       onClick={() => setStoryItem({ item, day: activeDay, trip: activeTrip })}
@@ -1772,7 +1769,7 @@
             />
           )}
 
-          {/* 彈窗 5：單張行程 9:16 IG 限時動態圖卡生成器 */}
+          {/* 彈窗 5：單張行程 9:16 IG 限時動態圖卡生成器 (已完美避開 IG 頂部頭像與底部回覆框) */}
           {storyItem && (
             <StoryCardModal
               item={storyItem.item}
@@ -1839,15 +1836,15 @@
     }
 
     // ============================================================================
-    // 子元件 0：直式 9:16 IG 限時動態圖卡生成器 (1080 x 1920 高解析度 Canvas)
+    // 子元件 0：直式 9:16 IG 限時動態圖卡生成器 (IG Safe Zone 零遮擋精修版)
     // ============================================================================
     function StoryCardModal({ item, day, trip, onClose }) {
       const photos = Array.isArray(item.photos) ? item.photos : [];
       const [selectedPhotoIdx, setSelectedPhotoIdx] = useState(0);
       const [previewDataUrl, setPreviewDataUrl] = useState('');
       const [generating, setGenerating] = useState(true);
+      const [showIgSafeGuide, setShowIgSafeGuide] = useState(true);
 
-      // 自動換行文字繪製輔助函式
       const wrapText = (ctx, text, x, y, maxWidth, lineHeight, maxLines = 6) => {
         const paragraphs = String(text || '').split('\n');
         let curY = y;
@@ -1888,81 +1885,101 @@
           canvas.height = H;
           const ctx = canvas.getContext('2d');
 
-          // 1. 米白紙質底色 + 外框線條
+          // 1. 米白紙質底色
           ctx.fillStyle = '#F7F6F2';
           ctx.fillRect(0, 0, W, H);
 
+          // 2. IG Safe Zone 安全外框：頂部留出 215px 給 IG 頭像/ID/摯友按鈕；底部留出 190px 給 IG 回覆框
+          const frameTop = 215;
+          const frameBottom = H - 190; // 1730px
+          const frameLeft = 52;
+          const frameRight = W - 52;
+          const frameW = frameRight - frameLeft;
+          const frameH = frameBottom - frameTop;
+
           ctx.strokeStyle = '#1C1B18';
           ctx.lineWidth = 4;
-          ctx.strokeRect(48, 48, W - 96, H - 96);
+          ctx.strokeRect(frameLeft, frameTop, frameW, frameH);
 
-          // 2. 頂部刊頭：TABI NOTE + 旅行名稱 + 天數日期
+          // 3. 雜誌刊頭 (位於安全區頂部 y = 248)
+          const innerLeft = frameLeft + 38;
+          const innerRight = frameRight - 38;
+          const innerW = innerRight - innerLeft;
+
           ctx.fillStyle = '#1C1B18';
-          ctx.fillRect(88, 92, 54, 54);
+          ctx.fillRect(innerLeft, frameTop + 34, 48, 48);
           ctx.fillStyle = '#F7F6F2';
-          ctx.font = 'bold 30px "Noto Serif TC", serif';
+          ctx.font = 'bold 27px "Noto Serif TC", serif';
           ctx.textAlign = 'center';
-          ctx.fillText('旅', 115, 130);
+          ctx.fillText('旅', innerLeft + 24, frameTop + 68);
 
           ctx.textAlign = 'left';
           ctx.fillStyle = '#1C1B18';
-          ctx.font = 'bold 28px "JetBrains Mono", monospace';
-          ctx.fillText('TABI NOTE', 162, 129);
+          ctx.font = 'bold 25px "JetBrains Mono", monospace';
+          ctx.fillText('TABI NOTE', innerLeft + 64, frameTop + 67);
 
           ctx.textAlign = 'right';
-          ctx.font = 'bold 24px "JetBrains Mono", monospace';
+          ctx.font = 'bold 22px "JetBrains Mono", monospace';
           ctx.fillStyle = '#555555';
-          ctx.fillText(`DAY ${String(day.dayNumber).padStart(2, '0')} · ${day.date || ''}`, W - 88, 128);
+          ctx.fillText(`DAY ${String(day.dayNumber).padStart(2, '0')} · ${day.date || ''}`, innerRight, frameTop + 66);
 
-          // 分隔線
+          // 刊頭分隔線
           ctx.strokeStyle = '#1C1B18';
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(88, 174);
-          ctx.lineTo(W - 88, 174);
+          ctx.moveTo(innerLeft, frameTop + 104);
+          ctx.lineTo(innerRight, frameTop + 104);
           ctx.stroke();
 
-          // 3. 旅行專案副標
+          // 4. 旅行專案名稱
+          let curY = frameTop + 148;
           ctx.textAlign = 'left';
           ctx.fillStyle = '#B85D19';
-          ctx.font = 'bold 24px "Noto Sans TC", sans-serif';
-          ctx.fillText(trip.name || '', 88, 224);
+          ctx.font = 'bold 23px "Noto Sans TC", sans-serif';
+          ctx.fillText(trip.name || '', innerLeft, curY);
 
-          // 4. 時間與時區徽章
+          // 5. 時間與時區黑底膠囊 (先設定字體再測量寬度，確保文字絕不被切掉)
+          curY += 24;
           const startTz = getTzInfo(item.startTz || day.timezone);
           const endTz = getTzInfo(item.endTz || item.startTz || day.timezone);
           const timeLabel = `${item.time || ''} (${startTz.short})${item.endTime ? ` ➔ ${item.endTime} (${endTz.short})` : ''}`;
 
-          ctx.fillStyle = '#1C1B18';
-          ctx.fillRect(88, 252, Math.min(W - 176, ctx.measureText(timeLabel).width + 44), 52);
-          ctx.fillStyle = '#F7F6F2';
-          ctx.font = 'bold 26px "JetBrains Mono", monospace';
-          ctx.fillText(timeLabel, 110, 287);
+          ctx.font = 'bold 23px "JetBrains Mono", monospace';
+          const measuredTimeW = ctx.measureText(timeLabel).width;
+          const badgeW = Math.min(innerW, measuredTimeW + 40);
 
-          // 5. 景點大標題
           ctx.fillStyle = '#1C1B18';
-          ctx.font = 'bold 54px "Noto Serif TC", "Noto Sans TC", serif';
-          let nextY = wrapText(ctx, item.title || '', 88, 376, W - 176, 72, 3);
+          ctx.fillRect(innerLeft, curY, badgeW, 46);
+          ctx.fillStyle = '#F7F6F2';
+          ctx.fillText(timeLabel, innerLeft + 20, curY + 31);
+
+          // 6. 景點大標題
+          curY += 108;
+          ctx.fillStyle = '#1C1B18';
+          ctx.font = 'bold 48px "Noto Serif TC", "Noto Sans TC", serif';
+          curY = wrapText(ctx, item.title || '', innerLeft, curY, innerW, 64, 2);
 
           // 車站 / 航廈
           if (item.station) {
             ctx.fillStyle = '#444444';
-            ctx.font = '26px "JetBrains Mono", "Noto Sans TC", sans-serif';
-            ctx.fillText(`🚉 ${item.station}`, 88, nextY + 14);
-            nextY += 56;
+            ctx.font = '24px "JetBrains Mono", "Noto Sans TC", sans-serif';
+            ctx.fillText(`🚉 ${item.station}`, innerLeft, curY + 8);
+            curY += 46;
+          } else {
+            curY += 12;
           }
 
-          // 6. 中央拍立得照片相框 (若有上傳照片)
+          // 7. 中央拍立得照片相框 (自動依剩餘高度彈性調整，確保不擠壓底部筆記)
           const activePhoto = photos[selectedPhotoIdx];
           if (activePhoto?.url) {
-            const boxX = 88;
-            const boxY = nextY + 24;
-            const boxW = W - 176;
-            const boxH = 740;
+            const boxX = innerLeft;
+            const boxY = curY + 10;
+            const boxW = innerW;
+            const hasNote = Boolean(item.note && item.note.trim());
+            const boxH = hasNote ? 600 : 760;
 
-            // 拍立得白底與陰影
             ctx.fillStyle = '#1C1B18';
-            ctx.fillRect(boxX + 12, boxY + 12, boxW, boxH);
+            ctx.fillRect(boxX + 10, boxY + 10, boxW, boxH);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(boxX, boxY, boxW, boxH);
             ctx.strokeStyle = '#1C1B18';
@@ -1978,9 +1995,10 @@
                 image.src = activePhoto.url;
               });
 
-              const pad = 28;
+              const pad = 24;
+              const bottomCaptionSpace = activePhoto.caption ? 76 : 24;
               const imgAreaW = boxW - pad * 2;
-              const imgAreaH = boxH - 110;
+              const imgAreaH = boxH - pad - bottomCaptionSpace;
               const scale = Math.max(imgAreaW / img.width, imgAreaH / img.height);
               const drawW = img.width * scale;
               const drawH = img.height * scale;
@@ -1996,62 +2014,62 @@
 
               // 底片右下角橘色日期章
               const dateStamp = `'${day.date ? day.date.slice(2).replace(/-/g, ' ') : '26 12'}`;
-              ctx.fillStyle = 'rgba(0,0,0,0.55)';
-              ctx.fillRect(boxX + boxW - pad - 150, boxY + pad + imgAreaH - 44, 138, 34);
+              ctx.fillStyle = 'rgba(0,0,0,0.58)';
+              ctx.fillRect(boxX + boxW - pad - 144, boxY + pad + imgAreaH - 42, 134, 32);
               ctx.fillStyle = '#FF7A00';
-              ctx.font = 'bold 22px "JetBrains Mono", monospace';
+              ctx.font = 'bold 20px "JetBrains Mono", monospace';
               ctx.textAlign = 'right';
-              ctx.fillText(dateStamp, boxX + boxW - pad - 22, boxY + pad + imgAreaH - 19);
+              ctx.fillText(dateStamp, boxX + boxW - pad - 20, boxY + pad + imgAreaH - 19);
               ctx.textAlign = 'left';
             } catch {
               ctx.fillStyle = '#EFECE6';
-              ctx.fillRect(boxX + 28, boxY + 28, boxW - 56, boxH - 110);
+              ctx.fillRect(boxX + 24, boxY + 24, boxW - 48, boxH - 80);
             }
 
-            // 拍立得底部手寫短註解
             if (activePhoto.caption) {
               ctx.fillStyle = '#1C1B18';
-              ctx.font = '28px "Noto Serif TC", serif';
-              ctx.fillText(activePhoto.caption, boxX + 32, boxY + boxH - 34);
+              ctx.font = '25px "Noto Serif TC", serif';
+              ctx.fillText(activePhoto.caption, boxX + 28, boxY + boxH - 26);
             }
 
-            nextY = boxY + boxH + 46;
+            curY = boxY + boxH + 34;
           } else {
-            nextY += 40;
+            curY += 24;
           }
 
-          // 7. 個人 NOTE 筆記區
-          if (item.note && nextY < H - 240) {
+          // 8. 個人 NOTE 筆記區 (精準限制在框內安全高度)
+          const footerTopY = frameBottom - 74;
+          if (item.note && curY < footerTopY - 90) {
             ctx.fillStyle = '#EFECE6';
-            const noteBoxH = Math.min(340, H - nextY - 190);
-            ctx.fillRect(88, nextY, W - 176, noteBoxH);
+            const noteBoxH = Math.min(250, footerTopY - curY - 22);
+            ctx.fillRect(innerLeft, curY, innerW, noteBoxH);
             ctx.fillStyle = '#1C1B18';
-            ctx.fillRect(88, nextY, 8, noteBoxH);
+            ctx.fillRect(innerLeft, curY, 7, noteBoxH);
 
-            ctx.font = '26px "Noto Sans TC", sans-serif';
+            ctx.font = '24px "Noto Sans TC", sans-serif';
             const cleanNote = item.note.replace(/https?:\/\/[^\s]+/g, '[連結]');
-            wrapText(ctx, cleanNote, 118, nextY + 46, W - 230, 42, Math.floor((noteBoxH - 40) / 42));
+            wrapText(ctx, cleanNote, innerLeft + 26, curY + 42, innerW - 46, 38, Math.floor((noteBoxH - 32) / 38));
           }
 
-          // 8. 底部頁尾戳章
+          // 9. 安全區內底部頁尾標籤與 VISITED 郵戳 (位於 frameBottom 上方，絕不被 IG 下方輸入框遮住)
           if (item.stamped) {
             ctx.save();
-            ctx.translate(W - 210, H - 180);
-            ctx.rotate(-0.18);
+            ctx.translate(innerRight - 115, frameBottom - 44);
+            ctx.rotate(-0.12);
             ctx.strokeStyle = '#B91C1C';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(-110, -28, 220, 52);
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(-98, -22, 196, 42);
             ctx.fillStyle = '#B91C1C';
-            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.font = 'bold 21px "JetBrains Mono", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText('★ VISITED ✓', 0, 7);
+            ctx.fillText('★ VISITED ✓', 0, 6);
             ctx.restore();
           }
 
           ctx.textAlign = 'left';
           ctx.fillStyle = '#666666';
-          ctx.font = '20px "JetBrains Mono", monospace';
-          ctx.fillText(`#TABINOTE · ${getTzInfo(day.timezone).short}`, 88, H - 86);
+          ctx.font = '19px "JetBrains Mono", monospace';
+          ctx.fillText(`#TABINOTE · ${getTzInfo(day.timezone).short}`, innerLeft, frameBottom - 32);
 
           if (!cancelled) {
             setPreviewDataUrl(canvas.toDataURL('image/png'));
@@ -2081,39 +2099,66 @@
             className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-md w-full p-4 shadow-[8px_8px_0px_#1C1B18] flex flex-col items-center"
           >
             <div className="w-full flex items-center justify-between border-b border-[#1C1B18] pb-2.5 mb-3">
-              <span className="font-mono text-xs font-bold">📲 IG 限時動態圖卡 (9:16)</span>
+              <span className="font-mono text-xs font-bold">📲 IG 限時動態圖卡 (9:16 安全區校準版)</span>
               <button onClick={onClose} className="font-mono text-xs px-2 py-0.5 border border-[#1C1B18]">✕</button>
             </div>
 
-            {/* 若有多張照片可切換要放進限動的那一張 */}
-            {photos.length > 1 && (
-              <div className="w-full flex items-center gap-1.5 mb-2.5 overflow-x-auto no-scrollbar">
-                <span className="font-mono text-[10px] shrink-0">選擇照片：</span>
-                {photos.map((p, idx) => (
-                  <button
-                    key={p.id || idx}
-                    onClick={() => setSelectedPhotoIdx(idx)}
-                    className={`px-2 py-0.5 font-mono text-[11px] border shrink-0 ${
-                      idx === selectedPhotoIdx ? 'bg-[#1C1B18] text-white border-[#1C1B18]' : 'bg-white border-[#1C1B18]/40'
-                    }`}
-                  >
-                    照片 #{idx + 1}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="w-full flex items-center justify-between gap-2 mb-2.5">
+              {photos.length > 1 ? (
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                  {photos.map((p, idx) => (
+                    <button
+                      key={p.id || idx}
+                      onClick={() => setSelectedPhotoIdx(idx)}
+                      className={`px-2 py-0.5 font-mono text-[10px] border shrink-0 ${
+                        idx === selectedPhotoIdx ? 'bg-[#1C1B18] text-white border-[#1C1B18]' : 'bg-white border-[#1C1B18]/40'
+                      }`}
+                    >
+                      照片 #{idx + 1}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span className="font-mono text-[10px] text-[#1C1B18]/60">已自動避開 IG 頭像與回覆框</span>
+              )}
 
-            {/* 9:16 預覽圖 */}
-            <div className="w-full max-w-[270px] aspect-[9/16] bg-white border border-[#1C1B18] shadow-md overflow-hidden flex items-center justify-center mb-3">
+              <button
+                type="button"
+                onClick={() => setShowIgSafeGuide(!showIgSafeGuide)}
+                className={`px-2 py-0.5 font-mono text-[10px] border shrink-0 ${
+                  showIgSafeGuide ? 'bg-amber-100 border-amber-500 text-amber-950' : 'bg-white border-[#1C1B18]/30'
+                }`}
+              >
+                {showIgSafeGuide ? '👁️ 顯示 IG 遮擋模擬' : '隱藏模擬線'}
+              </button>
+            </div>
+
+            {/* 9:16 預覽圖 + 模擬 IG 介面遮擋安全區 */}
+            <div className="relative w-full max-w-[270px] aspect-[9/16] bg-white border border-[#1C1B18] shadow-md overflow-hidden flex items-center justify-center mb-3">
               {generating ? (
                 <span className="font-mono text-xs">圖卡繪製中...</span>
               ) : (
-                <img src={previewDataUrl} alt="Story Preview" className="w-full h-full object-contain" />
+                <>
+                  <img src={previewDataUrl} alt="Story Preview" className="w-full h-full object-contain" />
+                  {showIgSafeGuide && (
+                    <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+                      {/* 模擬 IG 頂部頭像與右上角摯友/關閉區 (約 11.2%) */}
+                      <div className="h-[11.2%] bg-black/25 border-b border-dashed border-red-500 flex items-center justify-between px-2.5 text-[9px] font-mono text-white">
+                        <span>● IG 頭像/帳號區</span>
+                        <span>★ ✕</span>
+                      </div>
+                      {/* 模擬 IG 底部回覆輸入框區 (約 9.9%) */}
+                      <div className="h-[9.9%] bg-black/25 border-t border-dashed border-red-500 flex items-center justify-center text-[9px] font-mono text-white">
+                        IG 底部「寫點什麼」安全留白區
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
             <p className="text-[11px] text-[#1C1B18]/70 text-center mb-3">
-              手機用戶可直接點擊下方下載，或長按上方圖片「儲存影像」即可發 IG 限動！
+              下載的 PNG 不會包含模擬輔助線，上傳 IG 限動時內容會精準落在上下安全區內！
             </p>
 
             <div className="w-full flex gap-2">
@@ -2137,7 +2182,7 @@
     }
 
     // ============================================================================
-    // 子元件 1：行程節點編輯器 Modal (已修復手機儲存白屏與地圖卸載問題)
+    // 子元件 1：行程節點編輯器 Modal
     // ============================================================================
     function ItemEditorModal({ day, initialItem, onClose, onSave }) {
       const [form, setForm] = useState(() => ({
@@ -2167,7 +2212,6 @@
       const miniMapInstance = useRef(null);
       const miniMarkerRef = useRef(null);
 
-      // 初始化迷你預覽地圖，並在關閉時確實卸載清理
       useEffect(() => {
         if (!miniMapRef.current || !window.L) return;
         let m = null;
