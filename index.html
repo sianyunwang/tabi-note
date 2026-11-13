@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>TABI NOTE</title>
 
-  <!-- Google Fonts: 雜誌襯線體 + 無襯線體 + 等寬數據字體 -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
@@ -44,7 +44,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* 實體車票兩側撕票半圓缺口 */
     .ticket-notch-left {
       position: absolute;
       left: -10px;
@@ -69,7 +68,6 @@
       border-radius: 9999px;
       z-index: 10;
     }
-    /* 地圖自訂圓形編號標記 */
     .custom-map-marker {
       display: flex;
       align-items: center;
@@ -132,7 +130,7 @@
     // 2. 工具函式
     // ============================================================================
     const timeToMins = (t) => {
-      if (!t || !t.includes(':')) return 0;
+      if (!t || typeof t !== 'string' || !t.includes(':')) return 0;
       const [h, m] = t.split(':').map(Number);
       return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
     };
@@ -198,10 +196,11 @@
 
     const renderTextWithLinks = (text) => {
       if (!text) return null;
+      const str = String(text);
       const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-      const parts = text.split(urlRegex);
+      const parts = str.split(urlRegex);
       return parts.map((part, idx) => {
-        if (urlRegex.test(part)) {
+        if (/^(https?:\/\/|www\.)/i.test(part)) {
           const href = part.startsWith('http') ? part : `https://${part}`;
           let shortDisplay = part.replace(/^https?:\/\/(www\.)?/i, '');
           if (shortDisplay.length > 34) shortDisplay = shortDisplay.slice(0, 32) + '…';
@@ -264,24 +263,32 @@
       return null;
     };
 
-    const compressImageToBase64 = (file, maxWidth = 760, quality = 0.78) => {
+    // 手機相簿安全壓縮轉 Base64 (防止 iPhone 高畫質照片撐爆手機記憶體)
+    const compressImageToBase64 = (file, maxWidth = 680, quality = 0.72) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let w = img.width;
-            let h = img.height;
-            if (w > maxWidth) {
-              h = Math.round((h * maxWidth) / w);
-              w = maxWidth;
+            try {
+              const canvas = document.createElement('canvas');
+              let w = img.width;
+              let h = img.height;
+              if (w > maxWidth) {
+                h = Math.round((h * maxWidth) / w);
+                w = maxWidth;
+              }
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              const result = canvas.toDataURL('image/jpeg', quality);
+              canvas.width = 0;
+              canvas.height = 0;
+              resolve(result);
+            } catch (err) {
+              reject(err);
             }
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
           };
           img.onerror = reject;
           img.src = e.target.result;
@@ -416,19 +423,20 @@
       const [dayModalOpen, setDayModalOpen] = useState(false);
       const [tripModalOpen, setTripModalOpen] = useState(false);
       const [tripManagerOpen, setTripManagerOpen] = useState(false);
+      const [storyItem, setStoryItem] = useState(null); // 9:16 限動圖卡預覽視窗
       const [lightbox, setLightbox] = useState(null);
       const [toastMsg, setToastMsg] = useState('');
 
       const showToast = (msg) => {
         setToastMsg(msg);
-        setTimeout(() => setToastMsg(''), 2800);
+        setTimeout(() => setToastMsg(''), 3000);
       };
 
       useEffect(() => {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
         } catch (e) {
-          showToast('⚠️ 照片或資料量較大，建議匯出 JSON 備份');
+          showToast('⚠️ 手機瀏覽器暫存空間已滿，建議先匯出 JSON 或離線紀念冊備份');
         }
       }, [trips]);
 
@@ -469,7 +477,7 @@
       }, [activeTrip, unlockedTokens, sessionUnlockedIds]);
 
       const activeDay = useMemo(() => {
-        if (!activeTrip || !activeTrip.days.length) return null;
+        if (!activeTrip || !activeTrip.days || !activeTrip.days.length) return null;
         return activeTrip.days[Math.min(activeDayIndex, activeTrip.days.length - 1)];
       }, [activeTrip, activeDayIndex]);
 
@@ -524,15 +532,15 @@
       };
 
       // ============================================================================
-      // 5. 右側 Leaflet 互動路線地圖同步
+      // 5. 右側 Leaflet 互動路線地圖同步 (含安全卸載清理)
       // ============================================================================
       const mapContainerRef = useRef(null);
       const mapInstanceRef = useRef(null);
       const markersLayerRef = useRef(null);
 
       useEffect(() => {
-        if (isTripLocked || !mapContainerRef.current) return;
-        if (!mapInstanceRef.current && window.L) {
+        if (isTripLocked || !mapContainerRef.current || !window.L) return;
+        if (!mapInstanceRef.current) {
           const map = window.L.map(mapContainerRef.current, {
             center: [25.0797, 121.2342],
             zoom: 11,
@@ -546,6 +554,13 @@
           markersLayerRef.current = window.L.layerGroup().addTo(map);
           mapInstanceRef.current = map;
         }
+        return () => {
+          if (isTripLocked && mapInstanceRef.current) {
+            mapInstanceRef.current.remove();
+            mapInstanceRef.current = null;
+            markersLayerRef.current = null;
+          }
+        };
       }, [isTripLocked, mobileTab]);
 
       useEffect(() => {
@@ -553,69 +568,73 @@
         const layer = markersLayerRef.current;
         if (!map || !layer || !activeDay || isTripLocked) return;
 
-        setTimeout(() => map.invalidateSize(), 120);
-        layer.clearLayers();
+        try {
+          setTimeout(() => {
+            if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
+          }, 120);
+          layer.clearLayers();
 
-        const validItems = (activeDay.items || []).filter(
-          it => typeof it.lat === 'number' && typeof it.lng === 'number' && !isNaN(it.lat) && !isNaN(it.lng)
-        );
+          const validItems = (activeDay.items || []).filter(
+            it => typeof it.lat === 'number' && typeof it.lng === 'number' && !isNaN(it.lat) && !isNaN(it.lng)
+          );
 
-        if (validItems.length === 0) return;
+          if (validItems.length === 0) return;
 
-        const latlngs = [];
-        validItems.forEach((item, idx) => {
-          const isSelected = item.id === selectedItemId;
-          const cat = CATEGORIES[item.category] || CATEGORIES.sight;
-          latlngs.push([item.lat, item.lng]);
+          const latlngs = [];
+          validItems.forEach((item, idx) => {
+            const isSelected = item.id === selectedItemId;
+            const cat = CATEGORIES[item.category] || CATEGORIES.sight;
+            latlngs.push([item.lat, item.lng]);
 
-          const iconHtml = `
-            <div class="custom-map-marker" style="
-              width: ${isSelected ? '30px' : '24px'};
-              height: ${isSelected ? '30px' : '24px'};
-              background: ${isSelected ? '#B85D19' : cat.color};
-              color: #F7F6F2;
-              border: 2px solid #F7F6F2;
-              transform: scale(${isSelected ? 1.15 : 1});
-            ">
-              ${idx + 1}
-            </div>
-          `;
-          const icon = window.L.divIcon({
-            html: iconHtml,
-            className: '',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
+            const iconHtml = `
+              <div class="custom-map-marker" style="
+                width: ${isSelected ? '30px' : '24px'};
+                height: ${isSelected ? '30px' : '24px'};
+                background: ${isSelected ? '#B85D19' : cat.color};
+                color: #F7F6F2;
+                border: 2px solid #F7F6F2;
+                transform: scale(${isSelected ? 1.15 : 1});
+              ">
+                ${idx + 1}
+              </div>
+            `;
+            const icon = window.L.divIcon({
+              html: iconHtml,
+              className: '',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            });
+
+            const marker = window.L.marker([item.lat, item.lng], { icon })
+              .bindPopup(`
+                <div style="font-family:'Noto Sans TC',sans-serif;min-width:150px;">
+                  <div style="font-size:10px;color:#666;font-family:monospace;">#${idx + 1} · ${item.time || ''}</div>
+                  <div style="font-weight:700;font-size:13px;margin:2px 0;">${item.title}</div>
+                  ${item.station ? `<div style="font-size:11px;color:#555;">📍 ${item.station}</div>` : ''}
+                </div>
+              `);
+            marker.on('click', () => setSelectedItemId(item.id));
+            marker.addTo(layer);
           });
 
-          const marker = window.L.marker([item.lat, item.lng], { icon })
-            .bindPopup(`
-              <div style="font-family:'Noto Sans TC',sans-serif;min-width:150px;">
-                <div style="font-size:10px;color:#666;font-family:monospace;">#${idx + 1} · ${item.time || ''}</div>
-                <div style="font-weight:700;font-size:13px;margin:2px 0;">${item.title}</div>
-                ${item.station ? `<div style="font-size:11px;color:#555;">📍 ${item.station}</div>` : ''}
-              </div>
-            `);
-          marker.on('click', () => setSelectedItemId(item.id));
-          marker.addTo(layer);
-        });
+          if (latlngs.length >= 2) {
+            window.L.polyline(latlngs, {
+              color: '#1C1B18',
+              weight: 2.5,
+              opacity: 0.75,
+              dashArray: '6, 6',
+            }).addTo(layer);
+          }
 
-        if (latlngs.length >= 2) {
-          window.L.polyline(latlngs, {
-            color: '#1C1B18',
-            weight: 2.5,
-            opacity: 0.75,
-            dashArray: '6, 6',
-          }).addTo(layer);
-        }
-
-        const selectedTarget = validItems.find(i => i.id === selectedItemId);
-        if (selectedTarget) {
-          map.flyTo([selectedTarget.lat, selectedTarget.lng], Math.max(map.getZoom(), 14), { duration: 0.6 });
-        } else if (latlngs.length === 1) {
-          map.setView(latlngs[0], 13);
-        } else {
-          map.fitBounds(latlngs, { padding: [36, 36], maxZoom: 14 });
-        }
+          const selectedTarget = validItems.find(i => i.id === selectedItemId);
+          if (selectedTarget) {
+            map.flyTo([selectedTarget.lat, selectedTarget.lng], Math.max(map.getZoom(), 14), { duration: 0.6 });
+          } else if (latlngs.length === 1) {
+            map.setView(latlngs[0], 13);
+          } else {
+            map.fitBounds(latlngs, { padding: [36, 36], maxZoom: 14 });
+          }
+        } catch (err) {}
       }, [activeDay, selectedItemId, isTripLocked, mobileTab]);
 
       const googleMapsMultiRouteUrl = useMemo(() => {
@@ -630,7 +649,7 @@
       }, [activeDay]);
 
       // ============================================================================
-      // 6. 行程與天數增刪改操作
+      // 6. 行程增刪改 & 匯出 JSON & 一鍵下載離線紀念冊 HTML
       // ============================================================================
       const updateActiveTrip = (updater) => {
         setTrips(prev => prev.map(t => (t.id === activeTrip.id ? updater(t) : t)));
@@ -743,6 +762,117 @@
         showToast('📥 已匯出 JSON 備份檔');
       };
 
+      // 一鍵下載整趟「獨立離線紀念冊 HTML」(內嵌所有照片、時間軸與郵戳，無需匯入即可離線雙擊翻閱)
+      const handleDownloadOfflineBook = () => {
+        if (!activeTrip) return;
+        const esc = (s) => String(s || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+
+        const daysHtml = activeTrip.days.map((d) => {
+          const tzObj = getTzInfo(d.timezone);
+          const itemsHtml = (d.items || []).map((it, idx) => {
+            const cat = CATEGORIES[it.category] || CATEGORIES.sight;
+            const startTz = getTzInfo(it.startTz || d.timezone);
+            const endTz = getTzInfo(it.endTz || it.startTz || d.timezone);
+            const photosHtml = (it.photos || []).map(ph => `
+              <div class="polaroid">
+                <img src="${ph.url}" alt="" />
+                ${ph.caption ? `<div class="cap">${esc(ph.caption)}</div>` : ''}
+              </div>
+            `).join('');
+
+            return `
+              <div class="card">
+                ${it.stamped ? '<div class="stamp">★ VISITED ✓</div>' : ''}
+                <div class="meta">
+                  <span class="num">#${String(idx + 1).padStart(2, '0')}</span>
+                  <span class="time">${esc(it.time)} (${startTz.short})${it.endTime ? ` ➔ ${esc(it.endTime)} (${endTz.short})` : ''}</span>
+                  <span class="cat" style="background:${cat.badgeBg};color:${cat.badgeText};">${cat.label}</span>
+                  ${Number(it.cost) > 0 ? `<span class="cost">${esc(activeTrip.currency)}${Number(it.cost).toLocaleString()}</span>` : ''}
+                </div>
+                <h3>${esc(it.title)}</h3>
+                ${it.station ? `<div class="station">🚉 ${esc(it.station)}</div>` : ''}
+                ${it.note ? `<div class="note">${esc(it.note).replace(/\n/g, '<br/>')}</div>` : ''}
+                ${photosHtml ? `<div class="gallery">${photosHtml}</div>` : ''}
+                ${it.transitNext ? `<div class="transit">⇣ NEXT: ${esc(it.transitNext)}</div>` : ''}
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <section class="day-section">
+              <div class="day-header">
+                <div class="day-badge">DAY ${String(d.dayNumber).padStart(2, '0')} · ${esc(d.date)} · ${tzObj.label}</div>
+                <h2>${esc(d.title)}</h2>
+                ${d.weatherNote ? `<div class="weather">☁️ ${esc(d.weatherNote)} · 🌅 ${esc(d.sunrise)} / 🌇 ${esc(d.sunset)}</div>` : ''}
+              </div>
+              ${itemsHtml || '<p class="empty">本日無行程紀錄</p>'}
+            </section>
+          `;
+        }).join('');
+
+        const standaloneHtml = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${esc(activeTrip.name)} — TABI NOTE 離線紀念冊</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif; background: #F7F6F2; color: #1C1B18; margin: 0; padding: 24px 16px 60px; line-height: 1.6; }
+    .container { max-width: 820px; margin: 0 auto; }
+    .cover { border-bottom: 3px solid #1C1B18; padding-bottom: 20px; margin-bottom: 32px; }
+    .brand { display: inline-flex; align-items: center; gap: 8px; font-family: monospace; font-weight: bold; font-size: 13px; letter-spacing: 2px; margin-bottom: 12px; }
+    .brand-icon { background: #1C1B18; color: #F7F6F2; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+    h1 { font-size: 32px; margin: 4px 0 6px; font-family: Georgia, serif; }
+    .sub { font-family: monospace; font-size: 12px; color: #555; }
+    .day-section { margin-bottom: 40px; }
+    .day-header { background: #1C1B18; color: #F7F6F2; padding: 14px 18px; margin-bottom: 16px; }
+    .day-badge { font-family: monospace; font-size: 11px; color: #F4A261; }
+    .day-header h2 { margin: 4px 0; font-size: 20px; }
+    .weather { font-family: monospace; font-size: 11px; opacity: 0.85; }
+    .card { position: relative; background: #fff; border: 1px solid #1C1B18; box-shadow: 4px 4px 0 #1C1B18; padding: 16px 18px; margin-bottom: 16px; }
+    .stamp { position: absolute; top: 14px; right: 16px; transform: rotate(-10deg); border: 2px solid #B91C1C; color: #B91C1C; font-family: monospace; font-size: 11px; font-weight: bold; padding: 2px 6px; background: #FEF2F2; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-family: monospace; font-size: 12px; border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 10px; }
+    .num { background: #1C1B18; color: #fff; padding: 1px 6px; border-radius: 99px; font-weight: bold; }
+    .time { font-weight: bold; }
+    .cat { padding: 1px 8px; font-size: 11px; font-weight: 600; }
+    .cost { color: #B85D19; font-weight: bold; margin-left: auto; }
+    .card h3 { margin: 0 0 6px; font-size: 19px; font-family: Georgia, serif; }
+    .station { font-family: monospace; font-size: 12px; color: #444; margin-bottom: 8px; }
+    .note { background: #F7F6F2; border-left: 3px solid #1C1B18; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+    .gallery { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+    .polaroid { width: 210px; background: #fff; border: 1px solid #ccc; padding: 8px 8px 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .polaroid img { width: 100%; height: 155px; object-fit: cover; display: block; }
+    .cap { font-size: 12px; color: #333; margin-top: 6px; font-family: Georgia, serif; }
+    .transit { margin-top: 10px; padding-top: 8px; border-top: 1px dotted #ccc; font-family: monospace; font-size: 11px; color: #555; }
+    @media print { body { background: #fff; padding: 0; } .card { break-inside: avoid; box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="cover">
+      <div class="brand"><span class="brand-icon">旅</span> TABI NOTE · OFFLINE ARCHIVE</div>
+      <h1>${esc(activeTrip.name)}</h1>
+      <div class="sub">${esc(activeTrip.dateRange)} · ${esc(activeTrip.subtitle)} · 封存日期 ${new Date().toISOString().slice(0, 10)}</div>
+    </header>
+    ${daysHtml}
+  </div>
+</body>
+</html>`;
+
+        const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${activeTrip.name.replace(/\s+/g, '_')}_離線紀念冊.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📖 已下載獨立離線紀念冊 HTML！無需網路雙擊即可翻閱');
+      };
+
       const handleImportJSON = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -793,12 +923,12 @@
       return (
         <div className="min-h-screen flex flex-col pb-20 lg:pb-10">
           {toastMsg && (
-            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-[#1C1B18] text-[#F7F6F2] px-4 py-2 rounded-full text-xs font-mono shadow-lg border border-[#F7F6F2]/20">
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-[#1C1B18] text-[#F7F6F2] px-4 py-2 rounded-full text-xs font-mono shadow-lg border border-[#F7F6F2]/20 max-w-[90vw] text-center">
               {toastMsg}
             </div>
           )}
 
-          {/* 刊頭 Header (精簡版：僅保留「旅」印章 icon 與 TABI NOTE 標題) */}
+          {/* 刊頭 Header */}
           <header className="border-b border-[#1C1B18] bg-[#F7F6F2]/95 sticky top-0 z-30 backdrop-blur-sm">
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
@@ -828,12 +958,20 @@
                 </button>
 
                 {!isTripLocked && (
-                  <button
-                    onClick={() => handleExportJSON(false)}
-                    className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors"
-                  >
-                    匯出 JSON
-                  </button>
+                  <>
+                    <button
+                      onClick={handleDownloadOfflineBook}
+                      className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-[#F9ECE3] text-[#8F420B] hover:bg-[#B85D19] hover:text-white transition-colors font-semibold"
+                    >
+                      📖 離線紀念冊
+                    </button>
+                    <button
+                      onClick={() => handleExportJSON(false)}
+                      className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors"
+                    >
+                      匯出 JSON
+                    </button>
+                  </>
                 )}
 
                 <label className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors cursor-pointer">
@@ -843,7 +981,7 @@
               </div>
             </div>
 
-            {/* 多趟旅行分頁列 (Trip Tabs) */}
+            {/* 多趟旅行分頁列 */}
             <div className="border-t border-[#1C1B18]/20 bg-[#EFECE6] px-4 sm:px-6 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#1C1B18]/60 shrink-0">
                 TRIPS:
@@ -1239,7 +1377,16 @@
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  {/* 右上角功能按鈕群：含「📲 限動圖卡」 */}
+                                  <div className="flex items-center gap-1 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                      onClick={() => setStoryItem({ item, day: activeDay, trip: activeTrip })}
+                                      className="px-2 py-1 text-[11px] font-mono bg-[#F9ECE3] text-[#8F420B] border border-[#B85D19]/40 hover:bg-[#B85D19] hover:text-white transition-colors font-semibold"
+                                      title="輸出 9:16 IG 限時動態圖卡"
+                                    >
+                                      📲 限動圖卡
+                                    </button>
+
                                     {(item.mapUrl || (item.lat && item.lng)) && (
                                       <a
                                         href={item.mapUrl || `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`}
@@ -1250,6 +1397,7 @@
                                         📍 Maps ↗
                                       </a>
                                     )}
+
                                     {!liveMode && (
                                       <>
                                         <button
@@ -1520,7 +1668,10 @@
             <ItemEditorModal
               day={activeDay}
               initialItem={editingItem}
-              onClose={() => setItemModalOpen(false)}
+              onClose={() => {
+                setItemModalOpen(false);
+                setEditingItem(null);
+              }}
               onSave={(savedItem) => {
                 updateActiveTrip(t => ({
                   ...t,
@@ -1535,7 +1686,8 @@
                 }));
                 setSelectedItemId(savedItem.id);
                 setItemModalOpen(false);
-                showToast('✓ 已儲存行程節點');
+                setEditingItem(null);
+                showToast('✓ 已儲存');
               }}
             />
           )}
@@ -1620,7 +1772,17 @@
             />
           )}
 
-          {/* 彈窗 5：多張照片全螢幕放大燈箱 Lightbox */}
+          {/* 彈窗 5：單張行程 9:16 IG 限時動態圖卡生成器 */}
+          {storyItem && (
+            <StoryCardModal
+              item={storyItem.item}
+              day={storyItem.day}
+              trip={storyItem.trip}
+              onClose={() => setStoryItem(null)}
+            />
+          )}
+
+          {/* 彈窗 6：多張照片全螢幕放大燈箱 Lightbox */}
           {lightbox && (
             <div
               onClick={() => setLightbox(null)}
@@ -1677,7 +1839,305 @@
     }
 
     // ============================================================================
-    // 子元件 1：行程節點編輯器 Modal
+    // 子元件 0：直式 9:16 IG 限時動態圖卡生成器 (1080 x 1920 高解析度 Canvas)
+    // ============================================================================
+    function StoryCardModal({ item, day, trip, onClose }) {
+      const photos = Array.isArray(item.photos) ? item.photos : [];
+      const [selectedPhotoIdx, setSelectedPhotoIdx] = useState(0);
+      const [previewDataUrl, setPreviewDataUrl] = useState('');
+      const [generating, setGenerating] = useState(true);
+
+      // 自動換行文字繪製輔助函式
+      const wrapText = (ctx, text, x, y, maxWidth, lineHeight, maxLines = 6) => {
+        const paragraphs = String(text || '').split('\n');
+        let curY = y;
+        let lineCount = 0;
+        for (const para of paragraphs) {
+          let line = '';
+          const chars = Array.from(para);
+          for (let i = 0; i < chars.length; i++) {
+            const testLine = line + chars[i];
+            if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+              ctx.fillText(line, x, curY);
+              line = chars[i];
+              curY += lineHeight;
+              lineCount++;
+              if (lineCount >= maxLines) return curY;
+            } else {
+              line = testLine;
+            }
+          }
+          if (line) {
+            ctx.fillText(line, x, curY);
+            curY += lineHeight;
+            lineCount++;
+            if (lineCount >= maxLines) return curY;
+          }
+        }
+        return curY;
+      };
+
+      useEffect(() => {
+        let cancelled = false;
+        const renderStory = async () => {
+          setGenerating(true);
+          const W = 1080;
+          const H = 1920;
+          const canvas = document.createElement('canvas');
+          canvas.width = W;
+          canvas.height = H;
+          const ctx = canvas.getContext('2d');
+
+          // 1. 米白紙質底色 + 外框線條
+          ctx.fillStyle = '#F7F6F2';
+          ctx.fillRect(0, 0, W, H);
+
+          ctx.strokeStyle = '#1C1B18';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(48, 48, W - 96, H - 96);
+
+          // 2. 頂部刊頭：TABI NOTE + 旅行名稱 + 天數日期
+          ctx.fillStyle = '#1C1B18';
+          ctx.fillRect(88, 92, 54, 54);
+          ctx.fillStyle = '#F7F6F2';
+          ctx.font = 'bold 30px "Noto Serif TC", serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('旅', 115, 130);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#1C1B18';
+          ctx.font = 'bold 28px "JetBrains Mono", monospace';
+          ctx.fillText('TABI NOTE', 162, 129);
+
+          ctx.textAlign = 'right';
+          ctx.font = 'bold 24px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#555555';
+          ctx.fillText(`DAY ${String(day.dayNumber).padStart(2, '0')} · ${day.date || ''}`, W - 88, 128);
+
+          // 分隔線
+          ctx.strokeStyle = '#1C1B18';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(88, 174);
+          ctx.lineTo(W - 88, 174);
+          ctx.stroke();
+
+          // 3. 旅行專案副標
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#B85D19';
+          ctx.font = 'bold 24px "Noto Sans TC", sans-serif';
+          ctx.fillText(trip.name || '', 88, 224);
+
+          // 4. 時間與時區徽章
+          const startTz = getTzInfo(item.startTz || day.timezone);
+          const endTz = getTzInfo(item.endTz || item.startTz || day.timezone);
+          const timeLabel = `${item.time || ''} (${startTz.short})${item.endTime ? ` ➔ ${item.endTime} (${endTz.short})` : ''}`;
+
+          ctx.fillStyle = '#1C1B18';
+          ctx.fillRect(88, 252, Math.min(W - 176, ctx.measureText(timeLabel).width + 44), 52);
+          ctx.fillStyle = '#F7F6F2';
+          ctx.font = 'bold 26px "JetBrains Mono", monospace';
+          ctx.fillText(timeLabel, 110, 287);
+
+          // 5. 景點大標題
+          ctx.fillStyle = '#1C1B18';
+          ctx.font = 'bold 54px "Noto Serif TC", "Noto Sans TC", serif';
+          let nextY = wrapText(ctx, item.title || '', 88, 376, W - 176, 72, 3);
+
+          // 車站 / 航廈
+          if (item.station) {
+            ctx.fillStyle = '#444444';
+            ctx.font = '26px "JetBrains Mono", "Noto Sans TC", sans-serif';
+            ctx.fillText(`🚉 ${item.station}`, 88, nextY + 14);
+            nextY += 56;
+          }
+
+          // 6. 中央拍立得照片相框 (若有上傳照片)
+          const activePhoto = photos[selectedPhotoIdx];
+          if (activePhoto?.url) {
+            const boxX = 88;
+            const boxY = nextY + 24;
+            const boxW = W - 176;
+            const boxH = 740;
+
+            // 拍立得白底與陰影
+            ctx.fillStyle = '#1C1B18';
+            ctx.fillRect(boxX + 12, boxY + 12, boxW, boxH);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(boxX, boxY, boxW, boxH);
+            ctx.strokeStyle = '#1C1B18';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+            try {
+              const img = await new Promise((res, rej) => {
+                const image = new Image();
+                image.crossOrigin = 'anonymous';
+                image.onload = () => res(image);
+                image.onerror = rej;
+                image.src = activePhoto.url;
+              });
+
+              const pad = 28;
+              const imgAreaW = boxW - pad * 2;
+              const imgAreaH = boxH - 110;
+              const scale = Math.max(imgAreaW / img.width, imgAreaH / img.height);
+              const drawW = img.width * scale;
+              const drawH = img.height * scale;
+              const offsetX = boxX + pad + (imgAreaW - drawW) / 2;
+              const offsetY = boxY + pad + (imgAreaH - drawH) / 2;
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.rect(boxX + pad, boxY + pad, imgAreaW, imgAreaH);
+              ctx.clip();
+              ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+              ctx.restore();
+
+              // 底片右下角橘色日期章
+              const dateStamp = `'${day.date ? day.date.slice(2).replace(/-/g, ' ') : '26 12'}`;
+              ctx.fillStyle = 'rgba(0,0,0,0.55)';
+              ctx.fillRect(boxX + boxW - pad - 150, boxY + pad + imgAreaH - 44, 138, 34);
+              ctx.fillStyle = '#FF7A00';
+              ctx.font = 'bold 22px "JetBrains Mono", monospace';
+              ctx.textAlign = 'right';
+              ctx.fillText(dateStamp, boxX + boxW - pad - 22, boxY + pad + imgAreaH - 19);
+              ctx.textAlign = 'left';
+            } catch {
+              ctx.fillStyle = '#EFECE6';
+              ctx.fillRect(boxX + 28, boxY + 28, boxW - 56, boxH - 110);
+            }
+
+            // 拍立得底部手寫短註解
+            if (activePhoto.caption) {
+              ctx.fillStyle = '#1C1B18';
+              ctx.font = '28px "Noto Serif TC", serif';
+              ctx.fillText(activePhoto.caption, boxX + 32, boxY + boxH - 34);
+            }
+
+            nextY = boxY + boxH + 46;
+          } else {
+            nextY += 40;
+          }
+
+          // 7. 個人 NOTE 筆記區
+          if (item.note && nextY < H - 240) {
+            ctx.fillStyle = '#EFECE6';
+            const noteBoxH = Math.min(340, H - nextY - 190);
+            ctx.fillRect(88, nextY, W - 176, noteBoxH);
+            ctx.fillStyle = '#1C1B18';
+            ctx.fillRect(88, nextY, 8, noteBoxH);
+
+            ctx.font = '26px "Noto Sans TC", sans-serif';
+            const cleanNote = item.note.replace(/https?:\/\/[^\s]+/g, '[連結]');
+            wrapText(ctx, cleanNote, 118, nextY + 46, W - 230, 42, Math.floor((noteBoxH - 40) / 42));
+          }
+
+          // 8. 底部頁尾戳章
+          if (item.stamped) {
+            ctx.save();
+            ctx.translate(W - 210, H - 180);
+            ctx.rotate(-0.18);
+            ctx.strokeStyle = '#B91C1C';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(-110, -28, 220, 52);
+            ctx.fillStyle = '#B91C1C';
+            ctx.font = 'bold 24px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('★ VISITED ✓', 0, 7);
+            ctx.restore();
+          }
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#666666';
+          ctx.font = '20px "JetBrains Mono", monospace';
+          ctx.fillText(`#TABINOTE · ${getTzInfo(day.timezone).short}`, 88, H - 86);
+
+          if (!cancelled) {
+            setPreviewDataUrl(canvas.toDataURL('image/png'));
+            setGenerating(false);
+          }
+        };
+
+        renderStory();
+        return () => { cancelled = true; };
+      }, [item, day, trip, selectedPhotoIdx]);
+
+      const handleDownloadPng = () => {
+        if (!previewDataUrl) return;
+        const a = document.createElement('a');
+        a.href = previewDataUrl;
+        a.download = `TABI_STORY_${(item.title || 'card').replace(/\s+/g, '_')}.png`;
+        a.click();
+      };
+
+      return (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-md w-full p-4 shadow-[8px_8px_0px_#1C1B18] flex flex-col items-center"
+          >
+            <div className="w-full flex items-center justify-between border-b border-[#1C1B18] pb-2.5 mb-3">
+              <span className="font-mono text-xs font-bold">📲 IG 限時動態圖卡 (9:16)</span>
+              <button onClick={onClose} className="font-mono text-xs px-2 py-0.5 border border-[#1C1B18]">✕</button>
+            </div>
+
+            {/* 若有多張照片可切換要放進限動的那一張 */}
+            {photos.length > 1 && (
+              <div className="w-full flex items-center gap-1.5 mb-2.5 overflow-x-auto no-scrollbar">
+                <span className="font-mono text-[10px] shrink-0">選擇照片：</span>
+                {photos.map((p, idx) => (
+                  <button
+                    key={p.id || idx}
+                    onClick={() => setSelectedPhotoIdx(idx)}
+                    className={`px-2 py-0.5 font-mono text-[11px] border shrink-0 ${
+                      idx === selectedPhotoIdx ? 'bg-[#1C1B18] text-white border-[#1C1B18]' : 'bg-white border-[#1C1B18]/40'
+                    }`}
+                  >
+                    照片 #{idx + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* 9:16 預覽圖 */}
+            <div className="w-full max-w-[270px] aspect-[9/16] bg-white border border-[#1C1B18] shadow-md overflow-hidden flex items-center justify-center mb-3">
+              {generating ? (
+                <span className="font-mono text-xs">圖卡繪製中...</span>
+              ) : (
+                <img src={previewDataUrl} alt="Story Preview" className="w-full h-full object-contain" />
+              )}
+            </div>
+
+            <p className="text-[11px] text-[#1C1B18]/70 text-center mb-3">
+              手機用戶可直接點擊下方下載，或長按上方圖片「儲存影像」即可發 IG 限動！
+            </p>
+
+            <div className="w-full flex gap-2">
+              <button
+                onClick={onClose}
+                className="flex-1 py-2 border border-[#1C1B18] bg-white font-mono text-xs"
+              >
+                關閉
+              </button>
+              <button
+                onClick={handleDownloadPng}
+                disabled={generating}
+                className="flex-1 py-2 bg-[#1C1B18] text-white font-mono text-xs font-bold hover:bg-[#B85D19]"
+              >
+                ⬇️ 下載 PNG 圖卡
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 子元件 1：行程節點編輯器 Modal (已修復手機儲存白屏與地圖卸載問題)
     // ============================================================================
     function ItemEditorModal({ day, initialItem, onClose, onSave }) {
       const [form, setForm] = useState(() => ({
@@ -1686,30 +2146,33 @@
         endTime: initialItem?.endTime || '',
         startTz: initialItem?.startTz || day.timezone || 'Asia/Taipei',
         endTz: initialItem?.endTz || initialItem?.startTz || day.timezone || 'Asia/Taipei',
-        dayOffset: initialItem?.dayOffset || 0,
+        dayOffset: Number(initialItem?.dayOffset) || 0,
         category: initialItem?.category || 'sight',
         title: initialItem?.title || '',
         station: initialItem?.station || '',
         transitNext: initialItem?.transitNext || '',
-        cost: initialItem?.cost ?? 0,
-        lat: initialItem?.lat ?? 35.6812,
-        lng: initialItem?.lng ?? 139.7671,
+        cost: Number(initialItem?.cost) || 0,
+        lat: typeof initialItem?.lat === 'number' && !isNaN(initialItem.lat) ? initialItem.lat : 35.6812,
+        lng: typeof initialItem?.lng === 'number' && !isNaN(initialItem.lng) ? initialItem.lng : 139.7671,
         mapUrl: initialItem?.mapUrl || '',
         note: initialItem?.note || '',
-        stamped: initialItem?.stamped || false,
+        stamped: Boolean(initialItem?.stamped),
         photos: Array.isArray(initialItem?.photos) ? initialItem.photos : [],
       }));
 
       const [searchStatus, setSearchStatus] = useState('');
       const [photoUrlInput, setPhotoUrlInput] = useState('');
+      const [uploading, setUploading] = useState(false);
       const miniMapRef = useRef(null);
       const miniMapInstance = useRef(null);
       const miniMarkerRef = useRef(null);
 
+      // 初始化迷你預覽地圖，並在關閉時確實卸載清理
       useEffect(() => {
         if (!miniMapRef.current || !window.L) return;
-        if (!miniMapInstance.current) {
-          const m = window.L.map(miniMapRef.current, {
+        let m = null;
+        try {
+          m = window.L.map(miniMapRef.current, {
             center: [form.lat, form.lng],
             zoom: 13,
           });
@@ -1736,13 +2199,25 @@
           });
           miniMapInstance.current = m;
           miniMarkerRef.current = marker;
-        }
+        } catch (err) {}
+
+        return () => {
+          if (miniMapInstance.current) {
+            try {
+              miniMapInstance.current.remove();
+            } catch (e) {}
+            miniMapInstance.current = null;
+            miniMarkerRef.current = null;
+          }
+        };
       }, []);
 
       useEffect(() => {
         if (miniMapInstance.current && miniMarkerRef.current && form.lat && form.lng) {
-          miniMarkerRef.current.setLatLng([form.lat, form.lng]);
-          miniMapInstance.current.setView([form.lat, form.lng], 14);
+          try {
+            miniMarkerRef.current.setLatLng([form.lat, form.lng]);
+            miniMapInstance.current.setView([form.lat, form.lng], 14);
+          } catch (e) {}
         }
       }, [form.lat, form.lng]);
 
@@ -1796,6 +2271,7 @@
       const handleUploadFiles = async (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
+        setUploading(true);
         const compressedList = [];
         for (const file of files) {
           try {
@@ -1805,9 +2281,12 @@
               url: dataUrl,
               caption: '',
             });
-          } catch {}
+          } catch (err) {
+            alert('有部分照片讀取失敗，建議單次選取 1～2 張照片上傳');
+          }
         }
         setForm(prev => ({ ...prev, photos: [...prev.photos, ...compressedList] }));
+        setUploading(false);
         e.target.value = '';
       };
 
@@ -1820,7 +2299,7 @@
               <h3 className="font-serif text-xl font-bold">
                 {initialItem ? '編輯行程節點' : '新增行程節點'}
               </h3>
-              <button onClick={onClose} className="font-mono text-sm px-2 py-0.5 border border-[#1C1B18]">
+              <button type="button" onClick={onClose} className="font-mono text-sm px-2 py-0.5 border border-[#1C1B18]">
                 ✕
               </button>
             </div>
@@ -1832,7 +2311,12 @@
                   alert('請輸入行程或景點名稱');
                   return;
                 }
-                onSave(form);
+                onSave({
+                  ...form,
+                  cost: Number(form.cost) || 0,
+                  lat: Number(form.lat) || 35.6812,
+                  lng: Number(form.lng) || 139.7671,
+                });
               }}
               className="space-y-4 text-xs"
             >
@@ -2014,13 +2498,13 @@
 
               <div>
                 <label className="block font-mono text-[10px] uppercase mb-1 font-bold">
-                  NOTE (貼上 https:// 網址將自動轉為超連結)
+                  NOTE
                 </label>
                 <textarea
                   rows={2}
                   value={form.note}
                   onChange={(e) => setForm({ ...form, note: e.target.value })}
-                  placeholder="輸入備註或貼上餐廳預約網址、票券連結..."
+                  placeholder="輸入備註或貼上預約網址..."
                   className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
                 />
               </div>
@@ -2032,8 +2516,8 @@
                   </span>
                   <div className="flex items-center gap-2">
                     <label className="px-2.5 py-1 bg-[#1C1B18] text-white font-mono text-[11px] cursor-pointer hover:bg-[#B85D19]">
-                      + 上傳照片 (可多選)
-                      <input type="file" accept="image/*" multiple onChange={handleUploadFiles} className="hidden" />
+                      {uploading ? '處理中...' : '+ 上傳照片 (可多選)'}
+                      <input type="file" accept="image/*" multiple onChange={handleUploadFiles} disabled={uploading} className="hidden" />
                     </label>
                   </div>
                 </div>
@@ -2108,7 +2592,8 @@
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs font-bold hover:bg-[#B85D19]"
+                  disabled={uploading}
+                  className="px-6 py-2 bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs font-bold hover:bg-[#B85D19] disabled:opacity-50"
                 >
                   儲存
                 </button>
