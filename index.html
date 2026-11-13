@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TABI NOTE</title>
+
+  <!-- Google Fonts: 雜誌襯線體 + 無襯線體 + 等寬數據字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            serif: ['"Instrument Serif"', '"Noto Serif TC"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet 互動地圖 CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- React 18 & Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      background-color: #F7F6F2;
+      color: #1C1B18;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 實體車票兩側撕票半圓缺口 */
+    .ticket-notch-left {
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: #F7F6F2;
+      border-right: 1px solid #1C1B18;
+      border-radius: 9999px;
+      z-index: 10;
+    }
+    .ticket-notch-right {
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: #F7F6F2;
+      border-left: 1px solid #1C1B18;
+      border-radius: 9999px;
+      z-index: 10;
+    }
+    /* 地圖自訂圓形編號標記 */
+    .custom-map-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 11px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.28);
+      transition: transform 0.2s ease;
+    }
+  </style>
+</head>
+<body class="bg-[#F7F6F2] text-[#1C1B18] antialiased selection:bg-[#1C1B18] selection:text-[#F7F6F2]">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // ============================================================================
+    // 1. 時區資料庫
+    // ============================================================================
+    const TIMEZONES = [
+      { id: 'Asia/Taipei', label: '台灣 TPE (UTC+8)', short: 'TW UTC+8', offset: 8, quick: 'TPE 台灣' },
+      { id: 'Asia/Tokyo', label: '日本 TYO (UTC+9)', short: 'JP UTC+9', offset: 9, quick: 'TYO 日本' },
+      { id: 'Pacific/Honolulu', label: '夏威夷 HNL (UTC-10)', short: 'HI UTC-10', offset: -10, quick: 'HNL 夏威夷' },
+      { id: 'America/Los_Angeles_STD', label: '美西 PST 冬令 (UTC-8 洛杉磯/舊金山)', short: 'PST UTC-8', offset: -8, quick: '美西 PST (-8)' },
+      { id: 'America/Los_Angeles_DST', label: '美西 PDT 夏令 (UTC-7)', short: 'PDT UTC-7', offset: -7, quick: null },
+      { id: 'America/Denver_STD', label: '美山 MST 冬令 (UTC-7 丹佛/鳳凰城)', short: 'MST UTC-7', offset: -7, quick: '美山 MST (-7)' },
+      { id: 'America/Chicago_STD', label: '美中 CST 冬令 (UTC-6 芝加哥/達拉斯)', short: 'CST UTC-6', offset: -6, quick: '美中 CST (-6)' },
+      { id: 'America/Chicago_DST', label: '美中 CDT 夏令 (UTC-5)', short: 'CDT UTC-5', offset: -5, quick: null },
+      { id: 'America/New_York_STD', label: '美東 EST 冬令 (UTC-5 紐約/波士頓)', short: 'EST UTC-5', offset: -5, quick: '美東 EST (-5)' },
+      { id: 'America/New_York_DST', label: '美東 EDT 夏令 (UTC-4)', short: 'EDT UTC-4', offset: -4, quick: null },
+      { id: 'Europe/London', label: '倫敦 GMT (UTC+0)', short: 'UK UTC+0', offset: 0, quick: null },
+      { id: 'Europe/Paris', label: '歐洲中部 CET (UTC+1)', short: 'EU UTC+1', offset: 1, quick: null },
+    ];
+
+    const getTzInfo = (tzId) => TIMEZONES.find(t => t.id === tzId) || TIMEZONES[0];
+
+    const QUICK_LANDMARKS = [
+      { label: '桃園機場 TPE', title: '桃園國際機場 (TPE)', lat: 25.0797, lng: 121.2342, tz: 'Asia/Taipei' },
+      { label: '東京成田 NRT', title: '成田国際空港 (NRT)', lat: 35.7720, lng: 140.3929, tz: 'Asia/Tokyo' },
+      { label: '東京羽田 HND', title: '羽田空港 (HND)', lat: 35.5494, lng: 139.7798, tz: 'Asia/Tokyo' },
+      { label: '洛杉磯 LAX', title: 'Los Angeles Intl Airport (LAX)', lat: 33.9416, lng: -118.4085, tz: 'America/Los_Angeles_STD' },
+      { label: '舊金山 SFO', title: 'San Francisco Intl Airport (SFO)', lat: 37.6213, lng: -122.3790, tz: 'America/Los_Angeles_STD' },
+      { label: '芝加哥 ORD', title: 'O\'Hare Intl Airport (ORD)', lat: 41.9742, lng: -87.9073, tz: 'America/Chicago_STD' },
+      { label: '紐約 JFK', title: 'John F. Kennedy Intl Airport (JFK)', lat: 40.6413, lng: -73.7781, tz: 'America/New_York_STD' },
+      { label: '檀香山 HNL', title: 'Daniel K. Inouye Intl Airport (HNL)', lat: 21.3187, lng: -157.9224, tz: 'Pacific/Honolulu' },
+    ];
+
+    const CATEGORIES = {
+      transit: { label: '交通・航班', color: '#1C1B18', badgeBg: '#1C1B18', badgeText: '#F7F6F2', isTicket: true },
+      sight:   { label: '景點・探索', color: '#2B5B84', badgeBg: '#E6EEF4', badgeText: '#1D4261', isTicket: false },
+      food:    { label: '餐飲・咖啡', color: '#B85D19', badgeBg: '#F9ECE3', badgeText: '#8F420B', isTicket: false },
+      stay:    { label: '住宿・休憩', color: '#3F624D', badgeBg: '#E7EFEA', badgeText: '#2A4736', isTicket: false },
+      shop:    { label: '購物・選物', color: '#7A4988', badgeBg: '#F2EAF5', badgeText: '#583063', isTicket: false },
+    };
+
+    // ============================================================================
+    // 2. 工具函式
+    // ============================================================================
+    const timeToMins = (t) => {
+      if (!t || !t.includes(':')) return 0;
+      const [h, m] = t.split(':').map(Number);
+      return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
+    };
+
+    const minsToTime = (mins) => {
+      let m = ((mins % 1440) + 1440) % 1440;
+      const h = Math.floor(m / 60);
+      const min = Math.round(m % 60);
+      return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+    };
+
+    const calcRealDuration = (startTime, endTime, startTzId, endTzId, dayOffset = 0) => {
+      if (!startTime || !endTime) return null;
+      const startTz = getTzInfo(startTzId);
+      const endTz = getTzInfo(endTzId);
+      const startUtcMins = timeToMins(startTime) - startTz.offset * 60;
+      const endUtcMins = timeToMins(endTime) + dayOffset * 1440 - endTz.offset * 60;
+      let diff = endUtcMins - startUtcMins;
+      if (diff < 0 && dayOffset === 0) diff += 1440;
+      if (diff <= 0 || diff > 2880) return null;
+      const h = Math.floor(diff / 60);
+      const m = diff % 60;
+      const tzDiff = endTz.offset - startTz.offset;
+      return {
+        hours: h,
+        mins: m,
+        text: `${h}h ${m > 0 ? `${m}m` : ''}`.trim(),
+        tzDiff,
+      };
+    };
+
+    const convertToTaiwanTime = (localTime, localTzId) => {
+      if (!localTime) return null;
+      const tz = getTzInfo(localTzId);
+      if (tz.offset === 8) return null;
+      const totalMins = timeToMins(localTime) + (8 - tz.offset) * 60;
+      let dayShift = '';
+      if (totalMins >= 1440) dayShift = ' (+1日)';
+      else if (totalMins < 0) dayShift = ' (-1日)';
+      return `TW ${minsToTime(totalMins)}${dayShift}`;
+    };
+
+    const estimateSunTimes = (lat = 35.68, dateStr = '2026-12-01') => {
+      try {
+        const d = new Date(dateStr);
+        const start = new Date(d.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((d - start) / 86400000) || 335;
+        const rad = Math.PI / 180;
+        const decl = 23.45 * Math.sin(rad * (360 / 365) * (dayOfYear - 81));
+        const cosH = -Math.tan(lat * rad) * Math.tan(decl * rad);
+        const clamped = Math.max(-0.95, Math.min(0.95, cosH));
+        const halfDayHours = Math.acos(clamped) / rad / 15;
+        const sunriseHour = 12 - halfDayHours - 0.15;
+        const sunsetHour = 12 + halfDayHours - 0.15;
+        return {
+          sunrise: minsToTime(Math.round(sunriseHour * 60)),
+          sunset: minsToTime(Math.round(sunsetHour * 60)),
+        };
+      } catch {
+        return { sunrise: '06:30', sunset: '16:45' };
+      }
+    };
+
+    const renderTextWithLinks = (text) => {
+      if (!text) return null;
+      const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+      const parts = text.split(urlRegex);
+      return parts.map((part, idx) => {
+        if (urlRegex.test(part)) {
+          const href = part.startsWith('http') ? part : `https://${part}`;
+          let shortDisplay = part.replace(/^https?:\/\/(www\.)?/i, '');
+          if (shortDisplay.length > 34) shortDisplay = shortDisplay.slice(0, 32) + '…';
+          return (
+            <a
+              key={idx}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title={part}
+              className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 my-0.5 rounded bg-[#1C1B18]/10 hover:bg-[#1C1B18] text-[#1C1B18] hover:text-[#F7F6F2] font-mono text-[11px] underline decoration-dotted transition-colors break-all"
+            >
+              <span>🔗 {shortDisplay}</span>
+              <span className="text-[10px] opacity-75">↗</span>
+            </a>
+          );
+        }
+        return <React.Fragment key={idx}>{part}</React.Fragment>;
+      });
+    };
+
+    const parseGoogleMapsInput = (input) => {
+      if (!input) return null;
+      const trimmed = input.trim();
+      const directCoord = trimmed.match(/^(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)$/);
+      if (directCoord) {
+        return { lat: parseFloat(directCoord[1]), lng: parseFloat(directCoord[2]) };
+      }
+      const bangMatch = trimmed.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (bangMatch) {
+        return { lat: parseFloat(bangMatch[1]), lng: parseFloat(bangMatch[2]) };
+      }
+      const atMatch = trimmed.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (atMatch) {
+        return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
+      }
+      const qCoord = trimmed.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (qCoord) {
+        return { lat: parseFloat(qCoord[1]), lng: parseFloat(qCoord[2]) };
+      }
+      const placeMatch = trimmed.match(/\/maps\/(?:place|search)\/([^/?&@]+)/);
+      if (placeMatch) {
+        try {
+          const placeName = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+          return { extractedQuery: placeName };
+        } catch {}
+      }
+      return null;
+    };
+
+    const guessTimezoneByCoord = (lat, lng) => {
+      if (lng >= 118 && lng <= 123.5 && lat >= 21 && lat <= 26.5) return 'Asia/Taipei';
+      if (lng >= 127 && lng <= 146 && lat >= 24 && lat <= 46) return 'Asia/Tokyo';
+      if (lng >= -161 && lng <= -154 && lat >= 18 && lat <= 23) return 'Pacific/Honolulu';
+      if (lng >= -125 && lng < -114) return 'America/Los_Angeles_STD';
+      if (lng >= -114 && lng < -102) return 'America/Denver_STD';
+      if (lng >= -102 && lng < -85) return 'America/Chicago_STD';
+      if (lng >= -85 && lng <= -66) return 'America/New_York_STD';
+      return null;
+    };
+
+    const compressImageToBase64 = (file, maxWidth = 760, quality = 0.78) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const makePassToken = (tripId, passcode) => {
+      const str = `${tripId}::${passcode || ''}`;
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return `tok_${Math.abs(hash).toString(36)}`;
+    };
+
+    // ============================================================================
+    // 3. 預設初始旅程資料
+    // ============================================================================
+    const DEFAULT_TRIPS = [
+      {
+        id: 'trip-default-1',
+        name: 'TPE ➔ USA 跨時區之旅',
+        subtitle: 'TAIWAN TO WEST / CENTRAL / EAST COAST',
+        dateRange: '2026.12',
+        currency: '$',
+        passcode: '',
+        checklist: [
+          { id: 'c1', text: '護照效期確認 & ESTA 電子簽證核准 https://esta.cbp.dhs.gov', done: true },
+          { id: 'c2', text: '開通跨國漫遊 eSIM 與離線地圖下載', done: false },
+        ],
+        days: [
+          {
+            id: 'day-1',
+            dayNumber: 1,
+            date: '2026-12-01',
+            title: '台灣出發 ➔ 飛往洛杉磯 (跨越國際換日線)',
+            weatherNote: 'TPE 19°C / LAX 18°C 晴朗',
+            timezone: 'Asia/Taipei',
+            sunrise: '06:25',
+            sunset: '17:05',
+            items: [
+              {
+                id: 'item-101',
+                time: '10:30',
+                endTime: '23:40',
+                startTz: 'Asia/Taipei',
+                endTz: 'Asia/Taipei',
+                dayOffset: 0,
+                category: 'transit',
+                title: '桃園國際機場 (TPE) 報到・前往登機門',
+                station: 'Terminal 2 第二航廈',
+                transitNext: '搭乘越洋直飛航班 (約 11h 50m)',
+                cost: 0,
+                lat: 25.0797,
+                lng: 121.2342,
+                mapUrl: 'https://www.google.com/maps/place/桃園國際機場/@25.0797,121.2342,15z',
+                note: '起飛前 3 小時抵達櫃檯託運行李。航班查詢：https://www.starlux-airlines.com',
+                stamped: false,
+                photos: [],
+              },
+              {
+                id: 'item-102',
+                time: '23:40',
+                endTime: '19:30',
+                startTz: 'Asia/Taipei',
+                endTz: 'America/Los_Angeles_STD',
+                dayOffset: 0,
+                category: 'transit',
+                title: '抵達洛杉磯國際機場 (LAX)・入境與轉機休息',
+                station: 'Tom Bradley Intl Terminal (TBIT)',
+                transitNext: '步行或搭乘航廈接駁車前往 Sepulveda Blvd',
+                cost: 35,
+                lat: 33.9416,
+                lng: -118.4085,
+                mapUrl: 'https://www.google.com/maps/place/Los+Angeles+International+Airport/@33.9416,-118.4085,15z',
+                note: '因為時差 -16 小時，抵達時間依然是同一天傍晚！手錶請調整為美西時間 (UTC-8)。',
+                stamped: false,
+                photos: [],
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const STORAGE_KEY = 'tabi_note_v6_trips';
+    const UNLOCK_STORAGE_KEY = 'tabi_note_v6_unlocked_tokens';
+
+    // ============================================================================
+    // 4. 主應用程式元件
+    // ============================================================================
+    function App() {
+      const [trips, setTrips] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
+        } catch (e) {}
+        return DEFAULT_TRIPS;
+      });
+
+      const [activeTripId, setActiveTripId] = useState(() => trips[0]?.id || 'trip-default-1');
+      const [activeDayIndex, setActiveDayIndex] = useState(0);
+      const [selectedItemId, setSelectedItemId] = useState(null);
+
+      const [mobileTab, setMobileTab] = useState('timeline');
+      const [liveMode, setLiveMode] = useState(false);
+      const [showTaiwanTime, setShowTaiwanTime] = useState(true);
+
+      const [unlockedTokens, setUnlockedTokens] = useState(() => {
+        try {
+          const saved = localStorage.getItem(UNLOCK_STORAGE_KEY);
+          return saved ? JSON.parse(saved) : {};
+        } catch {
+          return {};
+        }
+      });
+
+      const [passInput, setPassInput] = useState('');
+      const [rememberDevice, setRememberDevice] = useState(true);
+      const [passError, setPassError] = useState('');
+      const [sessionUnlockedIds, setSessionUnlockedIds] = useState({});
+
+      const [itemModalOpen, setItemModalOpen] = useState(false);
+      const [editingItem, setEditingItem] = useState(null);
+      const [dayModalOpen, setDayModalOpen] = useState(false);
+      const [tripModalOpen, setTripModalOpen] = useState(false);
+      const [tripManagerOpen, setTripManagerOpen] = useState(false);
+      const [lightbox, setLightbox] = useState(null);
+      const [toastMsg, setToastMsg] = useState('');
+
+      const showToast = (msg) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(''), 2800);
+      };
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
+        } catch (e) {
+          showToast('⚠️ 照片或資料量較大，建議匯出 JSON 備份');
+        }
+      }, [trips]);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(UNLOCK_STORAGE_KEY, JSON.stringify(unlockedTokens));
+        } catch (e) {}
+      }, [unlockedTokens]);
+
+      useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlTripId = params.get('trip');
+        const urlPass = params.get('pass');
+        if (urlTripId) {
+          const target = trips.find(t => t.id === urlTripId);
+          if (target) {
+            setActiveTripId(target.id);
+            if (urlPass && target.passcode && urlPass === target.passcode) {
+              const token = makePassToken(target.id, target.passcode);
+              setUnlockedTokens(prev => ({ ...prev, [target.id]: token }));
+              setSessionUnlockedIds(prev => ({ ...prev, [target.id]: true }));
+              showToast(`🔓 已透過專屬連結永久解鎖「${target.name}」`);
+            }
+          }
+        }
+      }, []);
+
+      const activeTrip = useMemo(
+        () => trips.find(t => t.id === activeTripId) || trips[0],
+        [trips, activeTripId]
+      );
+
+      const isTripLocked = useMemo(() => {
+        if (!activeTrip?.passcode) return false;
+        if (sessionUnlockedIds[activeTrip.id]) return false;
+        const expectedToken = makePassToken(activeTrip.id, activeTrip.passcode);
+        return unlockedTokens[activeTrip.id] !== expectedToken;
+      }, [activeTrip, unlockedTokens, sessionUnlockedIds]);
+
+      const activeDay = useMemo(() => {
+        if (!activeTrip || !activeTrip.days.length) return null;
+        return activeTrip.days[Math.min(activeDayIndex, activeTrip.days.length - 1)];
+      }, [activeTrip, activeDayIndex]);
+
+      const handleSelectTrip = (tripId) => {
+        setActiveTripId(tripId);
+        setActiveDayIndex(0);
+        setSelectedItemId(null);
+        setPassInput('');
+        setPassError('');
+      };
+
+      const handleUnlockSubmit = (e) => {
+        e.preventDefault();
+        if (!activeTrip) return;
+        if (passInput === activeTrip.passcode) {
+          const token = makePassToken(activeTrip.id, activeTrip.passcode);
+          if (rememberDevice) {
+            setUnlockedTokens(prev => ({ ...prev, [activeTrip.id]: token }));
+          }
+          setSessionUnlockedIds(prev => ({ ...prev, [activeTrip.id]: true }));
+          setPassInput('');
+          setPassError('');
+          showToast('🔓 解鎖成功！此裝置已記住通行狀態');
+        } else {
+          setPassError('密碼不正確，請重新輸入');
+        }
+      };
+
+      const handleRelockTrip = () => {
+        if (!activeTrip) return;
+        setUnlockedTokens(prev => {
+          const next = { ...prev };
+          delete next[activeTrip.id];
+          return next;
+        });
+        setSessionUnlockedIds(prev => {
+          const next = { ...prev };
+          delete next[activeTrip.id];
+          return next;
+        });
+        showToast('🔒 已在此裝置重新上鎖');
+      };
+
+      const handleCopyMagicLink = () => {
+        if (!activeTrip) return;
+        const baseUrl = window.location.origin + window.location.pathname;
+        const url = activeTrip.passcode
+          ? `${baseUrl}?trip=${encodeURIComponent(activeTrip.id)}&pass=${encodeURIComponent(activeTrip.passcode)}`
+          : `${baseUrl}?trip=${encodeURIComponent(activeTrip.id)}`;
+        navigator.clipboard?.writeText(url);
+        showToast('🔗 已複製同行友人專屬免輸密碼連結！');
+      };
+
+      // ============================================================================
+      // 5. 右側 Leaflet 互動路線地圖同步
+      // ============================================================================
+      const mapContainerRef = useRef(null);
+      const mapInstanceRef = useRef(null);
+      const markersLayerRef = useRef(null);
+
+      useEffect(() => {
+        if (isTripLocked || !mapContainerRef.current) return;
+        if (!mapInstanceRef.current && window.L) {
+          const map = window.L.map(mapContainerRef.current, {
+            center: [25.0797, 121.2342],
+            zoom: 11,
+            zoomControl: true,
+          });
+          window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+          }).addTo(map);
+          markersLayerRef.current = window.L.layerGroup().addTo(map);
+          mapInstanceRef.current = map;
+        }
+      }, [isTripLocked, mobileTab]);
+
+      useEffect(() => {
+        const map = mapInstanceRef.current;
+        const layer = markersLayerRef.current;
+        if (!map || !layer || !activeDay || isTripLocked) return;
+
+        setTimeout(() => map.invalidateSize(), 120);
+        layer.clearLayers();
+
+        const validItems = (activeDay.items || []).filter(
+          it => typeof it.lat === 'number' && typeof it.lng === 'number' && !isNaN(it.lat) && !isNaN(it.lng)
+        );
+
+        if (validItems.length === 0) return;
+
+        const latlngs = [];
+        validItems.forEach((item, idx) => {
+          const isSelected = item.id === selectedItemId;
+          const cat = CATEGORIES[item.category] || CATEGORIES.sight;
+          latlngs.push([item.lat, item.lng]);
+
+          const iconHtml = `
+            <div class="custom-map-marker" style="
+              width: ${isSelected ? '30px' : '24px'};
+              height: ${isSelected ? '30px' : '24px'};
+              background: ${isSelected ? '#B85D19' : cat.color};
+              color: #F7F6F2;
+              border: 2px solid #F7F6F2;
+              transform: scale(${isSelected ? 1.15 : 1});
+            ">
+              ${idx + 1}
+            </div>
+          `;
+          const icon = window.L.divIcon({
+            html: iconHtml,
+            className: '',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+          });
+
+          const marker = window.L.marker([item.lat, item.lng], { icon })
+            .bindPopup(`
+              <div style="font-family:'Noto Sans TC',sans-serif;min-width:150px;">
+                <div style="font-size:10px;color:#666;font-family:monospace;">#${idx + 1} · ${item.time || ''}</div>
+                <div style="font-weight:700;font-size:13px;margin:2px 0;">${item.title}</div>
+                ${item.station ? `<div style="font-size:11px;color:#555;">📍 ${item.station}</div>` : ''}
+              </div>
+            `);
+          marker.on('click', () => setSelectedItemId(item.id));
+          marker.addTo(layer);
+        });
+
+        if (latlngs.length >= 2) {
+          window.L.polyline(latlngs, {
+            color: '#1C1B18',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: '6, 6',
+          }).addTo(layer);
+        }
+
+        const selectedTarget = validItems.find(i => i.id === selectedItemId);
+        if (selectedTarget) {
+          map.flyTo([selectedTarget.lat, selectedTarget.lng], Math.max(map.getZoom(), 14), { duration: 0.6 });
+        } else if (latlngs.length === 1) {
+          map.setView(latlngs[0], 13);
+        } else {
+          map.fitBounds(latlngs, { padding: [36, 36], maxZoom: 14 });
+        }
+      }, [activeDay, selectedItemId, isTripLocked, mobileTab]);
+
+      const googleMapsMultiRouteUrl = useMemo(() => {
+        if (!activeDay?.items?.length) return 'https://www.google.com/maps';
+        const pts = activeDay.items.filter(it => it.lat && it.lng);
+        if (pts.length === 0) return 'https://www.google.com/maps';
+        if (pts.length === 1) return `https://www.google.com/maps/search/?api=1&query=${pts[0].lat},${pts[0].lng}`;
+        const origin = `${pts[0].lat},${pts[0].lng}`;
+        const destination = `${pts[pts.length - 1].lat},${pts[pts.length - 1].lng}`;
+        const waypoints = pts.slice(1, -1).map(p => `${p.lat},${p.lng}`).join('|');
+        return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : ''}&travelmode=transit`;
+      }, [activeDay]);
+
+      // ============================================================================
+      // 6. 行程與天數增刪改操作
+      // ============================================================================
+      const updateActiveTrip = (updater) => {
+        setTrips(prev => prev.map(t => (t.id === activeTrip.id ? updater(t) : t)));
+      };
+
+      const handleAddDay = () => {
+        if (!activeTrip) return;
+        const lastDay = activeTrip.days[activeTrip.days.length - 1];
+        let nextDateStr = '2026-12-02';
+        if (lastDay?.date) {
+          const d = new Date(lastDay.date);
+          if (!isNaN(d)) {
+            d.setDate(d.getDate() + 1);
+            nextDateStr = d.toISOString().slice(0, 10);
+          }
+        }
+        const inheritedTz = lastDay?.timezone || 'Asia/Taipei';
+        const newDay = {
+          id: `day-${Date.now()}`,
+          dayNumber: activeTrip.days.length + 1,
+          date: nextDateStr,
+          title: `Day ${activeTrip.days.length + 1} 行程探索`,
+          weatherNote: '晴時多雲',
+          timezone: inheritedTz,
+          sunrise: lastDay?.sunrise || '06:30',
+          sunset: lastDay?.sunset || '17:15',
+          items: [],
+        };
+        updateActiveTrip(t => ({ ...t, days: [...t.days, newDay] }));
+        setActiveDayIndex(activeTrip.days.length);
+        showToast(`＋ 已新增 Day ${activeTrip.days.length + 1}`);
+      };
+
+      const handleDeleteCurrentDay = () => {
+        if (!activeTrip || activeTrip.days.length <= 1) {
+          showToast('至少需保留一天行程');
+          return;
+        }
+        if (!window.confirm(`確定要刪除 Day ${activeDay.dayNumber}「${activeDay.title}」嗎？`)) return;
+        updateActiveTrip(t => {
+          const filtered = t.days.filter((_, idx) => idx !== activeDayIndex)
+            .map((d, idx) => ({ ...d, dayNumber: idx + 1 }));
+          return { ...t, days: filtered };
+        });
+        setActiveDayIndex(Math.max(0, activeDayIndex - 1));
+      };
+
+      const handleMoveItem = (itemId, direction) => {
+        updateActiveTrip(t => ({
+          ...t,
+          days: t.days.map((d, idx) => {
+            if (idx !== activeDayIndex) return d;
+            const list = [...d.items];
+            const i = list.findIndex(x => x.id === itemId);
+            const targetIdx = i + direction;
+            if (i < 0 || targetIdx < 0 || targetIdx >= list.length) return d;
+            [list[i], list[targetIdx]] = [list[targetIdx], list[i]];
+            return { ...d, items: list };
+          })
+        }));
+      };
+
+      const handleSortItemsByTime = () => {
+        updateActiveTrip(t => ({
+          ...t,
+          days: t.days.map((d, idx) => {
+            if (idx !== activeDayIndex) return d;
+            const sorted = [...d.items].sort((a, b) => timeToMins(a.time) - timeToMins(b.time));
+            return { ...d, items: sorted };
+          })
+        }));
+        showToast('⏱️ 已依時間順序排列今日行程');
+      };
+
+      const handleToggleStamp = (itemId) => {
+        updateActiveTrip(t => ({
+          ...t,
+          days: t.days.map((d, idx) => {
+            if (idx !== activeDayIndex) return d;
+            return {
+              ...d,
+              items: d.items.map(it => it.id === itemId ? { ...it, stamped: !it.stamped } : it)
+            };
+          })
+        }));
+      };
+
+      const handleDeleteItem = (itemId) => {
+        if (!window.confirm('確定要刪除這個行程節點嗎？')) return;
+        updateActiveTrip(t => ({
+          ...t,
+          days: t.days.map((d, idx) => {
+            if (idx !== activeDayIndex) return d;
+            return { ...d, items: d.items.filter(it => it.id !== itemId) };
+          })
+        }));
+      };
+
+      const handleExportJSON = (singleTripOnly = false) => {
+        const payload = singleTripOnly ? [activeTrip] : trips;
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = singleTripOnly
+          ? `tabi-note-${activeTrip.name.replace(/\s+/g, '_')}.json`
+          : `tabi-note-all-trips-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📥 已匯出 JSON 備份檔');
+      };
+
+      const handleImportJSON = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            const importedList = Array.isArray(parsed) ? parsed : [parsed];
+            if (!importedList[0]?.days) throw new Error('Invalid format');
+            setTrips(prev => {
+              const merged = [...prev];
+              importedList.forEach(incoming => {
+                const existIdx = merged.findIndex(x => x.id === incoming.id);
+                if (existIdx >= 0) merged[existIdx] = incoming;
+                else merged.push(incoming);
+              });
+              return merged;
+            });
+            setActiveTripId(importedList[0].id);
+            setActiveDayIndex(0);
+            showToast(`✅ 成功載入 ${importedList.length} 趟旅行計畫！`);
+          } catch {
+            alert('JSON 檔案格式不正確，請確認是否為 TABI NOTE 匯出的檔案。');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      };
+
+      const budgetStats = useMemo(() => {
+        if (!activeTrip) return { dayTotal: 0, tripTotal: 0, byCat: {} };
+        const dayTotal = (activeDay?.items || []).reduce((acc, it) => acc + (Number(it.cost) || 0), 0);
+        const byCat = {};
+        let tripTotal = 0;
+        activeTrip.days.forEach(d => {
+          d.items.forEach(it => {
+            const c = Number(it.cost) || 0;
+            tripTotal += c;
+            byCat[it.category] = (byCat[it.category] || 0) + c;
+          });
+        });
+        return { dayTotal, tripTotal, byCat };
+      }, [activeTrip, activeDay]);
+
+      // ============================================================================
+      // 7. 畫面渲染
+      // ============================================================================
+      return (
+        <div className="min-h-screen flex flex-col pb-20 lg:pb-10">
+          {toastMsg && (
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-[#1C1B18] text-[#F7F6F2] px-4 py-2 rounded-full text-xs font-mono shadow-lg border border-[#F7F6F2]/20">
+              {toastMsg}
+            </div>
+          )}
+
+          {/* 刊頭 Header (精簡版：僅保留「旅」印章 icon 與 TABI NOTE 標題) */}
+          <header className="border-b border-[#1C1B18] bg-[#F7F6F2]/95 sticky top-0 z-30 backdrop-blur-sm">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 flex items-center justify-center bg-[#1C1B18] text-[#F7F6F2] font-serif text-sm font-bold">
+                  旅
+                </span>
+                <h1 className="font-mono text-lg sm:text-xl tracking-widest font-bold">
+                  TABI NOTE
+                </h1>
+              </div>
+
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <button
+                  onClick={() => setLiveMode(!liveMode)}
+                  className={`px-2.5 py-1 text-xs font-mono border border-[#1C1B18] transition-colors ${
+                    liveMode ? 'bg-[#B85D19] text-white border-[#B85D19]' : 'bg-white hover:bg-[#1C1B18] hover:text-white'
+                  }`}
+                >
+                  {liveMode ? '● 旅途進行中' : '✎ 編輯規劃'}
+                </button>
+
+                <button
+                  onClick={() => setTripManagerOpen(true)}
+                  className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors"
+                >
+                  🗂️ 旅行專案 ({trips.length})
+                </button>
+
+                {!isTripLocked && (
+                  <button
+                    onClick={() => handleExportJSON(false)}
+                    className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors"
+                  >
+                    匯出 JSON
+                  </button>
+                )}
+
+                <label className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white transition-colors cursor-pointer">
+                  匯入
+                  <input type="file" accept=".json" onChange={handleImportJSON} className="hidden" />
+                </label>
+              </div>
+            </div>
+
+            {/* 多趟旅行分頁列 (Trip Tabs) */}
+            <div className="border-t border-[#1C1B18]/20 bg-[#EFECE6] px-4 sm:px-6 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#1C1B18]/60 shrink-0">
+                TRIPS:
+              </span>
+              {trips.map((t, idx) => {
+                const isCurrent = t.id === activeTrip?.id;
+                const hasPass = Boolean(t.passcode);
+                const tok = makePassToken(t.id, t.passcode);
+                const unlocked = !hasPass || unlockedTokens[t.id] === tok || sessionUnlockedIds[t.id];
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => handleSelectTrip(t.id)}
+                    className={`px-3 py-1 text-xs font-mono shrink-0 border transition-all flex items-center gap-1.5 ${
+                      isCurrent
+                        ? 'bg-[#1C1B18] text-[#F7F6F2] border-[#1C1B18] font-semibold'
+                        : 'bg-[#F7F6F2] text-[#1C1B18] border-[#1C1B18]/30 hover:border-[#1C1B18]'
+                    }`}
+                  >
+                    <span className="opacity-60">{String(idx + 1).padStart(2, '0')}</span>
+                    {hasPass && <span>{unlocked ? '🔓' : '🔒'}</span>}
+                    <span>{t.name}</span>
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setTripManagerOpen(true)}
+                className="px-2.5 py-1 text-xs font-mono shrink-0 border border-dashed border-[#1C1B18]/50 hover:border-[#1C1B18] text-[#1C1B18]/80 hover:bg-white"
+              >
+                + 新增旅行分頁
+              </button>
+            </div>
+          </header>
+
+          {/* 密碼鎖定畫面 */}
+          {isTripLocked ? (
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="max-w-md w-full bg-white border-2 border-[#1C1B18] p-6 sm:p-8 shadow-[6px_6px_0px_#1C1B18]">
+                <div className="font-mono text-[11px] tracking-widest uppercase text-[#B85D19] font-bold mb-1">
+                  PRIVATE TRAVEL ARCHIVE · 受密碼保護
+                </div>
+                <h2 className="font-serif text-2xl font-bold mb-2">{activeTrip.name}</h2>
+                <p className="text-xs text-[#1C1B18]/70 mb-5 leading-relaxed">
+                  此趟旅行行程包含私人時間軸與住宿資訊。請輸入同行友人專屬密碼解鎖（輸入一次後，此手機/電腦將自動永久記住解鎖狀態，無需重複輸入）。
+                </p>
+
+                <form onSubmit={handleUnlockSubmit} className="space-y-4">
+                  <div>
+                    <label className="block font-mono text-[11px] uppercase mb-1">PASSCODE 密碼</label>
+                    <input
+                      type="password"
+                      value={passInput}
+                      onChange={(e) => setPassInput(e.target.value)}
+                      placeholder="請輸入密碼..."
+                      autoFocus
+                      className="w-full px-3 py-2 border border-[#1C1B18] font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#1C1B18]"
+                    />
+                    {passError && <p className="text-xs text-red-600 mt-1 font-mono">{passError}</p>}
+                  </div>
+
+                  <label className="flex items-center gap-2 text-xs cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={rememberDevice}
+                      onChange={(e) => setRememberDevice(e.target.checked)}
+                      className="accent-[#1C1B18]"
+                    />
+                    <span>在此手機 / 瀏覽器永久記住解鎖狀態（下次打開免再輸入）</span>
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs uppercase tracking-widest hover:bg-[#333] transition-colors"
+                  >
+                    🔓 解鎖行程檔案
+                  </button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-5">
+              {/* 旅行大標題區 */}
+              <div className="border-b-2 border-[#1C1B18] pb-4 mb-4 flex flex-col md:flex-row md:items-end justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-mono text-xs px-2 py-0.5 bg-[#1C1B18]/10 font-semibold">
+                      {activeTrip.dateRange || 'DATE TBD'}
+                    </span>
+                    <span className="font-mono text-xs text-[#1C1B18]/60 tracking-wider uppercase">
+                      {activeTrip.subtitle}
+                    </span>
+                    {activeTrip.passcode && (
+                      <span className="font-mono text-[11px] px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-700/30">
+                        🔓 此裝置已永久解鎖
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight">
+                    {activeTrip.name}
+                  </h2>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {activeTrip.passcode && (
+                    <>
+                      <button
+                        onClick={handleCopyMagicLink}
+                        className="px-2.5 py-1 text-xs font-mono bg-[#F9ECE3] text-[#8F420B] border border-[#B85D19]/40 hover:bg-[#B85D19] hover:text-white transition-colors"
+                      >
+                        🔗 複製同行友人免輸密碼連結
+                      </button>
+                      <button
+                        onClick={handleRelockTrip}
+                        className="px-2.5 py-1 text-xs font-mono border border-[#1C1B18]/40 bg-white hover:bg-[#1C1B18] hover:text-white"
+                      >
+                        🔒 手動上鎖
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => setTripModalOpen(true)}
+                    className="px-3 py-1 text-xs font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white"
+                  >
+                    🔑 密碼與旅行設定
+                  </button>
+                </div>
+              </div>
+
+              {/* 天數切換橫列 */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-4 border-b border-[#1C1B18]/20">
+                {activeTrip.days.map((d, idx) => {
+                  const isSelected = idx === activeDayIndex;
+                  const prevTz = idx > 0 ? activeTrip.days[idx - 1].timezone : d.timezone;
+                  const tzChanged = idx > 0 && prevTz !== d.timezone;
+                  const tzObj = getTzInfo(d.timezone);
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => {
+                        setActiveDayIndex(idx);
+                        setSelectedItemId(null);
+                      }}
+                      className={`px-3.5 py-2 border text-left shrink-0 transition-all ${
+                        isSelected
+                          ? 'bg-[#1C1B18] text-[#F7F6F2] border-[#1C1B18] shadow-[3px_3px_0px_#B85D19]'
+                          : 'bg-white text-[#1C1B18] border-[#1C1B18]/30 hover:border-[#1C1B18]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
+                        <span>DAY {String(d.dayNumber).padStart(2, '0')}</span>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded ${
+                          tzChanged
+                            ? 'bg-amber-300 text-black font-bold'
+                            : isSelected ? 'bg-white/20 text-white' : 'bg-black/10 text-black'
+                        }`}>
+                          {tzObj.short}
+                        </span>
+                      </div>
+                      <div className="font-mono text-[10px] opacity-75 mt-0.5">
+                        {d.date || '未定日期'}
+                      </div>
+                    </button>
+                  );
+                })}
+                {!liveMode && (
+                  <button
+                    onClick={handleAddDay}
+                    className="px-3.5 py-2 border border-dashed border-[#1C1B18] font-mono text-xs shrink-0 hover:bg-[#1C1B18] hover:text-white transition-colors"
+                  >
+                    + ADD DAY
+                  </button>
+                )}
+              </div>
+
+              {/* 主雙欄網格 */}
+              {activeDay && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  <div className={`lg:col-span-7 space-y-4 ${mobileTab !== 'timeline' ? 'hidden lg:block' : 'block'}`}>
+                    <div className="bg-white border border-[#1C1B18] p-4 shadow-[4px_4px_0px_#1C1B18]">
+                      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2 font-mono text-xs mb-1">
+                            <span className="px-2 py-0.5 bg-[#1C1B18] text-[#F7F6F2] font-bold">
+                              DAY {String(activeDay.dayNumber).padStart(2, '0')} · {activeDay.date}
+                            </span>
+                            <button
+                              onClick={() => setDayModalOpen(true)}
+                              className="px-2 py-0.5 bg-[#E6EEF4] text-[#1D4261] border border-[#2B5B84]/40 font-semibold hover:bg-[#2B5B84] hover:text-white transition-colors"
+                            >
+                              🌍 {getTzInfo(activeDay.timezone).label}
+                            </button>
+                            <span className="px-2 py-0.5 bg-amber-50 border border-amber-300 text-amber-900">
+                              🌅 {activeDay.sunrise || '06:30'} / 🌇 {activeDay.sunset || '17:15'}
+                            </span>
+                          </div>
+                          <h3 className="font-serif text-xl sm:text-2xl font-bold">{activeDay.title}</h3>
+                          {activeDay.weatherNote && (
+                            <p className="text-xs text-[#1C1B18]/70 font-mono mt-0.5">☁️ {activeDay.weatherNote}</p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setShowTaiwanTime(!showTaiwanTime)}
+                            className={`px-2 py-1 text-[11px] font-mono border border-[#1C1B18]/40 ${
+                              showTaiwanTime ? 'bg-[#1C1B18] text-white' : 'bg-white text-[#1C1B18]'
+                            }`}
+                          >
+                            🇹🇼 台灣時間: {showTaiwanTime ? '開' : '關'}
+                          </button>
+                          {!liveMode && (
+                            <>
+                              <button
+                                onClick={() => setDayModalOpen(true)}
+                                className="px-2.5 py-1 text-[11px] font-mono border border-[#1C1B18] bg-white hover:bg-[#1C1B18] hover:text-white"
+                              >
+                                編輯當日 / 時區
+                              </button>
+                              <button
+                                onClick={handleDeleteCurrentDay}
+                                className="px-2 py-1 text-[11px] font-mono border border-red-600/40 text-red-700 hover:bg-red-600 hover:text-white"
+                              >
+                                刪除此日
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 24H 日照與黃金時刻光譜條 */}
+                      <div className="mt-3 pt-2.5 border-t border-[#1C1B18]/15">
+                        <div className="flex justify-between font-mono text-[10px] text-[#1C1B18]/60 mb-1">
+                          <span>00:00</span>
+                          <span>🌅 日出 {activeDay.sunrise || '06:30'}</span>
+                          <span>12:00 NOON</span>
+                          <span>🌇 日落 {activeDay.sunset || '17:15'} (Golden Hour)</span>
+                          <span>24:00</span>
+                        </div>
+                        <div
+                          className="relative h-3.5 rounded-full overflow-hidden border border-[#1C1B18]/30"
+                          style={{
+                            background: 'linear-gradient(90deg, #1a2436 0%, #1a2436 24%, #f4a261 28%, #e9c46a 36%, #cde8f6 50%, #e9c46a 64%, #e76f51 72%, #1a2436 78%, #1a2436 100%)'
+                          }}
+                        >
+                          {(activeDay.items || []).map((it, idx) => {
+                            const pct = Math.min(98, Math.max(2, (timeToMins(it.time) / 1440) * 100));
+                            return (
+                              <div
+                                key={it.id}
+                                title={`#${idx + 1} ${it.time} ${it.title}`}
+                                style={{ left: `${pct}%` }}
+                                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-[#1C1B18] text-white font-mono text-[8px] flex items-center justify-center border border-white shadow"
+                              >
+                                {idx + 1}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {!liveMode && (
+                      <div className="flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingItem(null);
+                            setItemModalOpen(true);
+                          }}
+                          className="px-4 py-2 bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs uppercase tracking-wider hover:bg-[#B85D19] transition-colors shadow-[3px_3px_0px_#B85D19]"
+                        >
+                          + 新增行程節點
+                        </button>
+                        {activeDay.items.length > 1 && (
+                          <button
+                            onClick={handleSortItemsByTime}
+                            className="px-3 py-1.5 bg-white border border-[#1C1B18] font-mono text-xs hover:bg-[#1C1B18] hover:text-white transition-colors"
+                          >
+                            ⏱️ 依時間自動排序
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {activeDay.items.length === 0 ? (
+                      <div className="bg-white border border-dashed border-[#1C1B18]/50 p-10 text-center">
+                        <p className="font-serif text-lg mb-2">今日尚無行程節點</p>
+                        <p className="text-xs text-[#1C1B18]/60 mb-4">點擊上方「+ 新增行程節點」加入景點、餐廳或跨時區航班</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {activeDay.items.map((item, idx) => {
+                          const cat = CATEGORIES[item.category] || CATEGORIES.sight;
+                          const isSelected = item.id === selectedItemId;
+                          const startTzId = item.startTz || activeDay.timezone;
+                          const endTzId = item.endTz || startTzId;
+                          const isCrossTz = startTzId !== endTzId;
+                          const realFlight = item.endTime
+                            ? calcRealDuration(item.time, item.endTime, startTzId, endTzId, item.dayOffset || 0)
+                            : null;
+                          const twTimeStr = showTaiwanTime ? convertToTaiwanTime(item.time, startTzId) : null;
+
+                          const prevItem = idx > 0 ? activeDay.items[idx - 1] : null;
+                          const prevEndTz = prevItem ? (prevItem.endTz || prevItem.startTz || activeDay.timezone) : startTzId;
+                          const tzShiftBanner = idx > 0 && prevEndTz !== startTzId
+                            ? getTzInfo(startTzId).offset - getTzInfo(prevEndTz).offset
+                            : 0;
+
+                          const itemPhotos = Array.isArray(item.photos) ? item.photos : [];
+
+                          return (
+                            <React.Fragment key={item.id}>
+                              {tzShiftBanner !== 0 && (
+                                <div className="bg-[#1D4261] text-white px-3.5 py-1.5 font-mono text-xs flex items-center justify-between border border-[#1C1B18]">
+                                  <span>
+                                    🌐 TIMEZONE CHANGE · 進入 {getTzInfo(startTzId).label}
+                                  </span>
+                                  <span className="font-bold text-amber-300">
+                                    手錶請{tzShiftBanner > 0 ? `撥快 +${tzShiftBanner}` : `撥慢 ${tzShiftBanner}`} 小時
+                                  </span>
+                                </div>
+                              )}
+
+                              <div
+                                onClick={() => setSelectedItemId(item.id)}
+                                className={`relative bg-white border transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'border-[#1C1B18] border-2 shadow-[5px_5px_0px_#B85D19]'
+                                    : 'border-[#1C1B18] shadow-[3px_3px_0px_#1C1B18]'
+                                } ${cat.isTicket ? 'px-5 py-4' : 'p-4'}`}
+                              >
+                                {cat.isTicket && (
+                                  <>
+                                    <div className="ticket-notch-left" />
+                                    <div className="ticket-notch-right" />
+                                  </>
+                                )}
+
+                                {item.stamped && (
+                                  <div className="absolute top-3 right-14 rotate-[-12deg] border-2 border-red-700 text-red-700 px-2 py-0.5 font-mono text-[10px] font-bold tracking-widest uppercase bg-red-50/90 pointer-events-none z-10">
+                                    ★ VISITED ✓
+                                  </div>
+                                )}
+
+                                <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-dashed border-[#1C1B18]/25">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleStamp(item.id);
+                                      }}
+                                      title="點擊蓋章打卡"
+                                      className="w-6 h-6 rounded-full bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs font-bold flex items-center justify-center hover:bg-[#B85D19] transition-colors"
+                                    >
+                                      {String(idx + 1).padStart(2, '0')}
+                                    </button>
+
+                                    <div className="font-mono text-sm font-bold flex flex-wrap items-center gap-1.5">
+                                      <span>{item.time}</span>
+                                      <span className="text-[10px] px-1.5 py-0.5 bg-[#EFECE6] font-normal">
+                                        {getTzInfo(startTzId).short}
+                                      </span>
+                                      {item.endTime && (
+                                        <>
+                                          <span className="opacity-50">➔</span>
+                                          <span>{item.endTime}</span>
+                                          {isCrossTz && (
+                                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-200 text-black font-bold">
+                                              {getTzInfo(endTzId).short}
+                                            </span>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+
+                                    {realFlight && (
+                                      <span className="font-mono text-[11px] px-2 py-0.5 bg-[#1D4261] text-white">
+                                        ✈️ 實際耗時 {realFlight.text}
+                                        {realFlight.tzDiff !== 0 && ` (時差 ${realFlight.tzDiff > 0 ? '+' : ''}${realFlight.tzDiff}h)`}
+                                      </span>
+                                    )}
+
+                                    {twTimeStr && (
+                                      <span className="font-mono text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-600/30">
+                                        {twTimeStr}
+                                      </span>
+                                    )}
+
+                                    <span
+                                      style={{ backgroundColor: cat.badgeBg, color: cat.badgeText }}
+                                      className="font-mono text-[11px] px-2 py-0.5 font-semibold"
+                                    >
+                                      {cat.label}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                    {(item.mapUrl || (item.lat && item.lng)) && (
+                                      <a
+                                        href={item.mapUrl || `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-2 py-1 text-[11px] font-mono bg-[#E6EEF4] text-[#1D4261] hover:bg-[#1D4261] hover:text-white transition-colors"
+                                      >
+                                        📍 Maps ↗
+                                      </a>
+                                    )}
+                                    {!liveMode && (
+                                      <>
+                                        <button
+                                          onClick={() => handleMoveItem(item.id, -1)}
+                                          disabled={idx === 0}
+                                          className="px-1.5 py-1 text-xs font-mono border border-[#1C1B18]/20 disabled:opacity-30 hover:bg-[#1C1B18] hover:text-white"
+                                        >
+                                          ↑
+                                        </button>
+                                        <button
+                                          onClick={() => handleMoveItem(item.id, 1)}
+                                          disabled={idx === activeDay.items.length - 1}
+                                          className="px-1.5 py-1 text-xs font-mono border border-[#1C1B18]/20 disabled:opacity-30 hover:bg-[#1C1B18] hover:text-white"
+                                        >
+                                          ↓
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            setEditingItem(item);
+                                            setItemModalOpen(true);
+                                          }}
+                                          className="px-2 py-1 text-[11px] font-mono border border-[#1C1B18]/30 hover:bg-[#1C1B18] hover:text-white"
+                                        >
+                                          編輯
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteItem(item.id)}
+                                          className="px-2 py-1 text-[11px] font-mono border border-red-600/30 text-red-700 hover:bg-red-600 hover:text-white"
+                                        >
+                                          ×
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+                                  <h4 className="font-serif text-lg sm:text-xl font-bold leading-snug">
+                                    {item.title}
+                                  </h4>
+                                  {Number(item.cost) > 0 && (
+                                    <span className="font-mono text-xs font-bold text-[#B85D19] shrink-0">
+                                      {activeTrip.currency}{Number(item.cost).toLocaleString()}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {item.station && (
+                                  <div className="text-xs font-mono text-[#1C1B18]/75 mb-2">
+                                    🚉 位置 / 航廈：{item.station}
+                                  </div>
+                                )}
+
+                                {item.note && (
+                                  <div className="text-xs text-[#1C1B18]/85 bg-[#F7F6F2] p-2.5 border-l-2 border-[#1C1B18] whitespace-pre-wrap leading-relaxed mb-2.5">
+                                    {renderTextWithLinks(item.note)}
+                                  </div>
+                                )}
+
+                                {itemPhotos.length > 0 && (
+                                  <div
+                                    className="mt-3 pt-2 border-t border-[#1C1B18]/10 flex gap-3 overflow-x-auto no-scrollbar pb-1"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {itemPhotos.map((ph, pIdx) => (
+                                      <div
+                                        key={ph.id || pIdx}
+                                        onClick={() => setLightbox({ photos: itemPhotos, index: pIdx })}
+                                        className="shrink-0 w-44 bg-white border border-[#1C1B18]/30 p-2 pb-2.5 shadow-md hover:scale-[1.02] transition-transform cursor-zoom-in"
+                                      >
+                                        <div className="relative aspect-[4/3] bg-[#EFECE6] overflow-hidden mb-1.5">
+                                          <img src={ph.url} alt={ph.caption || item.title} className="w-full h-full object-cover" />
+                                          <span className="absolute bottom-1 right-1.5 font-mono text-[9px] text-[#FF7A00] bg-black/60 px-1 rounded">
+                                            '{activeDay.date ? activeDay.date.slice(2).replace(/-/g, ' ') : '26 12'}
+                                          </span>
+                                        </div>
+                                        {ph.caption && (
+                                          <div className="font-serif text-[11px] text-[#1C1B18]/80 truncate">
+                                            {ph.caption}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {item.transitNext && (
+                                  <div className="mt-2.5 pt-2 border-t border-dotted border-[#1C1B18]/30 text-[11px] font-mono text-[#1C1B18]/75 flex items-center gap-1.5">
+                                    <span>⇣ NEXT TRANSIT:</span>
+                                    <span>{renderTextWithLinks(item.transitNext)}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 右側：互動路線圖 + 預算 + 行前清單 */}
+                  <div className={`lg:col-span-5 space-y-5 lg:sticky lg:top-24 ${
+                    mobileTab === 'timeline' ? 'hidden lg:block' : 'block'
+                  }`}>
+                    <div className={`bg-white border border-[#1C1B18] shadow-[4px_4px_0px_#1C1B18] ${
+                      mobileTab === 'budget' ? 'hidden lg:block' : 'block'
+                    }`}>
+                      <div className="px-4 py-2.5 border-b border-[#1C1B18] flex items-center justify-between bg-[#EFECE6]">
+                        <span className="font-mono text-xs font-bold tracking-wider uppercase">
+                          🗺️ ROUTE MAP · 今日地理動線 ({activeDay.items.filter(i => i.lat && i.lng).length} 站)
+                        </span>
+                        <a
+                          href={googleMapsMultiRouteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-[#1C1B18] text-[#F7F6F2] font-mono text-[11px] hover:bg-[#B85D19] transition-colors"
+                        >
+                          Google Maps 完整導航 ↗
+                        </a>
+                      </div>
+
+                      <div ref={mapContainerRef} className="w-full h-[340px] sm:h-[380px] z-10" />
+
+                      {activeDay.items.length > 0 && (
+                        <div className="p-2.5 border-t border-[#1C1B18]/20 bg-[#F7F6F2] flex gap-2 overflow-x-auto no-scrollbar">
+                          {activeDay.items.map((it, idx) => (
+                            <button
+                              key={it.id}
+                              onClick={() => setSelectedItemId(it.id)}
+                              className={`px-2.5 py-1.5 border text-left shrink-0 font-mono text-[11px] transition-colors ${
+                                it.id === selectedItemId
+                                  ? 'bg-[#1C1B18] text-white border-[#1C1B18]'
+                                  : 'bg-white text-[#1C1B18] border-[#1C1B18]/30'
+                              }`}
+                            >
+                              <span className="font-bold mr-1">#{idx + 1}</span>
+                              <span>{it.title.slice(0, 12)}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={`bg-white border border-[#1C1B18] p-4 shadow-[4px_4px_0px_#1C1B18] space-y-4 ${
+                      mobileTab === 'map' ? 'hidden lg:block' : 'block'
+                    }`}>
+                      <div className="border-b border-[#1C1B18]/20 pb-3 flex items-baseline justify-between">
+                        <div>
+                          <div className="font-mono text-[10px] uppercase tracking-widest text-[#1C1B18]/60">
+                            BUDGET SUMMARY
+                          </div>
+                          <div className="font-serif text-xl font-bold">
+                            今日預估：{activeTrip.currency}{budgetStats.dayTotal.toLocaleString()}
+                          </div>
+                        </div>
+                        <div className="text-right font-mono text-xs">
+                          總旅費：{activeTrip.currency}{budgetStats.tripTotal.toLocaleString()}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="font-mono text-xs font-bold uppercase tracking-wider mb-2">
+                          ✓ CHECKLIST & LINKS · 行前備忘
+                        </div>
+                        <div className="space-y-1.5 mb-2.5">
+                          {(activeTrip.checklist || []).map(ck => (
+                            <div key={ck.id} className="flex items-start justify-between gap-2 text-xs py-1 border-b border-dashed border-[#1C1B18]/15">
+                              <label className="flex items-start gap-2 cursor-pointer flex-1">
+                                <input
+                                  type="checkbox"
+                                  checked={ck.done}
+                                  onChange={() => {
+                                    updateActiveTrip(t => ({
+                                      ...t,
+                                      checklist: t.checklist.map(c => c.id === ck.id ? { ...c, done: !c.done } : c)
+                                    }));
+                                  }}
+                                  className="mt-0.5 accent-[#1C1B18]"
+                                />
+                                <span className={ck.done ? 'line-through opacity-50' : ''}>
+                                  {renderTextWithLinks(ck.text)}
+                                </span>
+                              </label>
+                              {!liveMode && (
+                                <button
+                                  onClick={() => {
+                                    updateActiveTrip(t => ({
+                                      ...t,
+                                      checklist: t.checklist.filter(c => c.id !== ck.id)
+                                    }));
+                                  }}
+                                  className="text-[#1C1B18]/40 hover:text-red-600 font-mono px-1"
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        {!liveMode && (
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const val = e.target.elements.ckText.value.trim();
+                              if (!val) return;
+                              updateActiveTrip(t => ({
+                                ...t,
+                                checklist: [...(t.checklist || []), { id: `ck-${Date.now()}`, text: val, done: false }]
+                              }));
+                              e.target.reset();
+                            }}
+                            className="flex gap-1.5"
+                          >
+                            <input
+                              name="ckText"
+                              placeholder="新增待辦事項或貼上預訂網址..."
+                              className="flex-1 px-2.5 py-1.5 text-xs border border-[#1C1B18]/40 focus:outline-none focus:border-[#1C1B18]"
+                            />
+                            <button
+                              type="submit"
+                              className="px-3 py-1.5 bg-[#1C1B18] text-white font-mono text-xs"
+                            >
+                              +
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </main>
+          )}
+
+          {/* 手機版 RWD 固定底部切換導覽列 */}
+          {!isTripLocked && (
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#1C1B18] text-[#F7F6F2] border-t border-[#F7F6F2]/20 grid grid-cols-4 text-center font-mono text-[11px]">
+              <button
+                onClick={() => setMobileTab('timeline')}
+                className={`py-3 ${mobileTab === 'timeline' ? 'bg-[#B85D19] font-bold' : 'opacity-75'}`}
+              >
+                📅 時間軸
+              </button>
+              <button
+                onClick={() => setMobileTab('map')}
+                className={`py-3 ${mobileTab === 'map' ? 'bg-[#B85D19] font-bold' : 'opacity-75'}`}
+              >
+                🗺️ 路線圖
+              </button>
+              <button
+                onClick={() => setMobileTab('budget')}
+                className={`py-3 ${mobileTab === 'budget' ? 'bg-[#B85D19] font-bold' : 'opacity-75'}`}
+              >
+                💰 清單/預算
+              </button>
+              <button
+                onClick={() => setTripManagerOpen(true)}
+                className="py-3 opacity-75"
+              >
+                🗂️ 切換旅行
+              </button>
+            </nav>
+          )}
+
+          {/* 彈窗 1：新增 / 編輯行程節點 Modal */}
+          {itemModalOpen && activeDay && (
+            <ItemEditorModal
+              day={activeDay}
+              initialItem={editingItem}
+              onClose={() => setItemModalOpen(false)}
+              onSave={(savedItem) => {
+                updateActiveTrip(t => ({
+                  ...t,
+                  days: t.days.map((d, idx) => {
+                    if (idx !== activeDayIndex) return d;
+                    const exists = d.items.some(i => i.id === savedItem.id);
+                    const nextItems = exists
+                      ? d.items.map(i => (i.id === savedItem.id ? savedItem : i))
+                      : [...d.items, savedItem];
+                    return { ...d, items: nextItems };
+                  })
+                }));
+                setSelectedItemId(savedItem.id);
+                setItemModalOpen(false);
+                showToast('✓ 已儲存行程節點');
+              }}
+            />
+          )}
+
+          {/* 彈窗 2：編輯當日標題、時區與日出日落 Modal */}
+          {dayModalOpen && activeDay && (
+            <DayEditorModal
+              day={activeDay}
+              onClose={() => setDayModalOpen(false)}
+              onSave={(updatedDay) => {
+                updateActiveTrip(t => ({
+                  ...t,
+                  days: t.days.map((d, idx) => (idx === activeDayIndex ? updatedDay : d))
+                }));
+                setDayModalOpen(false);
+                showToast('✓ 已更新當日資訊與時區');
+              }}
+            />
+          )}
+
+          {/* 彈窗 3：旅行密碼與基本資訊設定 Modal */}
+          {tripModalOpen && activeTrip && (
+            <TripSettingsModal
+              trip={activeTrip}
+              onClose={() => setTripModalOpen(false)}
+              onSave={(updatedTrip) => {
+                updateActiveTrip(() => updatedTrip);
+                if (updatedTrip.passcode) {
+                  const tok = makePassToken(updatedTrip.id, updatedTrip.passcode);
+                  setUnlockedTokens(prev => ({ ...prev, [updatedTrip.id]: tok }));
+                }
+                setTripModalOpen(false);
+                showToast('✓ 已儲存旅行與密碼設定');
+              }}
+            />
+          )}
+
+          {/* 彈窗 4：多趟旅行專案管理中心 Modal */}
+          {tripManagerOpen && (
+            <TripManagerModal
+              trips={trips}
+              activeTripId={activeTrip?.id}
+              onSelectTrip={(id) => {
+                handleSelectTrip(id);
+                setTripManagerOpen(false);
+              }}
+              onCreateTrip={(newTrip) => {
+                setTrips(prev => [...prev, newTrip]);
+                setActiveTripId(newTrip.id);
+                setActiveDayIndex(0);
+                setTripManagerOpen(false);
+                showToast(`✨ 已建立新旅行「${newTrip.name}」`);
+              }}
+              onDuplicateTrip={(tripToCopy) => {
+                const copy = JSON.parse(JSON.stringify(tripToCopy));
+                copy.id = `trip-${Date.now()}`;
+                copy.name = `${tripToCopy.name} (複製)`;
+                setTrips(prev => [...prev, copy]);
+                showToast('📋 已複製旅行分頁');
+              }}
+              onDeleteTrip={(id) => {
+                if (trips.length <= 1) {
+                  alert('至少需保留一個旅行分頁');
+                  return;
+                }
+                const target = trips.find(t => t.id === id);
+                if (!window.confirm(`確定要刪除「${target?.name}」整趟旅行嗎？`)) return;
+                const remaining = trips.filter(t => t.id !== id);
+                setTrips(remaining);
+                if (activeTripId === id) setActiveTripId(remaining[0].id);
+              }}
+              onExportSingle={(tripObj) => {
+                const blob = new Blob([JSON.stringify([tripObj], null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tabi-note-${tripObj.name.replace(/\s+/g, '_')}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              onClose={() => setTripManagerOpen(false)}
+            />
+          )}
+
+          {/* 彈窗 5：多張照片全螢幕放大燈箱 Lightbox */}
+          {lightbox && (
+            <div
+              onClick={() => setLightbox(null)}
+              className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4"
+            >
+              <div className="max-w-3xl w-full bg-white p-3 sm:p-4 border border-[#1C1B18]" onClick={(e) => e.stopPropagation()}>
+                <div className="relative aspect-[4/3] bg-black flex items-center justify-center overflow-hidden">
+                  <img
+                    src={lightbox.photos[lightbox.index]?.url}
+                    alt=""
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-3 font-mono text-xs">
+                  <span>
+                    {lightbox.index + 1} / {lightbox.photos.length} · {lightbox.photos[lightbox.index]?.caption || ''}
+                  </span>
+                  <div className="flex gap-2">
+                    {lightbox.photos.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setLightbox(prev => ({
+                            ...prev,
+                            index: (prev.index - 1 + prev.photos.length) % prev.photos.length
+                          }))}
+                          className="px-2.5 py-1 border border-[#1C1B18]"
+                        >
+                          ← 上一張
+                        </button>
+                        <button
+                          onClick={() => setLightbox(prev => ({
+                            ...prev,
+                            index: (prev.index + 1) % prev.photos.length
+                          }))}
+                          className="px-2.5 py-1 border border-[#1C1B18]"
+                        >
+                          下一張 →
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => setLightbox(null)}
+                      className="px-3 py-1 bg-[#1C1B18] text-white"
+                    >
+                      關閉
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 子元件 1：行程節點編輯器 Modal
+    // ============================================================================
+    function ItemEditorModal({ day, initialItem, onClose, onSave }) {
+      const [form, setForm] = useState(() => ({
+        id: initialItem?.id || `item-${Date.now()}`,
+        time: initialItem?.time || '09:30',
+        endTime: initialItem?.endTime || '',
+        startTz: initialItem?.startTz || day.timezone || 'Asia/Taipei',
+        endTz: initialItem?.endTz || initialItem?.startTz || day.timezone || 'Asia/Taipei',
+        dayOffset: initialItem?.dayOffset || 0,
+        category: initialItem?.category || 'sight',
+        title: initialItem?.title || '',
+        station: initialItem?.station || '',
+        transitNext: initialItem?.transitNext || '',
+        cost: initialItem?.cost ?? 0,
+        lat: initialItem?.lat ?? 35.6812,
+        lng: initialItem?.lng ?? 139.7671,
+        mapUrl: initialItem?.mapUrl || '',
+        note: initialItem?.note || '',
+        stamped: initialItem?.stamped || false,
+        photos: Array.isArray(initialItem?.photos) ? initialItem.photos : [],
+      }));
+
+      const [searchStatus, setSearchStatus] = useState('');
+      const [photoUrlInput, setPhotoUrlInput] = useState('');
+      const miniMapRef = useRef(null);
+      const miniMapInstance = useRef(null);
+      const miniMarkerRef = useRef(null);
+
+      useEffect(() => {
+        if (!miniMapRef.current || !window.L) return;
+        if (!miniMapInstance.current) {
+          const m = window.L.map(miniMapRef.current, {
+            center: [form.lat, form.lng],
+            zoom: 13,
+          });
+          window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+          }).addTo(m);
+          const marker = window.L.marker([form.lat, form.lng], { draggable: true }).addTo(m);
+          marker.on('dragend', (e) => {
+            const pos = e.target.getLatLng();
+            setForm(prev => ({
+              ...prev,
+              lat: Number(pos.lat.toFixed(5)),
+              lng: Number(pos.lng.toFixed(5)),
+            }));
+          });
+          m.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng([lat, lng]);
+            setForm(prev => ({
+              ...prev,
+              lat: Number(lat.toFixed(5)),
+              lng: Number(lng.toFixed(5)),
+            }));
+          });
+          miniMapInstance.current = m;
+          miniMarkerRef.current = marker;
+        }
+      }, []);
+
+      useEffect(() => {
+        if (miniMapInstance.current && miniMarkerRef.current && form.lat && form.lng) {
+          miniMarkerRef.current.setLatLng([form.lat, form.lng]);
+          miniMapInstance.current.setView([form.lat, form.lng], 14);
+        }
+      }, [form.lat, form.lng]);
+
+      const geocodePlaceName = async (queryText) => {
+        if (!queryText) return;
+        setSearchStatus('定位搜尋中...');
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryText)}&limit=1`
+          );
+          const data = await res.json();
+          if (data && data[0]) {
+            const lat = Number(parseFloat(data[0].lat).toFixed(5));
+            const lng = Number(parseFloat(data[0].lon).toFixed(5));
+            const guessedTz = guessTimezoneByCoord(lat, lng);
+            setForm(prev => ({
+              ...prev,
+              lat,
+              lng,
+              ...(guessedTz ? { startTz: guessedTz, endTz: guessedTz } : {})
+            }));
+            setSearchStatus(`✓ 已定位：${lat}, ${lng}`);
+          } else {
+            setSearchStatus('找不到對應座標，可直接點擊下方小地圖指定位置');
+          }
+        } catch {
+          setSearchStatus('搜尋連線逾時，可直接貼上含 @緯度,經度 的網址');
+        }
+      };
+
+      const handleMapUrlChange = (val) => {
+        setForm(prev => ({ ...prev, mapUrl: val }));
+        const parsed = parseGoogleMapsInput(val);
+        if (parsed?.lat && parsed?.lng) {
+          const guessedTz = guessTimezoneByCoord(parsed.lat, parsed.lng);
+          setForm(prev => ({
+            ...prev,
+            mapUrl: val,
+            lat: parsed.lat,
+            lng: parsed.lng,
+            ...(guessedTz ? { startTz: guessedTz, endTz: guessedTz } : {})
+          }));
+          setSearchStatus(`✓ 已從網址擷取座標：${parsed.lat}, ${parsed.lng}`);
+        } else if (parsed?.extractedQuery) {
+          geocodePlaceName(parsed.extractedQuery);
+        } else if (val.includes('maps.app.goo.gl') && form.title) {
+          geocodePlaceName(form.title);
+        }
+      };
+
+      const handleUploadFiles = async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const compressedList = [];
+        for (const file of files) {
+          try {
+            const dataUrl = await compressImageToBase64(file);
+            compressedList.push({
+              id: `ph-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              url: dataUrl,
+              caption: '',
+            });
+          } catch {}
+        }
+        setForm(prev => ({ ...prev, photos: [...prev.photos, ...compressedList] }));
+        e.target.value = '';
+      };
+
+      const realFlightPreview = calcRealDuration(form.time, form.endTime, form.startTz, form.endTz, form.dayOffset);
+
+      return (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+          <div className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-2xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-6 shadow-[8px_8px_0px_#1C1B18]">
+            <div className="flex items-center justify-between border-b border-[#1C1B18] pb-3 mb-4">
+              <h3 className="font-serif text-xl font-bold">
+                {initialItem ? '編輯行程節點' : '新增行程節點'}
+              </h3>
+              <button onClick={onClose} className="font-mono text-sm px-2 py-0.5 border border-[#1C1B18]">
+                ✕
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!form.title.trim()) {
+                  alert('請輸入行程或景點名稱');
+                  return;
+                }
+                onSave(form);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">開始時間</label>
+                  <input
+                    type="time"
+                    value={form.time}
+                    onChange={(e) => setForm({ ...form, time: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">結束/抵達時間 (選填)</label>
+                  <input
+                    type="time"
+                    value={form.endTime}
+                    onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">跨日抵達</label>
+                  <select
+                    value={form.dayOffset}
+                    onChange={(e) => setForm({ ...form, dayOffset: Number(e.target.value) })}
+                    className="w-full px-2 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  >
+                    <option value={0}>當日抵達</option>
+                    <option value={1}>+1日 (隔天抵達)</option>
+                    <option value={2}>+2日</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">類別 (交通具車票撕口)</label>
+                  <select
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    className="w-full px-2 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  >
+                    {Object.entries(CATEGORIES).map(([k, v]) => (
+                      <option key={k} value={k}>{v.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#1C1B18]/40 p-3 space-y-2">
+                <div className="font-mono text-[10px] uppercase tracking-wider font-bold text-[#1D4261]">
+                  🌍 TIMEZONE・時區設定 (跨州/跨國航班可分別指定起飛與抵達時區)
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block font-mono text-[10px] mb-1">開始 (起飛地) 時區</label>
+                    <select
+                      value={form.startTz}
+                      onChange={(e) => setForm({ ...form, startTz: e.target.value })}
+                      className="w-full px-2 py-1.5 border border-[#1C1B18] font-mono text-[11px]"
+                    >
+                      {TIMEZONES.map(tz => (
+                        <option key={tz.id} value={tz.id}>{tz.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-mono text-[10px] mb-1">結束 (抵達地) 時區</label>
+                    <select
+                      value={form.endTz}
+                      onChange={(e) => setForm({ ...form, endTz: e.target.value })}
+                      className="w-full px-2 py-1.5 border border-[#1C1B18] font-mono text-[11px]"
+                    >
+                      {TIMEZONES.map(tz => (
+                        <option key={tz.id} value={tz.id}>{tz.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {realFlightPreview && (
+                  <div className="font-mono text-[11px] text-[#1D4261] bg-[#E6EEF4] px-2.5 py-1">
+                    ✈️ 系統自動換算：實際移動/飛行時數為 <strong>{realFlightPreview.text}</strong>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block font-mono text-[10px] uppercase mb-1">行程 / 景點名稱 *</label>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={(e) => setForm({ ...form, title: e.target.value })}
+                      placeholder="例如：In-N-Out Burger Sepulveda / 新宿御苑"
+                      className="flex-1 px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => geocodePlaceName(form.title)}
+                      className="px-3 py-1.5 bg-[#1C1B18] text-white font-mono shrink-0"
+                    >
+                      搜尋定位
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">車站 / 航廈 / 出口</label>
+                  <input
+                    type="text"
+                    value={form.station}
+                    onChange={(e) => setForm({ ...form, station: e.target.value })}
+                    placeholder="Terminal 2 / A1出口"
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#1C1B18]/40 p-3 space-y-2">
+                <label className="block font-mono text-[10px] uppercase font-bold">
+                  📍 Google Maps 連結或座標定位
+                </label>
+                <input
+                  type="text"
+                  value={form.mapUrl}
+                  onChange={(e) => handleMapUrlChange(e.target.value)}
+                  placeholder="貼上 Google Maps 網址，或輸入 緯度, 經度..."
+                  className="w-full px-2.5 py-1.5 border border-[#1C1B18] font-mono text-[11px]"
+                />
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {QUICK_LANDMARKS.map(lm => (
+                    <button
+                      key={lm.label}
+                      type="button"
+                      onClick={() => setForm(prev => ({
+                        ...prev,
+                        title: prev.title || lm.title,
+                        lat: lm.lat,
+                        lng: lm.lng,
+                        startTz: lm.tz,
+                        endTz: lm.tz,
+                      }))}
+                      className="px-2 py-0.5 bg-[#EFECE6] hover:bg-[#1C1B18] hover:text-white font-mono text-[10px] transition-colors"
+                    >
+                      {lm.label}
+                    </button>
+                  ))}
+                </div>
+                {searchStatus && <div className="font-mono text-[11px] text-[#B85D19]">{searchStatus}</div>}
+
+                <div ref={miniMapRef} className="w-full h-36 border border-[#1C1B18]/30" />
+                <div className="flex gap-2 font-mono text-[10px] text-[#1C1B18]/70">
+                  <span>LAT: {form.lat}</span>
+                  <span>LNG: {form.lng}</span>
+                  <span>(可直接點擊上方小地圖或拖曳圖釘微調位置)</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">預估花費</label>
+                  <input
+                    type="number"
+                    value={form.cost}
+                    onChange={(e) => setForm({ ...form, cost: Number(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block font-mono text-[10px] uppercase mb-1">前往下一站交通說明</label>
+                  <input
+                    type="text"
+                    value={form.transitNext}
+                    onChange={(e) => setForm({ ...form, transitNext: e.target.value })}
+                    placeholder="搭乘地鐵 / 步行 8 分鐘..."
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1 font-bold">
+                  NOTE (貼上 https:// 網址將自動轉為超連結)
+                </label>
+                <textarea
+                  rows={2}
+                  value={form.note}
+                  onChange={(e) => setForm({ ...form, note: e.target.value })}
+                  placeholder="輸入備註或貼上餐廳預約網址、票券連結..."
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                />
+              </div>
+
+              <div className="bg-white border border-[#1C1B18]/40 p-3 space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-mono text-[11px] font-bold">
+                    📷 照片 ({form.photos.length})
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <label className="px-2.5 py-1 bg-[#1C1B18] text-white font-mono text-[11px] cursor-pointer hover:bg-[#B85D19]">
+                      + 上傳照片 (可多選)
+                      <input type="file" accept="image/*" multiple onChange={handleUploadFiles} className="hidden" />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={photoUrlInput}
+                    onChange={(e) => setPhotoUrlInput(e.target.value)}
+                    placeholder="或貼上外部圖片網址 https://..."
+                    className="flex-1 px-2 py-1 border border-[#1C1B18]/40 font-mono text-[11px]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!photoUrlInput.trim()) return;
+                      setForm(prev => ({
+                        ...prev,
+                        photos: [...prev.photos, { id: `ph-${Date.now()}`, url: photoUrlInput.trim(), caption: '' }]
+                      }));
+                      setPhotoUrlInput('');
+                    }}
+                    className="px-2.5 py-1 border border-[#1C1B18] font-mono text-[11px]"
+                  >
+                    + 加入圖片
+                  </button>
+                </div>
+
+                {form.photos.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                    {form.photos.map((ph, idx) => (
+                      <div key={ph.id || idx} className="border border-[#1C1B18]/30 p-1.5 bg-[#F7F6F2]">
+                        <div className="relative aspect-[4/3] bg-black/10 mb-1 overflow-hidden">
+                          <img src={ph.url} alt="" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setForm(prev => ({
+                              ...prev,
+                              photos: prev.photos.filter((_, i) => i !== idx)
+                            }))}
+                            className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 font-mono text-xs flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          value={ph.caption || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setForm(prev => ({
+                              ...prev,
+                              photos: prev.photos.map((p, i) => (i === idx ? { ...p, caption: val } : p))
+                            }));
+                          }}
+                          placeholder="照片短註解..."
+                          className="w-full px-1.5 py-0.5 text-[11px] bg-white border border-[#1C1B18]/30"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#1C1B18]">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 border border-[#1C1B18] font-mono text-xs bg-white"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[#1C1B18] text-[#F7F6F2] font-mono text-xs font-bold hover:bg-[#B85D19]"
+                >
+                  儲存
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 子元件 2：當日標題、時區與日出日落設定 Modal
+    // ============================================================================
+    function DayEditorModal({ day, onClose, onSave }) {
+      const [form, setForm] = useState({
+        ...day,
+        timezone: day.timezone || 'Asia/Taipei',
+        sunrise: day.sunrise || '06:30',
+        sunset: day.sunset || '17:15',
+      });
+
+      const handleAutoSun = () => {
+        const firstCoord = (day.items || []).find(i => i.lat && i.lng);
+        const lat = firstCoord ? firstCoord.lat : 35.68;
+        const est = estimateSunTimes(lat, form.date);
+        setForm(prev => ({ ...prev, sunrise: est.sunrise, sunset: est.sunset }));
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-md w-full p-5 shadow-[6px_6px_0px_#1C1B18]">
+            <div className="flex items-center justify-between border-b border-[#1C1B18] pb-2.5 mb-4">
+              <h3 className="font-serif text-xl font-bold">編輯 Day {day.dayNumber} 資訊與時區</h3>
+              <button onClick={onClose} className="font-mono text-xs px-2 py-0.5 border border-[#1C1B18]">✕</button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave(form);
+              }}
+              className="space-y-3.5 text-xs"
+            >
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1">日期</label>
+                <input
+                  type="date"
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1 font-bold text-[#1D4261]">
+                  🌍 當日主要所在時區 (Daily Base Timezone)
+                </label>
+                <select
+                  value={form.timezone}
+                  onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                >
+                  {TIMEZONES.map(tz => (
+                    <option key={tz.id} value={tz.id}>{tz.label}</option>
+                  ))}
+                </select>
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {TIMEZONES.filter(t => t.quick).map(tz => (
+                    <button
+                      key={tz.id}
+                      type="button"
+                      onClick={() => setForm({ ...form, timezone: tz.id })}
+                      className={`px-2 py-0.5 font-mono text-[10px] border ${
+                        form.timezone === tz.id ? 'bg-[#1C1B18] text-white border-[#1C1B18]' : 'bg-white border-[#1C1B18]/30'
+                      }`}
+                    >
+                      {tz.quick}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1">當日主題標題</label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1">氣候 / 穿搭備註</label>
+                <input
+                  type="text"
+                  value={form.weatherNote}
+                  onChange={(e) => setForm({ ...form, weatherNote: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                />
+              </div>
+
+              <div className="bg-white border border-[#1C1B18]/40 p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] uppercase font-bold">🌅 日出與日落時間</span>
+                  <button
+                    type="button"
+                    onClick={handleAutoSun}
+                    className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-400 font-mono text-[10px]"
+                  >
+                    ✨ 依座標自動推算
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block font-mono text-[10px] mb-0.5">🌅 日出 SUNRISE</label>
+                    <input
+                      type="time"
+                      value={form.sunrise}
+                      onChange={(e) => setForm({ ...form, sunrise: e.target.value })}
+                      className="w-full px-2 py-1 border border-[#1C1B18] font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-mono text-[10px] mb-0.5">🌇 日落 SUNSET</label>
+                    <input
+                      type="time"
+                      value={form.sunset}
+                      onChange={(e) => setForm({ ...form, sunset: e.target.value })}
+                      className="w-full px-2 py-1 border border-[#1C1B18] font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#1C1B18]">
+                <button type="button" onClick={onClose} className="px-4 py-1.5 border border-[#1C1B18] bg-white font-mono">
+                  取消
+                </button>
+                <button type="submit" className="px-5 py-1.5 bg-[#1C1B18] text-white font-mono font-bold">
+                  儲存
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 子元件 3：旅行密碼與基本設定 Modal
+    // ============================================================================
+    function TripSettingsModal({ trip, onClose, onSave }) {
+      const [form, setForm] = useState({
+        ...trip,
+        passcode: trip.passcode || '',
+      });
+
+      return (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-md w-full p-5 shadow-[6px_6px_0px_#1C1B18]">
+            <div className="flex items-center justify-between border-b border-[#1C1B18] pb-2.5 mb-4">
+              <h3 className="font-serif text-xl font-bold">旅行資訊與獨立密碼鎖</h3>
+              <button onClick={onClose} className="font-mono text-xs px-2 py-0.5 border border-[#1C1B18]">✕</button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave(form);
+              }}
+              className="space-y-3.5 text-xs"
+            >
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1">旅行名稱</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18]"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[10px] uppercase mb-1">英文副標題 / 目的地</label>
+                <input
+                  type="text"
+                  value={form.subtitle}
+                  onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">日期區間標示</label>
+                  <input
+                    type="text"
+                    value={form.dateRange}
+                    onChange={(e) => setForm({ ...form, dateRange: e.target.value })}
+                    placeholder="2026.12.01 - 12.15"
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] uppercase mb-1">幣別符號</label>
+                  <select
+                    value={form.currency}
+                    onChange={(e) => setForm({ ...form, currency: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-white border border-[#1C1B18] font-mono"
+                  >
+                    <option value="¥">¥ (日圓 JPY)</option>
+                    <option value="$">$ (美金 USD)</option>
+                    <option value="NT$">NT$ (台幣 TWD)</option>
+                    <option value="€">€ (歐元 EUR)</option>
+                    <option value="₩">₩ (韓元 KRW)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#1C1B18] p-3 space-y-1.5">
+                <label className="block font-mono text-[11px] font-bold text-[#B85D19]">
+                  🔒 獨立隱私密碼鎖 (留空代表不設密碼)
+                </label>
+                <input
+                  type="text"
+                  value={form.passcode}
+                  onChange={(e) => setForm({ ...form, passcode: e.target.value.trim() })}
+                  placeholder="設定密碼，例如：1234 或旅伴暗號"
+                  className="w-full px-2.5 py-1.5 border border-[#1C1B18] font-mono"
+                />
+                <p className="text-[11px] text-[#1C1B18]/70 leading-relaxed">
+                  設定後，非本趟旅伴點開此分頁時會被鎖定。同行友人輸入一次密碼後，其手機瀏覽器會自動永久記住解鎖狀態。
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#1C1B18]">
+                <button type="button" onClick={onClose} className="px-4 py-1.5 border border-[#1C1B18] bg-white font-mono">
+                  取消
+                </button>
+                <button type="submit" className="px-5 py-1.5 bg-[#1C1B18] text-white font-mono font-bold">
+                  儲存
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 子元件 4：多趟旅行專案管理中心 Modal
+    // ============================================================================
+    function TripManagerModal({
+      trips,
+      activeTripId,
+      onSelectTrip,
+      onCreateTrip,
+      onDuplicateTrip,
+      onDeleteTrip,
+      onExportSingle,
+      onClose,
+    }) {
+      const [newName, setNewName] = useState('');
+      const [newCurrency, setNewCurrency] = useState('¥');
+      const [newTz, setNewTz] = useState('Asia/Tokyo');
+      const [newPass, setNewPass] = useState('');
+
+      const handleCreate = (e) => {
+        e.preventDefault();
+        if (!newName.trim()) return;
+        const created = {
+          id: `trip-${Date.now()}`,
+          name: newName.trim(),
+          subtitle: 'VISUAL ITINERARY ARCHIVE',
+          dateRange: '2026',
+          currency: newCurrency,
+          passcode: newPass.trim(),
+          checklist: [],
+          days: [
+            {
+              id: `day-${Date.now()}`,
+              dayNumber: 1,
+              date: new Date().toISOString().slice(0, 10),
+              title: 'Day 1 台灣出發 ➔ 抵達目的地',
+              weatherNote: '',
+              timezone: newTz,
+              sunrise: '06:30',
+              sunset: '17:15',
+              items: [
+                {
+                  id: `item-${Date.now()}`,
+                  time: '09:00',
+                  endTime: '13:30',
+                  startTz: 'Asia/Taipei',
+                  endTz: newTz,
+                  dayOffset: 0,
+                  category: 'transit',
+                  title: '桃園國際機場 (TPE) 出發',
+                  station: 'Terminal 1 / 2',
+                  transitNext: '',
+                  cost: 0,
+                  lat: 25.0797,
+                  lng: 121.2342,
+                  mapUrl: '',
+                  note: '',
+                  stamped: false,
+                  photos: [],
+                }
+              ],
+            }
+          ]
+        };
+        onCreateTrip(created);
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#F7F6F2] border-2 border-[#1C1B18] max-w-xl w-full p-5 shadow-[8px_8px_0px_#1C1B18] max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#1C1B18] pb-3 mb-4">
+              <h3 className="font-serif text-xl font-bold">🗂️ 旅行專案管理中心 ({trips.length})</h3>
+              <button onClick={onClose} className="font-mono text-xs px-2 py-0.5 border border-[#1C1B18]">✕</button>
+            </div>
+
+            <div className="space-y-2.5 mb-5">
+              {trips.map((t, idx) => (
+                <div
+                  key={t.id}
+                  className={`p-3 bg-white border flex flex-wrap items-center justify-between gap-2 ${
+                    t.id === activeTripId ? 'border-2 border-[#1C1B18]' : 'border-[#1C1B18]/40'
+                  }`}
+                >
+                  <div className="cursor-pointer flex-1" onClick={() => onSelectTrip(t.id)}>
+                    <div className="font-mono text-[10px] text-[#1C1B18]/60">
+                      TRIP #{idx + 1} · {t.days.length} DAYS · 幣別 {t.currency} {t.passcode ? '· 🔒 已設密碼' : ''}
+                    </div>
+                    <div className="font-serif text-base font-bold">{t.name}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <button
+                      onClick={() => onSelectTrip(t.id)}
+                      className="px-2.5 py-1 bg-[#1C1B18] text-white"
+                    >
+                      切換
+                    </button>
+                    <button
+                      onClick={() => onDuplicateTrip(t)}
+                      className="px-2 py-1 border border-[#1C1B18]"
+                      title="複製這趟旅行"
+                    >
+                      複製
+                    </button>
+                    <button
+                      onClick={() => onExportSingle(t)}
+                      className="px-2 py-1 border border-[#1C1B18]"
+                      title="單獨匯出此旅行 JSON"
+                    >
+                      匯出
+                    </button>
+                    <button
+                      onClick={() => onDeleteTrip(t.id)}
+                      className="px-2 py-1 border border-red-600/40 text-red-700"
+                    >
+                      刪除
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleCreate} className="bg-white border border-[#1C1B18] p-4 space-y-3 text-xs">
+              <div className="font-mono text-xs font-bold uppercase tracking-wider">
+                + 建立全新旅行分頁
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="旅行名稱 (例如：2026 東京迪士尼海洋)"
+                  className="px-2.5 py-1.5 border border-[#1C1B18]"
+                />
+                <input
+                  type="text"
+                  value={newPass}
+                  onChange={(e) => setNewPass(e.target.value)}
+                  placeholder="選填獨立密碼鎖 (留空則公開)"
+                  className="px-2.5 py-1.5 border border-[#1C1B18] font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <select
+                  value={newTz}
+                  onChange={(e) => setNewTz(e.target.value)}
+                  className="px-2 py-1.5 border border-[#1C1B18] font-mono"
+                >
+                  {TIMEZONES.map(tz => (
+                    <option key={tz.id} value={tz.id}>預設時區：{tz.label}</option>
+                  ))}
+                </select>
+                <select
+                  value={newCurrency}
+                  onChange={(e) => setNewCurrency(e.target.value)}
+                  className="px-2 py-1.5 border border-[#1C1B18] font-mono"
+                >
+                  <option value="¥">幣別：¥ (日圓)</option>
+                  <option value="$">幣別：$ (美金)</option>
+                  <option value="NT$">幣別：NT$ (台幣)</option>
+                  <option value="€">幣別：€ (歐元)</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-2 bg-[#1C1B18] text-white font-mono text-xs font-bold hover:bg-[#B85D19]"
+              >
+                儲存
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
