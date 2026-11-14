@@ -6,44 +6,44 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="TABI NOTE" />
-  <meta name="theme-color" content="#F4F1EA" />
-  <title>TABI NOTE — 個人旅行策展與跨時區誌</title>
+  <meta name="theme-color" content="#F2EFE9" />
+  <title>TABI NOTE</title>
 
-  <!-- Google Fonts: 5組全開源商用字體預覽庫 -->
+  <!-- Google Fonts: Dela Gothic One + Archivo + DM Mono + Zen Kaku Gothic New -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+TC:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=Noto+Sans+TC:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Space+Grotesk:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet" />
 
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
-  <!-- Dynamic App Icon & Manifest Mount -->
-  <link id="apple-touch-icon" rel="apple-touch-icon" />
+  <!-- Dynamic PNG App Icon & PWA Manifest Mounts -->
+  <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" />
+  <link id="favicon-png" rel="icon" type="image/png" />
   <link id="pwa-manifest" rel="manifest" />
 
   <style>
     :root {
-      --bg-paper: #F3EFEA;
-      --bg-ambient-1: rgba(214, 104, 56, 0.08);
-      --bg-ambient-2: rgba(45, 92, 128, 0.08);
-      --ink: #171717;
-      --ink-muted: #5C5953;
+      --bg-paper: #F2EFE9;
+      --ink: #161616;
+      --ink-muted: #5A5751;
       --accent-rust: #C84B31;
-      --accent-navy: #1E3A5F;
-      --accent-teal: #2A6F68;
-      
-      /* Liquid Glass Tokens */
-      --glass-bg: rgba(255, 255, 255, 0.56);
-      --glass-bg-strong: rgba(255, 255, 255, 0.78);
-      --glass-border: rgba(255, 255, 255, 0.72);
-      --glass-edge: rgba(23, 23, 23, 0.12);
-      --glass-shadow: 0 12px 36px -8px rgba(23, 23, 23, 0.10), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-      --glass-blur: blur(22px) saturate(185%);
+      --accent-blue: #1B5E91;
+      --accent-green: #2A6F4E;
 
-      /* Dynamic Font Tokens (Controlled by Font Switcher) */
-      --font-display: 'Instrument Serif', serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-body: 'Noto Sans TC', sans-serif;
+      /* Liquid Glass Tokens */
+      --glass-bg: rgba(255, 255, 255, 0.58);
+      --glass-bg-strong: rgba(255, 255, 255, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.78);
+      --glass-edge: rgba(22, 22, 22, 0.11);
+      --glass-shadow: 0 12px 34px -8px rgba(20, 20, 20, 0.09), inset 0 1px 0 0 rgba(255, 255, 255, 0.92);
+      --glass-blur: blur(24px) saturate(185%);
+
+      /* Hardcore Transit Timetable Fonts */
+      --font-brand: 'Dela Gothic One', sans-serif;
+      --font-display: 'Archivo', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-body: 'Zen Kaku Gothic New', sans-serif;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -52,9 +52,8 @@
       margin: 0;
       background-color: var(--bg-paper);
       background-image:
-        radial-gradient(circle at 12% 10%, var(--bg-ambient-1), transparent 42%),
-        radial-gradient(circle at 88% 35%, var(--bg-ambient-2), transparent 46%),
-        radial-gradient(circle at 50% 90%, rgba(200, 75, 49, 0.05), transparent 50%);
+        radial-gradient(circle at 12% 8%, rgba(200, 75, 49, 0.07), transparent 40%),
+        radial-gradient(circle at 88% 30%, rgba(27, 94, 145, 0.07), transparent 45%);
       background-attachment: fixed;
       color: var(--ink);
       font-family: var(--font-body);
@@ -62,7 +61,6 @@
       padding-bottom: 110px;
     }
 
-    /* Liquid Glass Surface Utility */
     .liquid-glass {
       background: var(--glass-bg);
       backdrop-filter: var(--glass-blur);
@@ -75,8 +73,8 @@
       background: var(--glass-bg-strong);
       backdrop-filter: blur(28px) saturate(200%);
       -webkit-backdrop-filter: blur(28px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      box-shadow: 0 18px 48px -10px rgba(20, 20, 20, 0.16), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      box-shadow: 0 18px 46px -10px rgba(18, 18, 18, 0.16), inset 0 1px 0 0 rgba(255, 255, 255, 0.96);
     }
 
     /* Header */
@@ -84,7 +82,7 @@
       position: sticky;
       top: 0;
       z-index: 90;
-      padding: calc(env(safe-area-inset-top, 12px) + 10px) 18px 12px;
+      padding: calc(env(safe-area-inset-top, 10px) + 10px) 16px 12px;
       border-bottom: 1px solid var(--glass-edge);
     }
 
@@ -101,34 +99,34 @@
     .brand-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
     }
 
     .logo-badge {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       background: #141414;
       color: #F7F5F0;
       border-radius: 9px;
       display: grid;
       place-items: center;
-      font-family: 'Shippori Mincho', serif;
-      font-weight: 700;
-      font-size: 18px;
+      font-family: var(--font-brand);
+      font-size: 20px;
+      line-height: 1;
       box-shadow: 0 4px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.25);
     }
 
     .brand-title {
-      font-family: var(--font-mono);
-      font-weight: 600;
-      font-size: 18px;
-      letter-spacing: 0.12em;
+      font-family: var(--font-brand);
+      font-size: 21px;
+      letter-spacing: 0.06em;
+      color: var(--ink);
     }
 
     .toolbar-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 6px;
       align-items: center;
     }
 
@@ -140,7 +138,7 @@
       color: var(--ink);
       font-family: var(--font-body);
       font-size: 12.5px;
-      font-weight: 500;
+      font-weight: 700;
       padding: 6px 12px;
       border-radius: 999px;
       cursor: pointer;
@@ -148,28 +146,21 @@
       align-items: center;
       gap: 5px;
       transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.85);
     }
 
-    button.pill-btn:hover {
-      background: #FFFFFF;
-      transform: translateY(-1px);
-    }
+    button.pill-btn:hover { background: #FFFFFF; transform: translateY(-1px); }
+    button.pill-btn.active { background: #161616; color: #FAF8F5; border-color: #161616; }
+    button.pill-btn.rust { background: rgba(200, 75, 49, 0.12); color: var(--accent-rust); border-color: rgba(200, 75, 49, 0.35); }
 
-    button.pill-btn.active {
-      background: #171717;
-      color: #FAF8F5;
-      border-color: #171717;
-    }
-
-    /* Trip Tabs */
+    /* Trip Strip */
     .trip-strip {
       max-width: 980px;
-      margin: 14px auto 0;
-      padding: 0 18px;
+      margin: 10px auto 0;
+      padding: 4px 0 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       overflow-x: auto;
       scrollbar-width: none;
     }
@@ -179,60 +170,70 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--ink-muted);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       flex-shrink: 0;
     }
 
     .trip-tab {
-      padding: 6px 14px;
-      border-radius: 10px;
+      padding: 5px 13px;
+      border-radius: 9px;
       font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 500;
       border: 1px solid var(--glass-edge);
-      background: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.52);
       cursor: pointer;
       white-space: nowrap;
-      transition: 0.2s;
+      transition: 0.18s;
     }
     .trip-tab.active {
-      background: #171717;
+      background: #161616;
       color: #FFF;
-      border-color: #171717;
+      border-color: #161616;
     }
 
     /* Main Container */
     main.container {
       max-width: 980px;
-      margin: 18px auto;
-      padding: 0 18px;
+      margin: 16px auto;
+      padding: 0 16px;
     }
 
-    /* Day Selector & TZ Toggle */
-    .sub-controls {
+    /* Weather + Daylight Spectrum Bar */
+    .day-banner {
+      border-radius: 20px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .day-banner-top {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding: 12px 16px;
-      border-radius: 18px;
+      gap: 8px;
     }
 
     .day-pills {
       display: flex;
       gap: 6px;
       overflow-x: auto;
+      padding-bottom: 2px;
     }
 
     .day-pill {
       font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 500;
       padding: 5px 12px;
       border-radius: 8px;
       border: 1px solid var(--glass-edge);
       background: rgba(255,255,255,0.65);
       cursor: pointer;
+      white-space: nowrap;
     }
     .day-pill.active {
       background: var(--accent-rust);
@@ -240,12 +241,79 @@
       border-color: var(--accent-rust);
     }
 
-    /* View Panels */
+    .weather-sun-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0,0,0,0.1);
+      font-size: 12px;
+    }
+
+    .weather-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      background: rgba(255,255,255,0.65);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-edge);
+      cursor: pointer;
+    }
+
+    .solar-track-wrap {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .solar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--ink-muted);
+    }
+
+    .solar-spectrum {
+      position: relative;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg,
+        #1B263B 0%,
+        #3D5A80 20%,
+        #F4A261 27%,
+        #E9C46A 50%,
+        #E76F51 75%,
+        #1B263B 84%,
+        #0D1B2A 100%
+      );
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    .solar-dot {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #FFF;
+      border: 2.5px solid var(--accent-rust);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    /* Views */
     .view-section { display: none; }
-    .view-section.active { display: block; animation: fadeIn 0.28s ease; }
+    .view-section.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Timeline Cards & Responsive Accordion */
+    /* Timeline Cards */
     .timeline-list {
       display: flex;
       flex-direction: column;
@@ -255,14 +323,13 @@
     .event-card {
       position: relative;
       border-radius: 20px;
-      padding: 16px 18px;
-      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-      overflow: hidden;
+      padding: 15px 18px;
+      transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .event-card.visited {
-      border-color: rgba(200, 75, 49, 0.35);
-      background: rgba(255, 252, 248, 0.72);
+      border-color: rgba(200, 75, 49, 0.38);
+      background: rgba(255, 252, 248, 0.74);
     }
 
     .card-header {
@@ -285,24 +352,23 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #171717;
+      background: #161616;
       color: #FFF;
       font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 500;
       display: grid;
       place-items: center;
       flex-shrink: 0;
       margin-top: 2px;
     }
-    .event-card.visited .seq-badge {
-      background: var(--accent-rust);
-    }
+    .event-card.visited .seq-badge { background: var(--accent-rust); }
 
     .time-block {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--accent-rust);
-      font-weight: 600;
+      font-weight: 500;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -311,10 +377,10 @@
 
     .tz-badge {
       font-size: 10.5px;
-      background: rgba(23,23,23,0.06);
+      background: rgba(22,22,22,0.07);
       color: var(--ink-muted);
-      padding: 1px 6px;
-      border-radius: 5px;
+      padding: 1px 7px;
+      border-radius: 6px;
     }
 
     .card-title {
@@ -328,22 +394,24 @@
 
     .card-subtitle-en {
       font-family: var(--font-display);
-      font-size: 16px;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--ink-muted);
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
+      margin-top: 2px;
     }
 
-    /* Independent Stamp Button */
+    /* Completion Button ("完成" vs "✓ 完成") */
     .stamp-action-btn {
       flex-shrink: 0;
-      padding: 6px 11px;
+      padding: 6px 12px;
       border-radius: 10px;
-      border: 1.5px dashed rgba(200, 75, 49, 0.55);
-      background: rgba(200, 75, 49, 0.06);
+      border: 1.5px dashed rgba(200, 75, 49, 0.58);
+      background: rgba(255, 255, 255, 0.45);
       color: var(--accent-rust);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
@@ -351,77 +419,90 @@
       gap: 4px;
     }
 
-    .stamp-action-btn:hover {
-      background: rgba(200, 75, 49, 0.14);
-      transform: scale(1.03);
-    }
+    .stamp-action-btn:hover { background: rgba(200, 75, 49, 0.12); }
 
     .stamp-action-btn.stamped {
       border-style: solid;
       background: var(--accent-rust);
-      color: #FFF;
+      color: #FFFFFF;
       border-color: var(--accent-rust);
-      transform: rotate(-2deg);
-      box-shadow: 0 4px 12px rgba(200, 75, 49, 0.28);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(200, 75, 49, 0.26);
     }
 
-    /* Smooth Grid Accordion Body */
+    /* Responsive Accordion Body */
     .card-body-wrapper {
       display: grid;
       grid-template-rows: 1fr;
-      transition: grid-template-rows 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease, margin-top 0.3s ease;
+      transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease, margin-top 0.28s ease;
       opacity: 1;
       margin-top: 12px;
     }
 
-    /* Mobile Scroll-Driven Collapse State */
     @media (max-width: 768px) {
       .event-card.mobile-collapsed .card-body-wrapper {
         grid-template-rows: 0fr;
         opacity: 0;
         margin-top: 0;
       }
-      .event-card.mobile-collapsed {
-        padding: 12px 16px;
-      }
+      .event-card.mobile-collapsed { padding: 12px 15px; }
     }
 
-    .card-body-inner {
-      overflow: hidden;
-      min-height: 0;
-    }
+    .card-body-inner { overflow: hidden; min-height: 0; }
 
-    .note-box {
+    /* Speech Bubble Note Box (No Black Border-Left Shadow) */
+    .speech-note-bubble {
+      position: relative;
       font-size: 13.5px;
-      color: #363430;
-      background: rgba(255,255,255,0.55);
-      padding: 10px 12px;
-      border-radius: 12px;
-      border-left: 3px solid var(--ink);
-      margin-bottom: 10px;
+      color: #2E2C29;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(22, 22, 22, 0.1);
+      padding: 11px 14px;
+      border-radius: 16px 16px 16px 4px;
+      margin: 6px 0 12px;
       white-space: pre-line;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     }
 
-    /* Uncropped Original Aspect Ratio Photo Frame */
+    .speech-note-bubble::before {
+      content: '💬 隨筆備註';
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      margin-bottom: 3px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Polaroid Frame with Custom Crop/Zoom Support */
     .polaroid-frame {
       background: #FFFFFF;
       padding: 10px 10px 14px;
-      border-radius: 6px;
+      border-radius: 10px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       border: 1px solid rgba(0,0,0,0.06);
-      margin: 10px 0;
+      margin: 8px 0 12px;
       display: inline-block;
       max-width: 100%;
     }
 
-    .polaroid-frame img {
+    .polaroid-viewport {
+      overflow: hidden;
+      border-radius: 4px;
+      background: #F4F2ED;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    .polaroid-viewport img {
       display: block;
-      width: auto;
       max-width: 100%;
       max-height: 360px;
+      width: auto;
       height: auto;
-      object-fit: contain;
-      border-radius: 2px;
+      transition: transform 0.15s ease;
     }
 
     .polaroid-caption {
@@ -432,36 +513,36 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--accent-rust);
+      gap: 12px;
     }
 
-    /* Real Postmark Stamp Visual */
     .vintage-postmark {
       display: inline-flex;
-      flex-direction: column;
-      border: 2px solid var(--accent-rust);
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid var(--accent-rust);
       color: var(--accent-rust);
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 6px;
       font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      transform: rotate(-2.5deg);
-      margin-bottom: 10px;
-      background: rgba(200, 75, 49, 0.04);
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      background: rgba(200, 75, 49, 0.05);
     }
 
     .card-footer-tools {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
       padding-top: 10px;
-      border-top: 1px dashed rgba(0,0,0,0.12);
+      border-top: 1px dashed rgba(0,0,0,0.11);
     }
 
     .tool-chip {
       font-size: 12px;
-      padding: 5px 10px;
+      font-weight: 700;
+      padding: 5px 11px;
       border-radius: 8px;
       border: 1px solid var(--glass-edge);
       background: rgba(255,255,255,0.75);
@@ -473,32 +554,39 @@
       gap: 4px;
       font-family: var(--font-body);
     }
-    .tool-chip:hover { background: #171717; color: #FFF; }
-    .tool-chip.story-trigger {
-      background: rgba(200, 75, 49, 0.1);
+    .tool-chip:hover { background: #161616; color: #FFF; }
+    .tool-chip.share-btn {
+      background: rgba(200, 75, 49, 0.11);
       border-color: rgba(200, 75, 49, 0.35);
       color: var(--accent-rust);
-      font-weight: 600;
     }
-    .tool-chip.story-trigger:hover {
-      background: var(--accent-rust);
-      color: #FFF;
-    }
+    .tool-chip.share-btn:hover { background: var(--accent-rust); color: #FFF; }
 
-    /* Map View */
-    .map-wrapper {
-      border-radius: 22px;
-      padding: 14px;
-    }
+    /* Map */
+    .map-wrapper { border-radius: 22px; padding: 14px; }
     #leaflet-map {
       width: 100%;
-      height: 430px;
+      height: 440px;
       border-radius: 14px;
       z-index: 1;
       border: 1px solid rgba(0,0,0,0.1);
     }
 
-    /* Bottom Liquid Glass Dock */
+    /* Offline Keepsake Booklet */
+    .booklet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .booklet-card {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    /* Bottom Dock */
     nav.bottom-dock {
       position: fixed;
       bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
@@ -506,108 +594,109 @@
       transform: translateX(-50%);
       z-index: 95;
       display: flex;
-      gap: 6px;
+      gap: 4px;
       padding: 6px;
       border-radius: 999px;
       width: max-content;
-      max-width: 94vw;
+      max-width: 96vw;
     }
 
     .dock-item {
       border: none;
       background: transparent;
       color: var(--ink-muted);
-      padding: 8px 15px;
+      padding: 8px 14px;
       border-radius: 999px;
-      font-size: 12.5px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-body);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 5px;
-      transition: 0.22s;
+      transition: 0.2s;
+      white-space: nowrap;
     }
     .dock-item.active {
-      background: #171717;
+      background: #161616;
       color: #FAF8F5;
       box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-    }
-
-    /* Floating Font Previewer (Liquid Glass Capsule) */
-    .font-switcher-widget {
-      position: fixed;
-      right: 16px;
-      bottom: calc(env(safe-area-inset-bottom, 10px) + 72px);
-      z-index: 105;
-      border-radius: 18px;
-      transition: all 0.25s ease;
-    }
-
-    .font-toggle-fab {
-      border: none;
-      background: #171717;
-      color: #FFF;
-      padding: 9px 14px;
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.24);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .font-panel {
-      display: none;
-      width: 270px;
-      padding: 14px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-    }
-    .font-panel.open { display: block; animation: fadeIn 0.2s ease; }
-
-    .font-option {
-      width: 100%;
-      text-align: left;
-      padding: 8px 10px;
-      margin-top: 6px;
-      border-radius: 10px;
-      border: 1px solid var(--glass-edge);
-      background: rgba(255,255,255,0.65);
-      cursor: pointer;
-      font-size: 12px;
-      transition: 0.15s;
-    }
-    .font-option.active {
-      background: #171717;
-      color: #FFF;
-      border-color: #171717;
     }
 
     /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(18, 18, 18, 0.55);
+      background: rgba(16, 16, 16, 0.56);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 200;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
     .modal-backdrop.open { display: flex; }
 
     .modal-card {
       width: 100%;
-      max-width: 480px;
+      max-width: 510px;
       max-height: 90vh;
       overflow-y: auto;
       border-radius: 24px;
       padding: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 11px;
+      margin-top: 12px;
+    }
+    .form-grid label {
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-grid input, .form-grid select, .form-grid textarea {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.18);
+      background: rgba(255,255,255,0.88);
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+
+    .time-select-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .time-select-group select { flex: 1; font-family: var(--font-mono); }
+
+    .crop-preview-box {
+      background: #181818;
+      border-radius: 12px;
+      padding: 10px;
+      color: #FFF;
+      margin-top: 4px;
+    }
+    .crop-stage {
+      width: 100%;
+      height: 190px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .crop-stage img {
+      max-width: 100%;
+      max-height: 100%;
+      transition: transform 0.08s linear;
     }
 
     .template-tabs {
@@ -616,20 +705,16 @@
       gap: 6px;
       margin: 12px 0;
     }
-
     .tpl-btn {
       padding: 8px 6px;
       border-radius: 10px;
       border: 1px solid var(--glass-edge);
-      background: rgba(255,255,255,0.7);
-      font-size: 11.5px;
-      font-weight: 600;
+      background: rgba(255,255,255,0.72);
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
     }
-    .tpl-btn.active {
-      background: #171717;
-      color: #FFF;
-    }
+    .tpl-btn.active { background: #161616; color: #FFF; }
 
     .story-preview-stage {
       display: flex;
@@ -651,68 +736,83 @@
       background: #111;
     }
 
-    .form-grid {
-      display: grid;
-      gap: 10px;
-      margin-top: 10px;
+    /* Password Lock Screen Overlay */
+    #lock-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(242, 239, 233, 0.92);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    .form-grid label {
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .form-grid input, .form-grid select, .form-grid textarea {
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.18);
-      background: rgba(255,255,255,0.85);
-      font-family: var(--font-body);
-      font-size: 13px;
-    }
-
-    .budget-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      font-size: 13.5px;
-    }
+    #lock-overlay.locked { display: flex; }
   </style>
 </head>
 <body>
 
-  <!-- Top Liquid Glass Header -->
+  <!-- Password Lock Overlay -->
+  <div id="lock-overlay">
+    <div class="modal-card liquid-glass-strong" style="max-width:360px; text-align:center;">
+      <div class="logo-badge" style="margin:0 auto 12px; width:48px; height:48px; font-size:24px;">旅</div>
+      <div class="brand-title" style="font-size:18px; margin-bottom:6px;">TABI NOTE</div>
+      <p style="font-size:12.5px; color:var(--ink-muted); margin:0 0 14px;">此旅行手冊受保護，請輸入密碼解鎖（單次解鎖後此裝置將永久記憶）</p>
+      <input type="password" id="unlock-input" placeholder="請輸入密碼" style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(0,0,0,0.2); font-family:var(--font-mono); text-align:center; margin-bottom:10px;" />
+      <button class="pill-btn active" style="width:100%; justify-content:center; padding:10px;" onclick="unlockWithPasscode()">解鎖手冊</button>
+    </div>
+  </div>
+
+  <!-- Top Liquid Glass Header (Clean Brand Title without Subtitle) -->
   <header class="top-bar liquid-glass">
     <div class="header-inner">
       <div class="brand-group">
         <div class="logo-badge">旅</div>
-        <div>
-          <div class="brand-title">TABI NOTE</div>
-          <div style="font-size: 10.5px; color: var(--ink-muted); font-family: var(--font-mono);">CURATED TRAVEL & TRANSIT LOG</div>
-        </div>
+        <div class="brand-title">TABI NOTE</div>
       </div>
 
       <div class="toolbar-actions">
-        <button class="pill-btn" onclick="openAddEventModal()">＋ 新增行程</button>
+        <button class="pill-btn active" onclick="openEventModal()">＋ 新增行程</button>
+        <button class="pill-btn" onclick="openTripManagerModal()">🗂️ 旅行專案 (<span id="trip-count-num">1</span>)</button>
+        <button class="pill-btn rust" onclick="switchView('booklet', document.querySelector('[data-view=booklet]'))">📖 離線紀念冊</button>
+        <button class="pill-btn" id="lock-status-btn" onclick="openSecurityModal()">🔓 密碼鎖</button>
         <button class="pill-btn" onclick="exportJSON()">匯出 JSON</button>
         <button class="pill-btn" onclick="document.getElementById('import-file').click()">匯入</button>
         <input type="file" id="import-file" accept=".json" hidden onchange="importJSON(event)" />
       </div>
     </div>
 
-    <!-- Trip Switcher -->
+    <!-- Trip Switcher Strip -->
     <div class="trip-strip" id="trip-strip"></div>
   </header>
 
   <main class="container">
-    <!-- Day & Timezone Controls -->
-    <div class="sub-controls liquid-glass">
-      <div class="day-pills" id="day-pills"></div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="pill-btn" id="tz-toggle-btn" onclick="toggleHomeTime()">🇹🇼 台灣時間對照：開</button>
-        <span id="mobile-hint" style="font-size:11px; color:var(--ink-muted); font-family:var(--font-mono);">📱 焦點自動展開</span>
+    <!-- Day Pills + Weather + Daylight Solar Trajectory -->
+    <div class="day-banner liquid-glass">
+      <div class="day-banner-top">
+        <div class="day-pills" id="day-pills"></div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button class="pill-btn" id="tz-toggle-btn" onclick="toggleHomeTime()">🏠 家鄉時區對照：開</button>
+        </div>
+      </div>
+
+      <div class="weather-sun-row">
+        <div class="weather-badge" onclick="openDayMetaModal()" title="點擊編輯當日天氣與日照時間">
+          <span id="day-weather-icon">☀️</span>
+          <span id="day-weather-text">晴朗 18°C / 11°C</span>
+          <span style="opacity:0.5;">✎</span>
+        </div>
+
+        <div class="solar-track-wrap">
+          <div class="solar-labels">
+            <span id="sunrise-label">🌅 日出 06:15</span>
+            <span id="day-tz-label">時區：Asia/Tokyo (UTC+9)</span>
+            <span id="sunset-label">🌇 日落 17:05</span>
+          </div>
+          <div class="solar-spectrum" id="solar-spectrum-bar"></div>
+        </div>
       </div>
     </div>
 
@@ -721,12 +821,12 @@
       <div class="timeline-list" id="timeline-list"></div>
     </section>
 
-    <!-- VIEW 2: Route Map (Fixed Keyless Minimalist Tiles) -->
+    <!-- VIEW 2: Route Map -->
     <section id="view-map" class="view-section">
       <div class="map-wrapper liquid-glass">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <span style="font-family:var(--font-mono); font-size:12px; font-weight:600;">🗺️ ROUTE MAP · 今日地理動線</span>
-          <span style="font-size:11px; color:var(--ink-muted);">Esri Minimal Gray Cartography</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <span style="font-family:var(--font-mono); font-size:12.5px; font-weight:600;">🗺️ ROUTE MAP · 今日地理動線</span>
+          <a id="gmaps-multi-route" href="#" target="_blank" rel="noopener" class="pill-btn active">Google Maps 完整導航 ↗</a>
         </div>
         <div id="leaflet-map"></div>
       </div>
@@ -735,283 +835,446 @@
     <!-- VIEW 3: Budget & Checklist -->
     <section id="view-budget" class="view-section">
       <div class="liquid-glass" style="border-radius:20px; padding:18px;">
-        <h3 style="margin:0 0 12px; font-family:var(--font-mono); font-size:14px;">💰 BUDGET SUMMARY · 本趟預算統計</h3>
+        <h3 style="margin:0 0 12px; font-family:var(--font-mono); font-size:14px;">💰 BUDGET SUMMARY · 預算與花費明細</h3>
         <div id="budget-list"></div>
       </div>
     </section>
-  </main>
 
-  <!-- Floating Font Previewer (Liquid Glass) -->
-  <div class="font-switcher-widget">
-    <div class="font-panel liquid-glass-strong" id="font-panel">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-family:var(--font-mono); font-size:12px;">Aa 臨時字體預覽器</strong>
-        <button onclick="toggleFontPanel()" style="border:none; background:none; cursor:pointer; font-size:14px;">✕</button>
+    <!-- VIEW 4: Offline Keepsake Booklet (離線紀念冊) -->
+    <section id="view-booklet" class="view-section">
+      <div class="liquid-glass" style="border-radius:22px; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div>
+            <h2 style="margin:0; font-family:var(--font-brand); font-size:20px;" id="booklet-trip-title">離線紀念冊</h2>
+            <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--ink-muted);" id="booklet-trip-meta">ARCHIVE EDITION</div>
+          </div>
+          <button class="pill-btn active" onclick="window.print()">🖨️ 列印 / 存為 PDF 紀念冊</button>
+        </div>
+        <div class="booklet-grid" id="booklet-grid"></div>
       </div>
-      <div style="font-size:11px; color:var(--ink-muted); margin-top:2px;">全開源商用字體，即時預覽介面與限動圖卡</div>
-      <div id="font-options-container"></div>
-    </div>
-    <button class="font-toggle-fab" onclick="toggleFontPanel()">
-      <span>Aa</span>
-      <span id="current-font-label">00 預設雜誌風</span>
-    </button>
-  </div>
+    </section>
+  </main>
 
   <!-- Bottom Navigation Dock -->
   <nav class="bottom-dock liquid-glass-strong">
     <button class="dock-item active" data-view="timeline" onclick="switchView('timeline', this)">📅 時間軸</button>
     <button class="dock-item" data-view="map" onclick="switchView('map', this)">🗺️ 路線圖</button>
-    <button class="dock-item" data-view="budget" onclick="switchView('budget', this)">💰 預算清單</button>
+    <button class="dock-item" data-view="budget" onclick="switchView('budget', this)">💰 清單/預算</button>
+    <button class="dock-item" data-view="booklet" onclick="switchView('booklet', this)">📖 離線紀念冊</button>
   </nav>
 
-  <!-- 9:16 IG Story Card Generator Modal -->
-  <div class="modal-backdrop" id="story-modal">
-    <div class="modal-card liquid-glass-strong">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-family:var(--font-mono); font-size:13px;">📲 9:16 IG 限動圖卡生成器</strong>
-        <button class="pill-btn" onclick="closeModal('story-modal')">關閉</button>
-      </div>
-
-      <!-- 3 Templates Switcher -->
-      <div class="template-tabs">
-        <button class="tpl-btn active" data-tpl="polaroid" onclick="setStoryTemplate('polaroid', this)">📷 拍立得底片</button>
-        <button class="tpl-btn" data-tpl="flight" onclick="setStoryTemplate('flight', this)">✈️ 航空軌跡</button>
-        <button class="tpl-btn" data-tpl="transit" onclick="setStoryTemplate('transit', this)">🚃 電車 / 船票</button>
-      </div>
-
-      <!-- Flight Options (Custom Window Photo Overlay & Radar Theme) -->
-      <div id="flight-extra-controls" style="display:none; background:rgba(255,255,255,0.5); padding:10px; border-radius:12px; margin-bottom:8px; font-size:12px;">
-        <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:space-between;">
-          <label class="pill-btn" style="cursor:pointer;">
-            ☁️ 疊加機窗背景照
-            <input type="file" accept="image/*" hidden onchange="handleFlightBgUpload(event)" />
-          </label>
-          <button class="pill-btn" onclick="clearFlightBg()">清除背景照</button>
-        </div>
-      </div>
-
-      <!-- High-Res Rendered Image Stage (iOS Long-Press & Share Ready) -->
-      <div class="story-preview-stage">
-        <img id="story-output-img" alt="9:16 Story Preview" />
-        <div style="font-size:11px; color:var(--ink-muted); margin-top:8px; text-align:center;">
-          💡 iPhone 用戶可直接<strong>長按上方圖片 ➔ 加入「照片」</strong>，或點擊下方分享按鈕
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-        <button class="pill-btn active" style="justify-content:center; padding:10px;" onclick="shareOrSaveStory()">📤 儲存到相簿 / 分享 IG</button>
-        <button class="pill-btn" style="justify-content:center; padding:10px;" onclick="downloadStoryDesktop()">⬇️ 電腦版直接下載</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add / Edit Event Modal -->
+  <!-- MODAL 1: Add / Edit Event Modal (Refined Fields + Dropdown Time + Auto Geocode + Photo Crop) -->
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-family:var(--font-mono); font-size:13px;">✏️ 新增 / 編輯行程卡片</strong>
+        <strong style="font-family:var(--font-body); font-size:15px;" id="event-modal-heading">新增行程</strong>
         <button class="pill-btn" onclick="closeModal('event-modal')">取消</button>
       </div>
-      <form class="form-grid" onsubmit="saveNewEvent(event)">
+
+      <form class="form-grid" onsubmit="saveEventForm(event)">
+        <input type="hidden" id="ev-id" />
+
         <label>行程類型
-          <select id="ev-type">
-            <option value="spot">📍 景點 / 展覽 / 餐廳</option>
-            <option value="flight">✈️ 跨國航班 (支援大圓軌跡與入境章)</option>
-            <option value="train">🚃 電車 / 新幹線 (支援 Mini Metro 路線圖)</option>
-            <option value="ferry">⛴️ 渡輪 / 船班 (支援實體撕口船票)</option>
+          <select id="ev-type" onchange="handleEventTypeChange()">
+            <option value="spot">景點/展覽/餐廳</option>
+            <option value="flight">航班</option>
+            <option value="train">電車/新幹線</option>
+            <option value="ferry">渡輪/船班</option>
           </select>
         </label>
+
+        <!-- Cross-Timezone Selectors -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <label>當地時間 (如 23:40)<input type="text" id="ev-time" required placeholder="09:30" /></label>
-          <label>抵達/備註時間 (如 19:30)<input type="text" id="ev-arr-time" placeholder="11:45" /></label>
+          <label>開始時區
+            <select id="ev-start-tz"></select>
+          </label>
+          <label>結束/目的地時區
+            <select id="ev-end-tz"></select>
+          </label>
         </div>
-        <label>標題 (中文/日文)<input type="text" id="ev-title" required placeholder="例如：高松港 ➔ 豐島家浦港" /></label>
-        <label>英文副標 / 航班或路線代號<input type="text" id="ev-en" placeholder="例如：BR012 · TPE to LAX 或 JR 瀨戶大橋線" /></label>
+
+        <!-- Dropdown Time Pickers (Hour 00-23 + Minute 00-55 step 5) -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <label>出發地代碼/站名<input type="text" id="ev-from" placeholder="TPE / 大阪" /></label>
-          <label>目的地代碼/站名<input type="text" id="ev-to" placeholder="LAX / 高松" /></label>
+          <label>開始時間
+            <div class="time-select-group">
+              <select id="ev-start-hh"></select><span>:</span><select id="ev-start-mm"></select>
+            </div>
+          </label>
+          <label>結束時間
+            <div class="time-select-group">
+              <select id="ev-end-hh"><option value="">--</option></select><span>:</span><select id="ev-end-mm"><option value="">--</option></select>
+            </div>
+          </label>
         </div>
-        <label>精準地址或店家全名 (用於 Google Maps 電話/門牌搜尋)
+
+        <label>行程
+          <input type="text" id="ev-title" required placeholder="例如：高松港 ➔ 豐島家浦港 或 桃園國際機場" />
+        </label>
+
+        <label>副標 / 班次與路線名稱
+          <input type="text" id="ev-en" placeholder="例如：BR012 或 JR 山陽新幹線 さくら 543号" />
+        </label>
+
+        <div id="transit-endpoints-group" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+          <label>起點站/機場<input type="text" id="ev-from" placeholder="TPE / 新大阪" /></label>
+          <label>轉乘站 (選填)<input type="text" id="ev-via" placeholder="岡山" /></label>
+          <label>終點站/機場<input type="text" id="ev-to" placeholder="LAX / 高松" /></label>
+        </div>
+
+        <label>地址或地標名稱 (自動抓取地圖座標與店家電話門牌)
           <input type="text" id="ev-address" placeholder="例如：JR-East Hotel Mets Premier Tokyo Bay Shinkiba" />
         </label>
-        <label>專屬 Google Maps 網址 (選填，優先開啟)
+
+        <label>Google Maps 專屬連結 (選填，優先開啟)
           <input type="url" id="ev-map-url" placeholder="https://maps.app.goo.gl/..." />
         </label>
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <label>緯度 Lat (路線圖用)<input type="number" step="any" id="ev-lat" placeholder="35.6458" /></label>
-          <label>經度 Lng (路線圖用)<input type="number" step="any" id="ev-lng" placeholder="139.8266" /></label>
+          <label>幣別
+            <select id="ev-curr">
+              <option value="NT$">NT$ TWD</option>
+              <option value="¥">¥ JPY</option>
+              <option value="$">$ USD</option>
+              <option value="€">€ EUR</option>
+            </select>
+          </label>
+          <label>花費金額<input type="number" id="ev-cost" value="0" /></label>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <label>幣別<select id="ev-curr"><option value="NT$">NT$</option><option value="¥">¥ JPY</option><option value="$">$ USD</option></select></label>
-          <label>預估花費<input type="number" id="ev-cost" value="0" /></label>
-        </div>
-        <label>隨筆備註<textarea id="ev-note" rows="2" placeholder="出口編號、轉乘備案、票券提醒..."></textarea></label>
-        <label>上傳底片/現場照片 (原比例無裁切)
-          <input type="file" id="ev-photo" accept="image/*" />
+
+        <label>備註
+          <textarea id="ev-note" rows="2" placeholder="車站出口、轉乘月台、訂位代號..."></textarea>
         </label>
-        <button type="submit" class="pill-btn active" style="justify-content:center; padding:11px; margin-top:4px;">儲存行程卡片</button>
+
+        <label>上傳照片
+          <input type="file" id="ev-photo" accept="image/*" onchange="handleFormPhotoSelect(event)" />
+        </label>
+
+        <!-- Photo Remove & Crop/Focus Adjustment Controls -->
+        <div id="photo-edit-panel" class="crop-preview-box" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:11.5px;">
+            <span>🖼️ 畫面構圖與裁切微調</span>
+            <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px; background:#C84B31; color:#FFF; border:none;" onclick="removeCurrentPhoto()">🗑️ 移除照片</button>
+          </div>
+          <div class="crop-stage">
+            <img id="form-crop-preview" src="" alt="Preview" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px; font-size:11px;">
+            <label style="color:#DDD;">縮放 (<span id="zoom-val">1.0</span>x)
+              <input type="range" id="ev-photo-zoom" min="1" max="2.6" step="0.05" value="1" oninput="updateCropPreview()" />
+            </label>
+            <label style="color:#DDD;">水平位移
+              <input type="range" id="ev-photo-x" min="-45" max="45" step="1" value="0" oninput="updateCropPreview()" />
+            </label>
+            <label style="color:#DDD;">垂直位移
+              <input type="range" id="ev-photo-y" min="-45" max="45" step="1" value="0" oninput="updateCropPreview()" />
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" id="save-ev-btn" class="pill-btn active" style="justify-content:center; padding:11px; margin-top:6px;">儲存行程</button>
       </form>
     </div>
   </div>
 
-  <!-- Hidden High-Res 9:16 Canvas (1080x1920) -->
+  <!-- MODAL 2: Individual Trip Project Manager (旅行專案管理) -->
+  <div class="modal-backdrop" id="trip-manager-modal">
+    <div class="modal-card liquid-glass-strong">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:15px;">🗂️ 旅行專案管理</strong>
+        <button class="pill-btn" onclick="closeModal('trip-manager-modal')">完成</button>
+      </div>
+
+      <div style="margin-top:12px; padding:12px; background:rgba(255,255,255,0.55); border-radius:14px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:8px;">編輯目前旅行專案</div>
+        <div class="form-grid" style="margin-top:0;">
+          <label>旅行名稱<input type="text" id="tm-name" /></label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>出發日期<input type="date" id="tm-start-date" /></label>
+            <label>家鄉基準時區<select id="tm-home-tz"></select></label>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="pill-btn active" style="flex:1; justify-content:center;" onclick="saveCurrentTripMeta()">儲存修改</button>
+            <button class="pill-btn rust" onclick="deleteCurrentTrip()">刪除此旅行</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div style="font-size:12px; font-weight:700; margin-bottom:6px;">所有旅行分頁列表</div>
+        <div id="tm-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+        <button class="pill-btn active" style="width:100%; justify-content:center; margin-top:10px; padding:10px;" onclick="createNewTripProject()">＋ 新增旅行分頁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Day Weather & Sunrise/Sunset Editor -->
+  <div class="modal-backdrop" id="day-meta-modal">
+    <div class="modal-card liquid-glass-strong" style="max-width:400px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:14px;">☀️ 當日天氣與日照光軌設定</strong>
+        <button class="pill-btn" onclick="closeModal('day-meta-modal')">關閉</button>
+      </div>
+      <div class="form-grid">
+        <label>天氣圖示
+          <select id="dm-icon">
+            <option value="☀️">☀️ 晴朗</option>
+            <option value="⛅">⛅ 多雲時晴</option>
+            <option value="☁️">☁️ 陰天</option>
+            <option value="🌧️">🌧️ 陣雨</option>
+            <option value="❄️">❄️ 降雪</option>
+          </select>
+        </label>
+        <label>天氣與氣溫描述<input type="text" id="dm-weather" placeholder="晴朗 18°C / 11°C" /></label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <label>日出時間 (HH:MM)<input type="text" id="dm-sunrise" placeholder="06:15" /></label>
+          <label>日落時間 (HH:MM)<input type="text" id="dm-sunset" placeholder="17:05" /></label>
+        </div>
+        <button class="pill-btn active" style="justify-content:center; padding:10px;" onclick="saveDayMeta()">儲存設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Password Lock Settings -->
+  <div class="modal-backdrop" id="security-modal">
+    <div class="modal-card liquid-glass-strong" style="max-width:380px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:14px;">🔐 手冊獨立密碼鎖設定</strong>
+        <button class="pill-btn" onclick="closeModal('security-modal')">關閉</button>
+      </div>
+      <p style="font-size:12px; color:var(--ink-muted); margin:8px 0;">設定密碼後，其他人打開連結需輸入密碼才能查看私人動線；留空則代表公開不設密碼。</p>
+      <div class="form-grid">
+        <label>設定解鎖密碼 (留空即取消密碼)<input type="text" id="sec-pass-input" placeholder="例如：1130" /></label>
+        <div style="display:flex; gap:8px;">
+          <button class="pill-btn active" style="flex:1; justify-content:center;" onclick="saveSecurityPasscode()">儲存密碼設定</button>
+          <button class="pill-btn" onclick="lockImmediately()">立即上鎖測試</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: 9:16 IG Story Share Modal -->
+  <div class="modal-backdrop" id="story-modal">
+    <div class="modal-card liquid-glass-strong">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-family:var(--font-mono); font-size:13px;">📲 9:16 限動圖卡分享</strong>
+        <button class="pill-btn" onclick="closeModal('story-modal')">關閉</button>
+      </div>
+
+      <div class="template-tabs">
+        <button class="tpl-btn active" data-tpl="polaroid" onclick="setStoryTemplate('polaroid')">📷 拍立得底片</button>
+        <button class="tpl-btn" data-tpl="flight" onclick="setStoryTemplate('flight')">✈️ 航空軌跡</button>
+        <button class="tpl-btn" data-tpl="transit" onclick="setStoryTemplate('transit')">🚃 鐵道 / 船票</button>
+      </div>
+
+      <!-- Flight Overlay & Story Crop Fine-Tune -->
+      <div id="story-extra-controls" style="background:rgba(255,255,255,0.55); padding:10px; border-radius:12px; margin-bottom:8px; font-size:11.5px;">
+        <div id="flight-bg-row" style="display:none; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label class="pill-btn" style="cursor:pointer;">
+            ☁️ 疊加機窗背景照
+            <input type="file" accept="image/*" hidden onchange="handleFlightBgUpload(event)" />
+          </label>
+          <button class="pill-btn" onclick="clearFlightBg()">恢復世界地圖底圖</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+          <label>相片縮放<input type="range" id="st-zoom" min="1" max="2.5" step="0.05" value="1" oninput="syncStoryCrop()" /></label>
+          <label>左右焦點<input type="range" id="st-x" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
+          <label>上下焦點<input type="range" id="st-y" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
+        </div>
+      </div>
+
+      <div class="story-preview-stage">
+        <img id="story-output-img" alt="9:16 Story Preview" />
+        <div style="font-size:11px; color:var(--ink-muted); margin-top:8px; text-align:center;">
+          💡 iPhone 可直接<strong>長按上方圖片 ➔ 加入「照片」</strong>，或點擊下方分享
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+        <button class="pill-btn active" style="justify-content:center; padding:10px;" onclick="shareOrSaveStory()">📤 分享 / 儲存至相簿</button>
+        <button class="pill-btn" style="justify-content:center; padding:10px;" onclick="downloadStoryDesktop()">⬇️ 下載 PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden High-Res 9:16 Canvas -->
   <canvas id="story-canvas" width="1080" height="1920" hidden></canvas>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     /* ==========================================================================
-       1. PWA Dynamic Black-Square "旅" Icon & Manifest Generator
+       1. Real PNG App Icon ("旅" in Dela Gothic One) & PWA Setup
        ========================================================================== */
-    (function initPWA() {
-      const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-        <rect width="512" height="512" rx="112" fill="#141414"/>
-        <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="4"/>
-        <text x="256" y="325" font-family="serif" font-weight="700" font-size="250" fill="#F7F5F0" text-anchor="middle">旅</text>
-      </svg>`;
-      const iconUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(iconSvg)));
-      document.getElementById('apple-touch-icon').href = iconUrl;
+    async function generateRealPngAppIcon() {
+      try {
+        if (document.fonts && document.fonts.load) {
+          await document.fonts.load("400 240px 'Dela Gothic One'");
+        }
+      } catch (e) {}
+
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 512;
+      const ctx = c.getContext('2d');
+
+      // Black Rounded Square
+      ctx.fillStyle = '#141414';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, 512, 512, 112);
+      ctx.fill();
+
+      // Subtle Inner Rim Highlight
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.roundRect(22, 22, 468, 468, 92);
+      ctx.stroke();
+
+      // "旅" in Dela Gothic One
+      ctx.fillStyle = '#F7F5F0';
+      ctx.font = "400 268px 'Dela Gothic One', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('旅', 256, 268);
+
+      const pngDataUrl = c.toDataURL('image/png');
+      document.getElementById('apple-touch-icon').href = pngDataUrl;
+      document.getElementById('favicon-png').href = pngDataUrl;
 
       const manifest = {
-        name: 'TABI NOTE — 個人旅行策展誌',
+        name: 'TABI NOTE',
         short_name: 'TABI NOTE',
         start_url: '.',
         display: 'standalone',
-        background_color: '#F3EFEA',
+        background_color: '#F2EFE9',
         theme_color: '#141414',
-        icons: [{ src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }]
+        icons: [
+          { src: pngDataUrl, sizes: '180x180', type: 'image/png', purpose: 'any' },
+          { src: pngDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
       };
-      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-      document.getElementById('pwa-manifest').href = URL.createObjectURL(manifestBlob);
-
-      // Inline Service Worker for Offline Caching
-      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-        const swCode = `
-          const CACHE = 'tabi-note-v2';
-          self.addEventListener('install', e => {
-            e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
-            self.skipWaiting();
-          });
-          self.addEventListener('fetch', e => {
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-          });
-        `;
-        const swBlob = new Blob([swCode], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-      }
-    })();
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+    }
 
     /* ==========================================================================
-       2. Open-Source Font Preview Switcher (5 Curated Pairings)
+       2. Timezone Database & Helper Utilities
        ========================================================================== */
-    const FONT_PRESETS = [
-      {
-        id: '00',
-        name: '00 預設雜誌風',
-        desc: 'Instrument Serif + JetBrains Mono',
-        display: "'Instrument Serif', serif",
-        mono: "'JetBrains Mono', monospace",
-        body: "'Noto Sans TC', sans-serif",
-        canvasDisplay: 'Instrument Serif',
-        canvasMono: 'JetBrains Mono',
-        canvasBody: 'Noto Sans TC'
-      },
-      {
-        id: '01',
-        name: '01 東京設計展',
-        desc: 'Space Grotesk + IBM Plex Mono/Sans',
-        display: "'Space Grotesk', sans-serif",
-        mono: "'IBM Plex Mono', monospace",
-        body: "'IBM Plex Sans TC', sans-serif",
-        canvasDisplay: 'Space Grotesk',
-        canvasMono: 'IBM Plex Mono',
-        canvasBody: 'IBM Plex Sans TC'
-      },
-      {
-        id: '02',
-        name: '02 獨立電影刊物',
-        desc: 'Newsreader + Courier Prime + 筑紫明朝',
-        display: "'Newsreader', serif",
-        mono: "'Courier Prime', monospace",
-        body: "'Shippori Mincho', serif",
-        canvasDisplay: 'Newsreader',
-        canvasMono: 'Courier Prime',
-        canvasBody: 'Shippori Mincho'
-      },
-      {
-        id: '03',
-        name: '03 硬派交通時刻表',
-        desc: 'Archivo + DM Mono + Zen Kaku',
-        display: "'Archivo', sans-serif",
-        mono: "'DM Mono', monospace",
-        body: "'Zen Kaku Gothic New', sans-serif",
-        canvasDisplay: 'Archivo',
-        canvasMono: 'DM Mono',
-        canvasBody: 'Zen Kaku Gothic New'
-      },
-      {
-        id: '04',
-        name: '04 編輯混搭特調',
-        desc: 'Newsreader + Courier Prime + IBM 黑體',
-        display: "'Newsreader', serif",
-        mono: "'Courier Prime', monospace",
-        body: "'IBM Plex Sans TC', sans-serif",
-        canvasDisplay: 'Newsreader',
-        canvasMono: 'Courier Prime',
-        canvasBody: 'IBM Plex Sans TC'
-      }
+    const TIMEZONES = [
+      { id: 'Asia/Taipei', label: '台灣 TPE (UTC+8)', offset: 8 },
+      { id: 'Asia/Tokyo', label: '日本 TYO (UTC+9)', offset: 9 },
+      { id: 'Pacific/Honolulu', label: '夏威夷 HNL (UTC-10)', offset: -10 },
+      { id: 'America/Los_Angeles', label: '美西 LAX/SFO (UTC-8)', offset: -8 },
+      { id: 'America/Chicago', label: '美中 OKC/ORD (UTC-6)', offset: -6 },
+      { id: 'America/New_York', label: '美東 NYC (UTC-5)', offset: -5 },
+      { id: 'Europe/London', label: '倫敦 LON (UTC+0)', offset: 0 },
+      { id: 'Europe/Paris', label: '巴黎/歐洲 (UTC+1)', offset: 1 }
     ];
 
-    let activeFontPreset = FONT_PRESETS[0];
-
-    function initFontSwitcher() {
-      const container = document.getElementById('font-options-container');
-      container.innerHTML = FONT_PRESETS.map(p => `
-        <button class="font-option ${p.id === activeFontPreset.id ? 'active' : ''}" onclick="applyFontPreset('${p.id}')">
-          <div style="font-weight:700;">${p.name}</div>
-          <div style="font-size:10.5px; opacity:0.78;">${p.desc}</div>
-        </button>
-      `).join('');
+    function getTzOffset(tzId) {
+      const found = TIMEZONES.find(t => t.id === tzId);
+      return found ? found.offset : 8;
     }
 
-    function toggleFontPanel() {
-      document.getElementById('font-panel').classList.toggle('open');
+    function computeHomeTimeComparison(localTimeStr, eventTzId, homeTzId) {
+      if (!localTimeStr || !localTimeStr.includes(':')) return '';
+      const [hh, mm] = localTimeStr.split(':').map(Number);
+      if (isNaN(hh) || isNaN(mm)) return '';
+      const evOffset = getTzOffset(eventTzId);
+      const homeOffset = getTzOffset(homeTzId);
+      const diffHours = homeOffset - evOffset;
+      if (diffHours === 0) return '';
+
+      let totalMins = hh * 60 + mm + diffHours * 60;
+      let dayShift = '';
+      if (totalMins < 0) { totalMins += 1440; dayShift = '前日 '; }
+      else if (totalMins >= 1440) { totalMins -= 1440; dayShift = '隔日 '; }
+
+      const outH = String(Math.floor(totalMins / 60)).padStart(2, '0');
+      const outM = String(totalMins % 60).padStart(2, '0');
+      return `台灣 ${dayShift}${outH}:${outM}`;
     }
 
-    function applyFontPreset(id) {
-      const preset = FONT_PRESETS.find(p => p.id === id);
-      if (!preset) return;
-      activeFontPreset = preset;
-      document.documentElement.style.setProperty('--font-display', preset.display);
-      document.documentElement.style.setProperty('--font-mono', preset.mono);
-      document.documentElement.style.setProperty('--font-body', preset.body);
-      document.getElementById('current-font-label').textContent = preset.name;
-      initFontSwitcher();
-      if (document.getElementById('story-modal').classList.contains('open')) {
-        renderStoryCanvas();
-      }
+    function computeFlightDurationAndShift(startStr, endStr, startTz, endTz) {
+      if (!startStr || !endStr || !startStr.includes(':') || !endStr.includes(':')) return { durationText: '', dayShift: '' };
+      const [sh, sm] = startStr.split(':').map(Number);
+      const [eh, em] = endStr.split(':').map(Number);
+      const sOff = getTzOffset(startTz);
+      const eOff = getTzOffset(endTz);
+
+      const startUtcMins = (sh * 60 + sm) - sOff * 60;
+      let endUtcMins = (eh * 60 + em) - eOff * 60;
+      while (endUtcMins <= startUtcMins) endUtcMins += 1440;
+
+      const diff = endUtcMins - startUtcMins;
+      const dH = Math.floor(diff / 60);
+      const dM = diff % 60;
+
+      // Local calendar day comparison
+      const localDiff = (eh * 60 + em) - (sh * 60 + sm) + (diff + (eOff - sOff) * 60);
+      const dayDelta = Math.floor(((sh * 60 + sm) + diff + (eOff - sOff) * 60) / 1440);
+      const shiftTag = dayDelta > 0 ? `(+${dayDelta})` : dayDelta < 0 ? `(${dayDelta})` : '';
+      return { durationText: `${dH}H ${String(dM).padStart(2, '0')}M`, dayShift: shiftTag };
+    }
+
+    function timeToMinutes(t) {
+      if (!t || !t.includes(':')) return 720;
+      const [h, m] = t.split(':').map(Number);
+      return (h || 0) * 60 + (m || 0);
     }
 
     /* ==========================================================================
-       3. State & Rich Default Sample Data (Flight, Train, Ferry, Spot)
+       3. Default Rich State (Multi-Trip, Timezone, Solar, Keepsake, Passcode)
        ========================================================================== */
-    const DEFAULT_DATA = {
+    const DEFAULT_STATE = {
+      passcode: '',
       trips: [
         {
-          id: 'trip-1',
-          name: '01 TPE ➔ USA 跨時區之旅',
+          id: 'trip-tokyo-usa',
+          name: '01 TPE ➔ TYO ➔ LAX 跨時區之旅',
+          startDate: '2026-11-30',
+          homeTz: 'Asia/Taipei',
           days: [
             {
               dayLabel: 'DAY 01',
+              weatherIcon: '☀️',
+              weatherText: '東京晴朗 15°C / 7°C',
+              sunrise: '06:32',
+              sunset: '16:28',
               events: [
                 {
-                  id: 'ev-101',
+                  id: 'ev-1',
+                  type: 'train',
+                  startTz: 'Asia/Tokyo',
+                  endTz: 'Asia/Tokyo',
+                  time: '12:15',
+                  arrTime: '12:55',
+                  title: '新木場駅 ➔ 銀座 ➔ 神谷町駅',
+                  enSubtitle: '東京メトロ有楽町線 ➔ 日比谷線',
+                  fromCode: '新木場',
+                  viaCode: '銀座',
+                  toCode: '神谷町',
+                  fromLat: 35.6458, fromLng: 139.8266,
+                  toLat: 35.6630, toLng: 139.7450,
+                  address: 'JR-East Hotel Mets Premier Tokyo Bay Shinkiba',
+                  mapUrl: '',
+                  currency: '¥',
+                  cost: 210,
+                  note: '中午先於新木場站飯店寄放行李，晚間再持信用卡辦理加床入住手續。',
+                  photo: '',
+                  photoZoom: 1, photoX: 0, photoY: 0,
+                  visitedAt: '2026/11/30 12:56'
+                },
+                {
+                  id: 'ev-2',
                   type: 'flight',
+                  startTz: 'Asia/Taipei',
+                  endTz: 'America/Los_Angeles',
                   time: '23:40',
                   arrTime: '19:30',
-                  homeTimeHint: '台灣隔日 11:30',
                   title: '長榮航空 BR012 桃園 ➔ 洛杉磯',
-                  enSubtitle: 'BR012 · TAIPEI TO LOS ANGELES (11H 50M)',
+                  enSubtitle: 'BR012 · BOEING 777-300ER',
                   fromCode: 'TPE',
+                  viaCode: '',
                   toCode: 'LAX',
                   fromLat: 25.0797, fromLng: 121.2342,
                   toLat: 33.9416, toLng: -118.4085,
@@ -1019,71 +1282,62 @@
                   mapUrl: '',
                   currency: 'NT$',
                   cost: 34500,
-                  note: '起飛前 3 小時抵達第二航廈。機上調整為美西 PST 時區，落地後辦理入境手續。',
+                  note: '跨越國際換日線，降落後直接前往 In-N-Out 與 Trader Joe’s 採買。',
                   photo: '',
-                  visitedAt: '2026/12/04 19:32'
-                },
-                {
-                  id: 'ev-102',
-                  type: 'spot',
-                  time: '21:15',
-                  arrTime: '',
-                  homeTimeHint: '台灣 13:15',
-                  title: 'In-N-Out Burger LAX 機場店',
-                  enSubtitle: 'FIRST MEAL IN CALIFORNIA · DOUBLE-DOUBLE',
-                  fromCode: 'LAX',
-                  toCode: 'LAX',
-                  fromLat: 33.9535, fromLng: -118.3968,
-                  toLat: 33.9535, toLng: -118.3968,
-                  address: '9149 S Sepulveda Blvd, Los Angeles, CA 90045',
-                  mapUrl: '',
-                  currency: '$',
-                  cost: 14,
-                  note: '點起司薯條 Animal Style（蛋奶素可調整無肉漢堡 Grilled Cheese），看飛機低空掠過頭頂降落。',
-                  photo: '',
-                  visitedAt: ''
+                  photoZoom: 1, photoX: 0, photoY: 0,
+                  visitedAt: '2026/12/04 19:35'
                 }
               ]
             }
           ]
         },
         {
-          id: 'trip-2',
-          name: '02 瀨戶內跳島 ＆ 東京動線',
+          id: 'trip-setouchi',
+          name: '02 瀨戶內海跳島策展',
+          startDate: '2026-10-02',
+          homeTz: 'Asia/Taipei',
           days: [
             {
               dayLabel: 'DAY 01',
+              weatherIcon: '⛅',
+              weatherText: '高松微風 21°C / 14°C',
+              sunrise: '06:05',
+              sunset: '17:45',
               events: [
                 {
-                  id: 'ev-201',
+                  id: 'ev-3',
                   type: 'train',
+                  startTz: 'Asia/Tokyo',
+                  endTz: 'Asia/Tokyo',
                   time: '06:50',
                   arrTime: '08:55',
-                  homeTimeHint: '台灣 05:50',
-                  title: '新大阪 ➔ 岡山 ➔ 高松 鐵道轉乘',
-                  enSubtitle: 'JR 山陽新幹線 さくら 543号 ➔ JR 瀨戶大橋線',
+                  title: '新大阪 ➔ 岡山 ➔ 高松',
+                  enSubtitle: 'JR 山陽新幹線 さくら 543号 ➔ マリンライナー',
                   fromCode: '新大阪',
+                  viaCode: '岡山',
                   toCode: '高松',
-                  viaCode: '岡山 (轉乘)',
                   fromLat: 34.7335, fromLng: 135.5003,
                   toLat: 34.3506, toLng: 134.0465,
                   address: '高松駅 香川県高松市浜ノ町',
                   mapUrl: '',
                   currency: '¥',
                   cost: 6820,
-                  note: '岡山站新幹線轉在來線預留 12 分鐘，搭乘快速 Marine Liner 橫越瀨戶大橋。',
+                  note: '岡山站轉乘快速 Marine Liner 橫越瀨戶大橋，車頭展望席風景極佳。',
                   photo: '',
-                  visitedAt: '2026/11/30 08:56'
+                  photoZoom: 1, photoX: 0, photoY: 0,
+                  visitedAt: '2026/10/02 08:55'
                 },
                 {
-                  id: 'ev-202',
+                  id: 'ev-4',
                   type: 'ferry',
+                  startTz: 'Asia/Tokyo',
+                  endTz: 'Asia/Tokyo',
                   time: '09:25',
-                  arrTime: '10:15',
-                  homeTimeHint: '台灣 08:25',
-                  title: '高松港 ➔ 豐島（家浦港）高速船',
-                  enSubtitle: '豊島フェリー · TESHIMA FERRY',
+                  arrTime: '10:00',
+                  title: '高松港 ➔ 豐島家浦港 高速船',
+                  enSubtitle: '豊島フェリー · TESHIMA HIGH-SPEED FERRY',
                   fromCode: '高松港',
+                  viaCode: '',
                   toCode: '豐島家浦港',
                   fromLat: 34.3547, fromLng: 134.0489,
                   toLat: 34.4872, toLng: 134.0631,
@@ -1091,8 +1345,9 @@
                   mapUrl: '',
                   currency: '¥',
                   cost: 1350,
-                  note: '開船前 20 分鐘於高松港高速船售票處購票，下船直接租電動腳踏車前往豐島美術館。',
+                  note: '開船前 20 分鐘現場買票，抵達家浦港後租電動腳踏車直奔豐島美術館。',
                   photo: '',
+                  photoZoom: 1, photoX: 0, photoY: 0,
                   visitedAt: ''
                 }
               ]
@@ -1102,43 +1357,147 @@
       ]
     };
 
-    let appState = JSON.parse(localStorage.getItem('tabi_note_state_v2')) || DEFAULT_DATA;
+    let appState = JSON.parse(localStorage.getItem('tabi_note_state_v3')) || DEFAULT_STATE;
     let currentTripIdx = 0;
     let currentDayIdx = 0;
     let showHomeTime = true;
     let pinnedEventIds = new Set();
     let leafletMap = null;
 
-    // Story Generator State
+    // Form & Story State
+    let tempPhotoData = '';
     let activeStoryEvent = null;
     let activeStoryTemplate = 'polaroid';
     let flightBgImage = null;
 
     function persist() {
-      localStorage.setItem('tabi_note_state_v2', JSON.stringify(appState));
+      localStorage.setItem('tabi_note_state_v3', JSON.stringify(appState));
     }
 
     /* ==========================================================================
-       4. Render Trip Tabs, Day Pills, Timeline & Mobile Scroll Accordion
+       4. Initialize Time Dropdowns (00-23, 00-55 step 5) & Timezone Selectors
+       ========================================================================== */
+    function initFormSelects() {
+      const sh = document.getElementById('ev-start-hh');
+      const eh = document.getElementById('ev-end-hh');
+      const sm = document.getElementById('ev-start-mm');
+      const em = document.getElementById('ev-end-mm');
+
+      let hHtml = '';
+      for (let h = 0; h < 24; h++) {
+        const v = String(h).padStart(2, '0');
+        hHtml += `<option value="${v}">${v}</option>`;
+      }
+      sh.innerHTML = hHtml;
+      eh.innerHTML = `<option value="">--</option>` + hHtml;
+
+      let mHtml = '';
+      for (let m = 0; m < 60; m += 5) {
+        const v = String(m).padStart(2, '0');
+        mHtml += `<option value="${v}">${v}</option>`;
+      }
+      sm.innerHTML = mHtml;
+      em.innerHTML = `<option value="">--</option>` + mHtml;
+
+      const tzHtml = TIMEZONES.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+      document.getElementById('ev-start-tz').innerHTML = tzHtml;
+      document.getElementById('ev-end-tz').innerHTML = tzHtml;
+      document.getElementById('tm-home-tz').innerHTML = tzHtml;
+    }
+
+    /* ==========================================================================
+       5. Password Lock System
+       ========================================================================== */
+    function checkInitialLock() {
+      const pass = appState.passcode;
+      const unlocked = localStorage.getItem('tabi_note_unlocked') === pass;
+      const btn = document.getElementById('lock-status-btn');
+      btn.textContent = pass ? '🔒 密碼保護中' : '🔓 密碼鎖';
+
+      if (pass && !unlocked) {
+        document.getElementById('lock-overlay').classList.add('locked');
+      } else {
+        document.getElementById('lock-overlay').classList.remove('locked');
+      }
+    }
+
+    function unlockWithPasscode() {
+      const val = document.getElementById('unlock-input').value.trim();
+      if (val === appState.passcode) {
+        localStorage.setItem('tabi_note_unlocked', appState.passcode);
+        document.getElementById('lock-overlay').classList.remove('locked');
+      } else {
+        alert('密碼錯誤，請重新輸入');
+      }
+    }
+
+    function openSecurityModal() {
+      document.getElementById('sec-pass-input').value = appState.passcode || '';
+      document.getElementById('security-modal').classList.add('open');
+    }
+
+    function saveSecurityPasscode() {
+      appState.passcode = document.getElementById('sec-pass-input').value.trim();
+      localStorage.setItem('tabi_note_unlocked', appState.passcode);
+      persist();
+      checkInitialLock();
+      closeModal('security-modal');
+    }
+
+    function lockImmediately() {
+      saveSecurityPasscode();
+      if (appState.passcode) {
+        localStorage.removeItem('tabi_note_unlocked');
+        checkInitialLock();
+      }
+    }
+
+    /* ==========================================================================
+       6. Render Trips, Weather, Solar Trajectory & Timeline
        ========================================================================== */
     function renderAll() {
+      if (currentTripIdx >= appState.trips.length) currentTripIdx = 0;
       const trip = appState.trips[currentTripIdx];
-      // Trips
+      if (currentDayIdx >= trip.days.length) currentDayIdx = 0;
+      const day = trip.days[currentDayIdx];
+
+      document.getElementById('trip-count-num').textContent = appState.trips.length;
+
+      // Trip Strip
       document.getElementById('trip-strip').innerHTML =
         `<span class="trip-label">TRIPS:</span>` +
         appState.trips.map((t, idx) => `
           <button class="trip-tab ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx})">${t.name}</button>
-        `).join('');
+        `).join('') +
+        `<button class="trip-tab" style="border-style:dashed;" onclick="createNewTripProject()">＋ 新增旅行分頁</button>`;
 
-      // Days
+      // Day Pills
       document.getElementById('day-pills').innerHTML =
         trip.days.map((d, idx) => `
           <button class="day-pill ${idx === currentDayIdx ? 'active' : ''}" onclick="selectDay(${idx})">${d.dayLabel}</button>
         `).join('') +
         `<button class="day-pill" onclick="addDay()">＋ DAY</button>`;
 
+      // Weather & Solar Spectrum Bar
+      document.getElementById('day-weather-icon').textContent = day.weatherIcon || '☀️';
+      document.getElementById('day-weather-text').textContent = day.weatherText || '晴朗 18°C';
+      document.getElementById('sunrise-label').textContent = `🌅 日出 ${day.sunrise || '06:15'}`;
+      document.getElementById('sunset-label').textContent = `🌇 日落 ${day.sunset || '17:15'}`;
+
+      const firstEvTz = (day.events[0] && day.events[0].startTz) || trip.homeTz || 'Asia/Tokyo';
+      const tzMeta = TIMEZONES.find(t => t.id === firstEvTz) || TIMEZONES[1];
+      document.getElementById('day-tz-label').textContent = `時區：${tzMeta.label}`;
+
+      // Plot Event Dots on Solar Spectrum
+      const specBar = document.getElementById('solar-spectrum-bar');
+      specBar.innerHTML = day.events.map(ev => {
+        const pct = Math.min(98, Math.max(2, (timeToMinutes(ev.time) / 1440) * 100));
+        return `<div class="solar-dot" style="left:${pct}%;" title="${ev.time} ${ev.title}"></div>`;
+      }).join('');
+
       renderTimeline();
       renderBudget();
+      renderBooklet();
       if (document.getElementById('view-map').classList.contains('active')) {
         renderMap();
       }
@@ -1146,10 +1505,18 @@
 
     function selectTrip(idx) { currentTripIdx = idx; currentDayIdx = 0; renderAll(); }
     function selectDay(idx) { currentDayIdx = idx; renderAll(); }
+
     function addDay() {
       const trip = appState.trips[currentTripIdx];
       const num = String(trip.days.length + 1).padStart(2, '0');
-      trip.days.push({ dayLabel: `DAY ${num}`, events: [] });
+      trip.days.push({
+        dayLabel: `DAY ${num}`,
+        weatherIcon: '☀️',
+        weatherText: '晴朗 18°C',
+        sunrise: '06:15',
+        sunset: '17:15',
+        events: []
+      });
       currentDayIdx = trip.days.length - 1;
       persist();
       renderAll();
@@ -1157,25 +1524,24 @@
 
     function toggleHomeTime() {
       showHomeTime = !showHomeTime;
-      document.getElementById('tz-toggle-btn').textContent = `🇹🇼 台灣時間對照：${showHomeTime ? '開' : '關'}`;
+      document.getElementById('tz-toggle-btn').textContent = `🏠 家鄉時區對照：${showHomeTime ? '開' : '關'}`;
       renderTimeline();
     }
 
-    // Build Smart Google Maps URL (Prioritize Custom URL -> Name+Address -> Lat/Lng)
     function buildGoogleMapsHref(ev) {
       if (ev.mapUrl && ev.mapUrl.trim() !== '') return ev.mapUrl.trim();
-      const queryTarget = (ev.address && ev.address.trim()) ? `${ev.title} ${ev.address}` : ev.title;
-      if (queryTarget) {
-        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryTarget)}`;
-      }
-      return `https://www.google.com/maps/search/?api=1&query=${ev.toLat},${ev.toLng}`;
+      const q = (ev.address && ev.address.trim()) ? `${ev.title} ${ev.address}` : ev.title;
+      if (q) return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+      return `https://www.google.com/maps/search/?api=1&query=${ev.toLat || 35.68},${ev.toLng || 139.76}`;
     }
 
     function renderTimeline() {
-      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      const trip = appState.trips[currentTripIdx];
+      const day = trip.days[currentDayIdx];
       const listEl = document.getElementById('timeline-list');
+
       if (!day.events.length) {
-        listEl.innerHTML = `<div class="liquid-glass" style="padding:32px; text-align:center; border-radius:20px; color:var(--ink-muted);">本日尚無行程，點擊上方「＋ 新增行程」開始策展。</div>`;
+        listEl.innerHTML = `<div class="liquid-glass" style="padding:32px; text-align:center; border-radius:20px; color:var(--ink-muted);">本日尚無行程，點擊上方「＋ 新增行程」開始規劃。</div>`;
         return;
       }
 
@@ -1185,6 +1551,16 @@
         const typeIcon = ev.type === 'flight' ? '✈️' : ev.type === 'train' ? '🚃' : ev.type === 'ferry' ? '⛴️' : '📍';
         const mapsUrl = buildGoogleMapsHref(ev);
 
+        // Cross-Timezone Calculation
+        const homeCompare = computeHomeTimeComparison(ev.time, ev.startTz || 'Asia/Tokyo', trip.homeTz || 'Asia/Taipei');
+        const flightMeta = (ev.type === 'flight' && ev.arrTime)
+          ? computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz)
+          : { durationText: '', dayShift: '' };
+
+        const z = ev.photoZoom || 1;
+        const px = ev.photoX || 0;
+        const py = ev.photoY || 0;
+
         return `
           <article class="event-card liquid-glass ${isStamped ? 'visited' : ''} ${isPinned ? '' : 'mobile-collapsed'}" data-ev-id="${ev.id}">
             <div class="card-header" onclick="togglePinCard('${ev.id}')">
@@ -1192,43 +1568,44 @@
                 <div class="seq-badge">${idx + 1}</div>
                 <div style="min-width:0; flex:1;">
                   <div class="time-block">
-                    <span>${typeIcon} ${ev.time}${ev.arrTime ? ' ➔ ' + ev.arrTime : ''}</span>
-                    ${showHomeTime && ev.homeTimeHint ? `<span class="tz-badge">🇹🇼 ${ev.homeTimeHint}</span>` : ''}
+                    <span>${typeIcon} ${ev.time}${ev.arrTime ? ' ➔ ' + ev.arrTime : ''} ${flightMeta.dayShift}</span>
+                    ${flightMeta.durationText ? `<span class="tz-badge">⏱ ${flightMeta.durationText}</span>` : ''}
+                    ${showHomeTime && homeCompare ? `<span class="tz-badge">🏠 ${homeCompare}</span>` : ''}
                   </div>
                   <h2 class="card-title">${ev.title}</h2>
                   ${ev.enSubtitle ? `<div class="card-subtitle-en">${ev.enSubtitle}</div>` : ''}
                 </div>
               </div>
 
-              <!-- Independent Completion Stamp Button with Real-Time Timestamp -->
+              <!-- "完成" (Dashed) vs "✓ 完成" (Solid) -->
               <button class="stamp-action-btn ${isStamped ? 'stamped' : ''}" onclick="event.stopPropagation(); stampEvent('${ev.id}')">
-                ${isStamped ? '✓ 已蓋章' : '💮 完結蓋章'}
+                ${isStamped ? '✓ 完成' : '完成'}
               </button>
             </div>
 
             <div class="card-body-wrapper">
               <div class="card-body-inner">
-                ${isStamped ? `<div class="vintage-postmark">★ VISITED · ${ev.visitedAt}</div>` : ''}
-                ${ev.note ? `<div class="note-box">${ev.note}</div>` : ''}
+                ${isStamped ? `<div class="vintage-postmark">✓ COMPLETED · ${ev.visitedAt}</div>` : ''}
+
+                ${ev.note ? `<div class="speech-note-bubble">${ev.note}</div>` : ''}
 
                 ${ev.photo ? `
                   <div class="polaroid-frame">
-                    <img src="${ev.photo}" alt="${ev.title}" />
+                    <div class="polaroid-viewport">
+                      <img src="${ev.photo}" alt="${ev.title}" style="transform: scale(${z}) translate(${px}%, ${py}%);" />
+                    </div>
                     <div class="polaroid-caption">
-                      <span>FILM ARCHIVE · ORIGINAL RATIO</span>
+                      <span>${ev.fromCode && ev.toCode ? `${ev.fromCode} ➔ ${ev.toCode}` : 'ARCHIVE PHOTO'}</span>
                       <span>${ev.visitedAt || ev.time}</span>
                     </div>
                   </div>
                 ` : ''}
 
                 <div class="card-footer-tools">
-                  <a class="tool-chip" href="${mapsUrl}" target="_blank" rel="noopener">📍 Google Maps 地標詳情 ↗</a>
-                  <label class="tool-chip" style="cursor:pointer;">
-                    📷 上傳照片
-                    <input type="file" accept="image/*" hidden onchange="attachPhotoToEvent(event, '${ev.id}')" />
-                  </label>
-                  <button class="tool-chip story-trigger" onclick="openStoryModal('${ev.id}')">📲 9:16 限動圖卡</button>
-                  <button class="tool-chip" onclick="deleteEvent('${ev.id}')" style="margin-left:auto; color:#999;">刪除</button>
+                  <button class="tool-chip" onclick="openEventModal('${ev.id}')">✎ 編輯</button>
+                  <a class="tool-chip" href="${mapsUrl}" target="_blank" rel="noopener">📍 Google Maps ↗</a>
+                  <button class="tool-chip share-btn" onclick="openStoryModal('${ev.id}')">分享</button>
+                  <button class="tool-chip" onclick="deleteEvent('${ev.id}')" style="margin-left:auto; color:#888;">刪除</button>
                 </div>
               </div>
             </div>
@@ -1239,7 +1616,6 @@
       setupMobileScrollObserver();
     }
 
-    // Mobile Scroll-Driven Focus Accordion
     let scrollObserver = null;
     function setupMobileScrollObserver() {
       if (scrollObserver) scrollObserver.disconnect();
@@ -1253,38 +1629,26 @@
             entry.target.classList.remove('mobile-collapsed');
             return;
           }
-          if (entry.isIntersecting) {
-            entry.target.classList.remove('mobile-collapsed');
-          } else {
-            entry.target.classList.add('mobile-collapsed');
-          }
+          entry.target.classList.toggle('mobile-collapsed', !entry.isIntersecting);
         });
-      }, {
-        root: null,
-        rootMargin: '-28% 0px -32% 0px',
-        threshold: 0.1
-      });
+      }, { root: null, rootMargin: '-26% 0px -30% 0px', threshold: 0.1 });
 
       cards.forEach(c => scrollObserver.observe(c));
     }
 
     function togglePinCard(evId) {
-      if (pinnedEventIds.has(evId)) {
-        pinnedEventIds.delete(evId);
-      } else {
-        pinnedEventIds.add(evId);
-      }
+      if (pinnedEventIds.has(evId)) pinnedEventIds.delete(evId);
+      else pinnedEventIds.add(evId);
       const el = document.querySelector(`.event-card[data-ev-id="${evId}"]`);
       if (el) el.classList.toggle('mobile-collapsed', !pinnedEventIds.has(evId));
     }
 
-    // Real-Time Timestamp Stamping
     function stampEvent(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       const ev = day.events.find(e => e.id === evId);
       if (!ev) return;
       if (ev.visitedAt) {
-        ev.visitedAt = ''; // Toggle off if clicked again
+        ev.visitedAt = '';
       } else {
         const now = new Date();
         const yyyy = now.getFullYear();
@@ -1295,28 +1659,11 @@
         ev.visitedAt = `${yyyy}/${mm}/${dd} ${hh}:${min}`;
       }
       persist();
-      renderTimeline();
-    }
-
-    function attachPhotoToEvent(event, evId) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const day = appState.trips[currentTripIdx].days[currentDayIdx];
-        const ev = day.events.find(item => item.id === evId);
-        if (ev) {
-          ev.photo = e.target.result;
-          pinnedEventIds.add(evId);
-          persist();
-          renderTimeline();
-        }
-      };
-      reader.readAsDataURL(file);
+      renderAll();
     }
 
     function deleteEvent(evId) {
-      if (!confirm('確定刪除此行程卡片？')) return;
+      if (!confirm('確定刪除此行程？')) return;
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       day.events = day.events.filter(e => e.id !== evId);
       persist();
@@ -1324,16 +1671,299 @@
     }
 
     /* ==========================================================================
-       5. Fixed Keyless Leaflet Map (Esri Light Gray Base)
+       7. Two-Way Event Editor + Automatic Geocoding + Photo Crop/Delete
+       ========================================================================== */
+    function handleEventTypeChange() {
+      const t = document.getElementById('ev-type').value;
+      document.getElementById('transit-endpoints-group').style.display = (t === 'spot') ? 'none' : 'grid';
+    }
+
+    function openEventModal(editEvId = null) {
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      const form = document.querySelector('#event-modal form');
+      form.reset();
+
+      if (editEvId) {
+        const ev = day.events.find(e => e.id === editEvId);
+        if (!ev) return;
+        document.getElementById('event-modal-heading').textContent = '編輯行程';
+        document.getElementById('ev-id').value = ev.id;
+        document.getElementById('ev-type').value = ev.type || 'spot';
+        document.getElementById('ev-start-tz').value = ev.startTz || 'Asia/Tokyo';
+        document.getElementById('ev-end-tz').value = ev.endTz || ev.startTz || 'Asia/Tokyo';
+
+        const [sh, sm] = (ev.time || '09:00').split(':');
+        document.getElementById('ev-start-hh').value = sh || '09';
+        document.getElementById('ev-start-mm').value = sm || '00';
+
+        if (ev.arrTime && ev.arrTime.includes(':')) {
+          const [eh, em] = ev.arrTime.split(':');
+          document.getElementById('ev-end-hh').value = eh;
+          document.getElementById('ev-end-mm').value = em;
+        } else {
+          document.getElementById('ev-end-hh').value = '';
+          document.getElementById('ev-end-mm').value = '';
+        }
+
+        document.getElementById('ev-title').value = ev.title || '';
+        document.getElementById('ev-en').value = ev.enSubtitle || '';
+        document.getElementById('ev-from').value = ev.fromCode || '';
+        document.getElementById('ev-via').value = ev.viaCode || '';
+        document.getElementById('ev-to').value = ev.toCode || '';
+        document.getElementById('ev-address').value = ev.address || '';
+        document.getElementById('ev-map-url').value = ev.mapUrl || '';
+        document.getElementById('ev-curr').value = ev.currency || 'NT$';
+        document.getElementById('ev-cost').value = ev.cost || 0;
+        document.getElementById('ev-note').value = ev.note || '';
+
+        tempPhotoData = ev.photo || '';
+        document.getElementById('ev-photo-zoom').value = ev.photoZoom || 1;
+        document.getElementById('ev-photo-x').value = ev.photoX || 0;
+        document.getElementById('ev-photo-y').value = ev.photoY || 0;
+      } else {
+        document.getElementById('event-modal-heading').textContent = '新增行程';
+        document.getElementById('ev-id').value = '';
+        document.getElementById('ev-type').value = 'spot';
+        document.getElementById('ev-start-tz').value = 'Asia/Tokyo';
+        document.getElementById('ev-end-tz').value = 'Asia/Tokyo';
+        document.getElementById('ev-start-hh').value = '09';
+        document.getElementById('ev-start-mm').value = '00';
+        document.getElementById('ev-end-hh').value = '';
+        document.getElementById('ev-end-mm').value = '';
+        tempPhotoData = '';
+        document.getElementById('ev-photo-zoom').value = 1;
+        document.getElementById('ev-photo-x').value = 0;
+        document.getElementById('ev-photo-y').value = 0;
+      }
+
+      handleEventTypeChange();
+      refreshPhotoEditPanel();
+      document.getElementById('event-modal').classList.add('open');
+    }
+
+    function handleFormPhotoSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        tempPhotoData = ev.target.result;
+        document.getElementById('ev-photo-zoom').value = 1;
+        document.getElementById('ev-photo-x').value = 0;
+        document.getElementById('ev-photo-y').value = 0;
+        refreshPhotoEditPanel();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeCurrentPhoto() {
+      tempPhotoData = '';
+      document.getElementById('ev-photo').value = '';
+      refreshPhotoEditPanel();
+    }
+
+    function refreshPhotoEditPanel() {
+      const panel = document.getElementById('photo-edit-panel');
+      const img = document.getElementById('form-crop-preview');
+      if (tempPhotoData) {
+        panel.style.display = 'block';
+        img.src = tempPhotoData;
+        updateCropPreview();
+      } else {
+        panel.style.display = 'none';
+        img.src = '';
+      }
+    }
+
+    function updateCropPreview() {
+      const z = document.getElementById('ev-photo-zoom').value;
+      const x = document.getElementById('ev-photo-x').value;
+      const y = document.getElementById('ev-photo-y').value;
+      document.getElementById('zoom-val').textContent = Number(z).toFixed(2);
+      document.getElementById('form-crop-preview').style.transform = `scale(${z}) translate(${x}%, ${y}%)`;
+    }
+
+    // Automatic Geocoding via OpenStreetMap Nominatim (No Manual Lat/Lng Required)
+    async function autoGeocodePlace(queryStr) {
+      if (!queryStr) return null;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(queryStr)}`);
+        const data = await res.json();
+        if (data && data[0]) {
+          return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function saveEventForm(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-ev-btn');
+      saveBtn.textContent = '正在定位與儲存...';
+      saveBtn.disabled = true;
+
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      const editId = document.getElementById('ev-id').value;
+      const existing = editId ? day.events.find(x => x.id === editId) : null;
+
+      const startStr = `${document.getElementById('ev-start-hh').value}:${document.getElementById('ev-start-mm').value}`;
+      const eh = document.getElementById('ev-end-hh').value;
+      const em = document.getElementById('ev-end-mm').value;
+      const endStr = (eh && em) ? `${eh}:${em}` : '';
+
+      const titleVal = document.getElementById('ev-title').value.trim();
+      const addrVal = document.getElementById('ev-address').value.trim();
+      const fromVal = document.getElementById('ev-from').value.trim();
+      const toVal = document.getElementById('ev-to').value.trim();
+
+      let fromLat = existing ? existing.fromLat : 35.6812;
+      let fromLng = existing ? existing.fromLng : 139.7671;
+      let toLat = existing ? existing.toLat : 35.6812;
+      let toLng = existing ? existing.toLng : 139.7671;
+
+      const geoTarget = addrVal || toVal || titleVal;
+      const geoResult = await autoGeocodePlace(geoTarget);
+      if (geoResult) {
+        toLat = geoResult.lat;
+        toLng = geoResult.lng;
+      }
+      if (fromVal) {
+        const fromGeo = await autoGeocodePlace(fromVal);
+        if (fromGeo) {
+          fromLat = fromGeo.lat;
+          fromLng = fromGeo.lng;
+        }
+      } else {
+        fromLat = toLat;
+        fromLng = toLng;
+      }
+
+      const payload = {
+        id: existing ? existing.id : 'ev-' + Date.now(),
+        type: document.getElementById('ev-type').value,
+        startTz: document.getElementById('ev-start-tz').value,
+        endTz: document.getElementById('ev-end-tz').value,
+        time: startStr,
+        arrTime: endStr,
+        title: titleVal,
+        enSubtitle: document.getElementById('ev-en').value.trim(),
+        fromCode: fromVal,
+        viaCode: document.getElementById('ev-via').value.trim(),
+        toCode: toVal,
+        fromLat, fromLng, toLat, toLng,
+        address: addrVal,
+        mapUrl: document.getElementById('ev-map-url').value.trim(),
+        currency: document.getElementById('ev-curr').value,
+        cost: Number(document.getElementById('ev-cost').value) || 0,
+        note: document.getElementById('ev-note').value,
+        photo: tempPhotoData,
+        photoZoom: Number(document.getElementById('ev-photo-zoom').value) || 1,
+        photoX: Number(document.getElementById('ev-photo-x').value) || 0,
+        photoY: Number(document.getElementById('ev-photo-y').value) || 0,
+        visitedAt: existing ? existing.visitedAt : ''
+      };
+
+      if (existing) {
+        const idx = day.events.findIndex(x => x.id === editId);
+        day.events[idx] = payload;
+      } else {
+        day.events.push(payload);
+      }
+
+      pinnedEventIds.add(payload.id);
+      persist();
+      saveBtn.textContent = '儲存行程';
+      saveBtn.disabled = false;
+      closeModal('event-modal');
+      renderAll();
+    }
+
+    /* ==========================================================================
+       8. Trip Project Manager & Day Weather Editor
+       ========================================================================== */
+    function openTripManagerModal() {
+      const trip = appState.trips[currentTripIdx];
+      document.getElementById('tm-name').value = trip.name || '';
+      document.getElementById('tm-start-date').value = trip.startDate || '';
+      document.getElementById('tm-home-tz').value = trip.homeTz || 'Asia/Taipei';
+
+      document.getElementById('tm-list').innerHTML = appState.trips.map((t, idx) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.7); border-radius:10px;">
+          <span style="font-size:13px; font-weight:700;">${t.name} (${t.days.length} 天)</span>
+          <button class="pill-btn ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx}); openTripManagerModal();">切換</button>
+        </div>
+      `).join('');
+
+      document.getElementById('trip-manager-modal').classList.add('open');
+    }
+
+    function saveCurrentTripMeta() {
+      const trip = appState.trips[currentTripIdx];
+      trip.name = document.getElementById('tm-name').value.trim() || trip.name;
+      trip.startDate = document.getElementById('tm-start-date').value;
+      trip.homeTz = document.getElementById('tm-home-tz').value;
+      persist();
+      renderAll();
+      openTripManagerModal();
+    }
+
+    function createNewTripProject() {
+      const num = String(appState.trips.length + 1).padStart(2, '0');
+      appState.trips.push({
+        id: 'trip-' + Date.now(),
+        name: `${num} 新旅行策展`,
+        startDate: new Date().toISOString().slice(0, 10),
+        homeTz: 'Asia/Taipei',
+        days: [{ dayLabel: 'DAY 01', weatherIcon: '☀️', weatherText: '晴朗 20°C', sunrise: '06:15', sunset: '17:30', events: [] }]
+      });
+      currentTripIdx = appState.trips.length - 1;
+      currentDayIdx = 0;
+      persist();
+      renderAll();
+    }
+
+    function deleteCurrentTrip() {
+      if (appState.trips.length <= 1) {
+        alert('至少需保留一個旅行專案');
+        return;
+      }
+      if (!confirm('確定刪除此旅行專案？')) return;
+      appState.trips.splice(currentTripIdx, 1);
+      currentTripIdx = 0;
+      currentDayIdx = 0;
+      persist();
+      renderAll();
+      openTripManagerModal();
+    }
+
+    function openDayMetaModal() {
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      document.getElementById('dm-icon').value = day.weatherIcon || '☀️';
+      document.getElementById('dm-weather').value = day.weatherText || '';
+      document.getElementById('dm-sunrise').value = day.sunrise || '06:15';
+      document.getElementById('dm-sunset').value = day.sunset || '17:15';
+      document.getElementById('day-meta-modal').classList.add('open');
+    }
+
+    function saveDayMeta() {
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      day.weatherIcon = document.getElementById('dm-icon').value;
+      day.weatherText = document.getElementById('dm-weather').value;
+      day.sunrise = document.getElementById('dm-sunrise').value;
+      day.sunset = document.getElementById('dm-sunset').value;
+      persist();
+      closeModal('day-meta-modal');
+      renderAll();
+    }
+
+    /* ==========================================================================
+       9. Views: Route Map, Budget & Offline Keepsake Booklet (離線紀念冊)
        ========================================================================== */
     function switchView(viewName, btn) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       document.getElementById(`view-${viewName}`).classList.add('active');
       document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (viewName === 'map') {
-        setTimeout(renderMap, 80);
-      }
+      if (btn) btn.classList.add('active');
+      if (viewName === 'map') setTimeout(renderMap, 80);
     }
 
     function renderMap() {
@@ -1346,28 +1976,37 @@
         }).addTo(leafletMap);
       }
       leafletMap.invalidateSize();
-
-      // Clear previous layers except base tile
-      leafletMap.eachLayer(layer => {
-        if (!layer._url) leafletMap.removeLayer(layer);
-      });
+      leafletMap.eachLayer(layer => { if (!layer._url) leafletMap.removeLayer(layer); });
 
       const coords = [];
+      const placeNames = [];
       day.events.forEach((ev, idx) => {
         const lat = parseFloat(ev.toLat || ev.fromLat);
         const lng = parseFloat(ev.toLng || ev.fromLng);
         if (!isNaN(lat) && !isNaN(lng)) {
           coords.push([lat, lng]);
+          placeNames.push(encodeURIComponent(ev.address || ev.title));
           L.marker([lat, lng]).addTo(leafletMap)
             .bindPopup(`<strong>#${idx + 1} ${ev.title}</strong><br/>${ev.time}`);
         }
       });
 
       if (coords.length > 1) {
-        L.polyline(coords, { color: '#C84B31', weight: 3, dashArray: '8, 8' }).addTo(leafletMap);
+        L.polyline(coords, { color: '#C84B31', weight: 3.5, dashArray: '8, 8' }).addTo(leafletMap);
       }
       if (coords.length > 0) {
-        leafletMap.fitBounds(coords, { padding: [40, 40], maxZoom: 12 });
+        leafletMap.fitBounds(coords, { padding: [40, 40], maxZoom: 13 });
+      }
+
+      // Multi-stop Google Maps Navigation Link
+      const gmapsMulti = document.getElementById('gmaps-multi-route');
+      if (placeNames.length >= 2) {
+        const origin = placeNames[0];
+        const dest = placeNames[placeNames.length - 1];
+        const waypoints = placeNames.slice(1, -1).join('|');
+        gmapsMulti.href = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}${waypoints ? '&waypoints=' + waypoints : ''}`;
+      } else if (placeNames.length === 1) {
+        gmapsMulti.href = `https://www.google.com/maps/search/?api=1&query=${placeNames[0]}`;
       }
     }
 
@@ -1381,43 +2020,79 @@
           const amt = Number(ev.cost) || 0;
           if (amt > 0) {
             totals[c] = (totals[c] || 0) + amt;
-            rowsHtml += `<div class="budget-row"><span>${d.dayLabel} · ${ev.title}</span><strong style="font-family:var(--font-mono);">${c} ${amt.toLocaleString()}</strong></div>`;
+            rowsHtml += `<div style="display:flex; justify-content:space-between; padding:10px 12px; border-bottom:1px solid rgba(0,0,0,0.07); font-size:13.5px;">
+              <span>${d.dayLabel} · ${ev.title}</span>
+              <strong style="font-family:var(--font-mono);">${c} ${amt.toLocaleString()}</strong>
+            </div>`;
           }
         });
       });
       const summary = Object.entries(totals).map(([k, v]) => `<span class="pill-btn active" style="margin-right:6px;">${k} ${v.toLocaleString()}</span>`).join('');
-      document.getElementById('budget-list').innerHTML = `<div style="margin-bottom:14px;">${summary || '尚未輸入花費'}</div>` + rowsHtml;
+      document.getElementById('budget-list').innerHTML = `<div style="margin-bottom:14px;">${summary || '尚未記錄花費'}</div>` + rowsHtml;
+    }
+
+    function renderBooklet() {
+      const trip = appState.trips[currentTripIdx];
+      document.getElementById('booklet-trip-title').textContent = `${trip.name} — 離線紀念冊`;
+      document.getElementById('booklet-trip-meta').textContent = `DEPARTURE: ${trip.startDate || 'ARCHIVE'} · TOTAL DAYS: ${trip.days.length}`;
+
+      const cards = [];
+      trip.days.forEach(d => {
+        d.events.forEach(ev => {
+          cards.push(`
+            <div class="booklet-card">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--accent-rust);">
+                <span>${d.dayLabel} · ${ev.time}</span>
+                <span>${ev.visitedAt ? '✓ ' + ev.visitedAt : 'SCHEDULED'}</span>
+              </div>
+              <h4 style="margin:6px 0 4px; font-size:16px;">${ev.title}</h4>
+              ${ev.enSubtitle ? `<div style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">${ev.enSubtitle}</div>` : ''}
+              ${ev.photo ? `<img src="${ev.photo}" style="width:100%; border-radius:8px; margin-bottom:8px; object-fit:contain; background:#F4F2ED; max-height:220px;" />` : ''}
+              ${ev.note ? `<div style="font-size:12.5px; color:#333; background:#F7F5F0; padding:8px 10px; border-radius:10px;">${ev.note}</div>` : ''}
+            </div>
+          `);
+        });
+      });
+      document.getElementById('booklet-grid').innerHTML = cards.join('') || '<p>尚無行程紀錄</p>';
     }
 
     /* ==========================================================================
-       6. High-Resolution 9:16 IG Story Generator (3 Templates + iOS Share)
+       10. Redesigned 9:16 IG Story Generator (World Map Flight + Mini Metro Rail)
        ========================================================================== */
     function openStoryModal(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       activeStoryEvent = day.events.find(e => e.id === evId);
       if (!activeStoryEvent) return;
 
-      // Auto-select matching template based on event type
+      document.getElementById('st-zoom').value = activeStoryEvent.photoZoom || 1;
+      document.getElementById('st-x').value = activeStoryEvent.photoX || 0;
+      document.getElementById('st-y').value = activeStoryEvent.photoY || 0;
+
       if (activeStoryEvent.type === 'flight') activeStoryTemplate = 'flight';
       else if (activeStoryEvent.type === 'train' || activeStoryEvent.type === 'ferry') activeStoryTemplate = 'transit';
       else activeStoryTemplate = 'polaroid';
 
-      updateTemplateButtons();
+      setStoryTemplate(activeStoryTemplate);
       document.getElementById('story-modal').classList.add('open');
-      renderStoryCanvas();
     }
 
-    function setStoryTemplate(tpl, btn) {
+    function setStoryTemplate(tpl) {
       activeStoryTemplate = tpl;
-      updateTemplateButtons();
+      document.querySelectorAll('.tpl-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-tpl') === tpl);
+      });
+      document.getElementById('flight-bg-row').style.display = (tpl === 'flight') ? 'flex' : 'none';
       renderStoryCanvas();
     }
 
-    function updateTemplateButtons() {
-      document.querySelectorAll('.tpl-btn').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-tpl') === activeStoryTemplate);
-      });
-      document.getElementById('flight-extra-controls').style.display = activeStoryTemplate === 'flight' ? 'block' : 'none';
+    function syncStoryCrop() {
+      if (!activeStoryEvent) return;
+      activeStoryEvent.photoZoom = Number(document.getElementById('st-zoom').value);
+      activeStoryEvent.photoX = Number(document.getElementById('st-x').value);
+      activeStoryEvent.photoY = Number(document.getElementById('st-y').value);
+      persist();
+      renderTimeline();
+      renderStoryCanvas();
     }
 
     function handleFlightBgUpload(e) {
@@ -1440,77 +2115,87 @@
       const ev = activeStoryEvent;
       const trip = appState.trips[currentTripIdx];
 
-      // Base Paper Background
-      ctx.fillStyle = '#F3EFEA';
+      // Warm Magazine Paper Background
+      ctx.fillStyle = '#EAE4D8';
       ctx.fillRect(0, 0, W, H);
 
-      // IG Safe Zone Header (Leave top 230px clear for IG avatar/progress bar)
-      ctx.fillStyle = '#171717';
-      ctx.fillRect(80, 240, 56, 56);
+      // Top Magazine Header Bar (Safe from IG top UI)
+      ctx.fillStyle = '#161616';
+      ctx.fillRect(76, 220, 62, 62);
       ctx.fillStyle = '#F7F5F0';
-      ctx.font = `700 32px ${activeFontPreset.canvasBody}`;
+      ctx.font = "400 38px 'Dela Gothic One', sans-serif";
       ctx.textAlign = 'center';
-      ctx.fillText('旅', 108, 279);
+      ctx.fillText('旅', 107, 265);
 
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#171717';
-      ctx.font = `600 28px ${activeFontPreset.canvasMono}`;
-      ctx.fillText(`TABI NOTE // ${trip.name}`, 156, 277);
+      ctx.fillStyle = '#161616';
+      ctx.font = "400 34px 'Dela Gothic One', sans-serif";
+      ctx.fillText('TABI NOTE', 156, 263);
 
-      ctx.strokeStyle = 'rgba(23,23,23,0.18)';
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(80, 320); ctx.lineTo(1000, 320); ctx.stroke();
+      ctx.font = "500 24px 'DM Mono', monospace";
+      ctx.fillStyle = '#4A4742';
+      ctx.textAlign = 'right';
+      ctx.fillText(trip.name.slice(0, 24), 1004, 260);
+
+      ctx.strokeStyle = '#161616';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(76, 304); ctx.lineTo(1004, 304); ctx.stroke();
 
       if (activeStoryTemplate === 'polaroid') {
-        await drawPolaroidTemplate(ctx, W, H, ev);
+        await drawPolaroidStory(ctx, W, H, ev);
       } else if (activeStoryTemplate === 'flight') {
-        drawFlightTemplate(ctx, W, H, ev);
+        drawFlightStoryWithWorldMap(ctx, W, H, ev);
       } else if (activeStoryTemplate === 'transit') {
-        drawTransitOrFerryTemplate(ctx, W, H, ev);
+        drawMiniMetroOrFerryStory(ctx, W, H, ev);
       }
 
-      // Footer Branding (Above IG Reply Bar safe zone)
-      ctx.fillStyle = '#6E6A63';
-      ctx.font = `500 22px ${activeFontPreset.canvasMono}`;
+      // Bottom Footer
+      ctx.fillStyle = '#5A5751';
+      ctx.font = "500 22px 'DM Mono', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText('#TABINOTE · CURATED ARCHIVE', 80, 1710);
+      ctx.fillText('#TABINOTE', 76, 1730);
       ctx.textAlign = 'right';
-      ctx.fillText(ev.visitedAt || ev.time, 1000, 1710);
+      ctx.fillText(ev.visitedAt || ev.time, 1004, 1730);
 
-      // Update Preview <img> for iOS Long-Press Save
-      document.getElementById('story-output-img').src = canvas.toDataURL('image/png', 0.95);
+      document.getElementById('story-output-img').src = canvas.toDataURL('image/png', 0.96);
     }
 
-    function drawPolaroidTemplate(ctx, W, H, ev) {
+    /* --- TEMPLATE A: POLAROID WITH CROP/ZOOM --- */
+    function drawPolaroidStory(ctx, W, H, ev) {
       return new Promise((resolve) => {
-        // White Polaroid Sheet
         ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.12)';
-        ctx.shadowBlur = 40;
-        ctx.shadowOffsetY = 18;
+        ctx.shadowColor = 'rgba(0,0,0,0.14)';
+        ctx.shadowBlur = 36;
+        ctx.shadowOffsetY = 16;
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(80, 370, 920, 1140);
+        ctx.beginPath();
+        ctx.roundRect(76, 350, 928, 1280, 18);
+        ctx.fill();
         ctx.restore();
 
-        const finishText = () => {
-          // Title & Film Date Stamp
-          ctx.fillStyle = '#171717';
-          ctx.font = `700 44px ${activeFontPreset.canvasBody}`;
+        const finishMeta = () => {
+          ctx.fillStyle = '#161616';
+          ctx.font = "700 44px 'Zen Kaku Gothic New', sans-serif";
           ctx.textAlign = 'left';
-          ctx.fillText(ev.title.slice(0, 20), 125, 1340);
+          ctx.fillText(ev.title.slice(0, 20), 124, 1345);
 
-          ctx.fillStyle = '#5C5953';
-          ctx.font = `400 28px ${activeFontPreset.canvasDisplay}`;
-          ctx.fillText((ev.enSubtitle || '').slice(0, 42), 125, 1392);
+          ctx.fillStyle = '#5A5751';
+          ctx.font = "600 26px 'Archivo', sans-serif";
+          ctx.fillText((ev.enSubtitle || '').slice(0, 40), 124, 1396);
 
-          // Film Orange Date Stamp
-          ctx.fillStyle = '#E05A2B';
-          ctx.font = `700 28px ${activeFontPreset.canvasMono}`;
-          ctx.fillText(`'26 ${ev.visitedAt || ev.time}`, 125, 1465);
+          if (ev.note) {
+            ctx.fillStyle = '#333';
+            ctx.font = "500 24px 'Zen Kaku Gothic New', sans-serif";
+            ctx.fillText(ev.note.slice(0, 34), 124, 1450);
+          }
 
-          // Arrival / Completion Postmark
+          // Film Date Stamp
+          ctx.fillStyle = '#D95326';
+          ctx.font = "500 28px 'DM Mono', monospace";
+          ctx.fillText(`'26 ${ev.visitedAt || ev.time}`, 124, 1555);
+
           if (ev.visitedAt) {
-            drawPostmark(ctx, 760, 1420, 'VISITED ✓', ev.visitedAt);
+            drawCustomsStamp(ctx, 780, 1510, 'COMPLETED ✓', ev.visitedAt, '#C84B31');
           }
           resolve();
         };
@@ -1518,324 +2203,472 @@
         if (ev.photo) {
           const img = new Image();
           img.onload = () => {
-            // Original Aspect Ratio Contain inside 840x840 frame (No Cropping!)
-            const boxX = 120, boxY = 410, boxW = 840, boxH = 840;
-            ctx.fillStyle = '#F7F5F2';
+            const boxX = 118, boxY = 392, boxW = 844, boxH = 870;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(boxX, boxY, boxW, boxH);
+            ctx.clip();
+            ctx.fillStyle = '#F4F2ED';
             ctx.fillRect(boxX, boxY, boxW, boxH);
-            const scale = Math.min(boxW / img.width, boxH / img.height);
-            const dw = img.width * scale;
-            const dh = img.height * scale;
-            ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
-            finishText();
+
+            const baseScale = Math.min(boxW / img.width, boxH / img.height);
+            const z = ev.photoZoom || 1;
+            const dw = img.width * baseScale * z;
+            const dh = img.height * baseScale * z;
+            const ox = ((ev.photoX || 0) / 100) * boxW;
+            const oy = ((ev.photoY || 0) / 100) * boxH;
+
+            ctx.drawImage(img, boxX + (boxW - dw) / 2 + ox, boxY + (boxH - dh) / 2 + oy, dw, dh);
+            ctx.restore();
+            finishMeta();
           };
           img.src = ev.photo;
         } else {
-          ctx.fillStyle = '#EAE5DC';
-          ctx.fillRect(120, 410, 840, 840);
-          ctx.fillStyle = '#8C867B';
-          ctx.font = `500 28px ${activeFontPreset.canvasMono}`;
+          ctx.fillStyle = '#EFECE6';
+          ctx.fillRect(118, 392, 844, 870);
+          ctx.fillStyle = '#888';
+          ctx.font = "500 28px 'DM Mono', monospace";
           ctx.textAlign = 'center';
-          ctx.fillText('NO PHOTO ATTACHED · TYPOGRAPHY EDITION', 540, 830);
-          finishText();
+          ctx.fillText('TABI NOTE ARCHIVE', 540, 830);
+          finishMeta();
         }
       });
     }
 
-    function drawFlightTemplate(ctx, W, H, ev) {
+    /* --- TEMPLATE B: FLIGHT GLOBE MAP + REALISTIC BOARDING PASS + BARCODE + ARRIVAL STAMP --- */
+    function drawFlightStoryWithWorldMap(ctx, W, H, ev) {
       const from = (ev.fromCode || 'TPE').toUpperCase();
       const to = (ev.toCode || 'LAX').toUpperCase();
+      const flightMeta = computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz);
 
-      // Top Radar / Window Photo Canvas Area
+      // Section Header
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 30px 'DM Mono', monospace";
+      ctx.textAlign = 'left';
+      ctx.fillText(`01 FLIGHT PATH // ${from} TO ${to}`, 76, 360);
+
+      // Globe / Map Viewport
+      const cx = 540, cy = 700, r = 300;
       ctx.save();
       ctx.beginPath();
-      ctx.roundRect(80, 365, 920, 640, 28);
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.clip();
 
       if (flightBgImage) {
-        const scale = Math.max(920 / flightBgImage.width, 640 / flightBgImage.height);
-        const dw = flightBgImage.width * scale;
-        const dh = flightBgImage.height * scale;
-        ctx.drawImage(flightBgImage, 80 + (920 - dw) / 2, 365 + (640 - dh) / 2, dw, dh);
-        ctx.fillStyle = 'rgba(12, 18, 28, 0.45)';
-        ctx.fillRect(80, 365, 920, 640);
+        const s = Math.max((r * 2) / flightBgImage.width, (r * 2) / flightBgImage.height);
+        ctx.drawImage(flightBgImage, cx - (flightBgImage.width * s) / 2, cy - (flightBgImage.height * s) / 2, flightBgImage.width * s, flightBgImage.height * s);
+        ctx.fillStyle = 'rgba(18, 26, 42, 0.45)';
+        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
       } else {
-        ctx.fillStyle = '#151D2B';
-        ctx.fillRect(80, 365, 920, 640);
-        // Subtle Latitude/Longitude Grid
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        // Deep Navy Globe Sphere
+        const grad = ctx.createRadialGradient(cx - 60, cy - 60, 40, cx, cy, r);
+        grad.addColorStop(0, '#2B3548');
+        grad.addColorStop(1, '#182030');
+        ctx.fillStyle = grad;
+        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+
+        // Latitude & Longitude Graticule Curves
+        ctx.strokeStyle = 'rgba(255,255,255,0.11)';
         ctx.lineWidth = 1.5;
-        for (let x = 140; x < 1000; x += 80) { ctx.beginPath(); ctx.moveTo(x, 365); ctx.lineTo(x, 1005); ctx.stroke(); }
-        for (let y = 420; y < 1005; y += 80) { ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(1000, y); ctx.stroke(); }
+        for (let latR = 80; latR < r; latR += 70) {
+          ctx.beginPath(); ctx.ellipse(cx, cy, r, latR, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(cx, cy, latR, r, 0, 0, Math.PI * 2); ctx.stroke();
+        }
+
+        // Vector Stylized Pacific & Rim Continents (Asia + Japan + Taiwan + North America)
+        ctx.fillStyle = 'rgba(14, 18, 26, 0.65)';
+        // East Asia & Japan Silhouette
+        ctx.beginPath();
+        ctx.moveTo(240, 520); ctx.lineTo(350, 480); ctx.lineTo(410, 550);
+        ctx.lineTo(385, 650); ctx.lineTo(330, 740); ctx.lineTo(250, 780); ctx.closePath();
+        ctx.fill();
+        // Japan Archipelago
+        ctx.beginPath();
+        ctx.ellipse(415, 620, 16, 48, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        // North America West Coast Silhouette
+        ctx.beginPath();
+        ctx.moveTo(640, 430); ctx.lineTo(840, 460); ctx.lineTo(830, 740);
+        ctx.lineTo(750, 720); ctx.lineTo(680, 620); ctx.closePath();
+        ctx.fill();
       }
 
-      // Great Circle Arc Trajectory
+      // Great Circle Dashed Arc
       ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 5;
-      ctx.setLineDash([14, 12]);
+      ctx.lineWidth = 4.5;
+      ctx.setLineDash([12, 10]);
       ctx.beginPath();
-      ctx.moveTo(230, 790);
-      ctx.quadraticCurveTo(540, 470, 850, 740);
+      ctx.moveTo(340, 745);
+      ctx.quadraticCurveTo(540, 520, 745, 685);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Origin & Destination Dots
+      // Endpoints
       ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.arc(230, 790, 10, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(850, 740, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(340, 745, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(745, 685, 9, 0, Math.PI * 2); ctx.fill();
 
-      // Airplane Glyph at Apex
-      ctx.font = '48px sans-serif';
+      // Airplane Vector Icon at Apex
+      ctx.save();
+      ctx.translate(540, 618);
+      ctx.rotate(-0.08);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '46px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('✈️', 545, 625);
-
-      // Airport Codes
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = `700 68px ${activeFontPreset.canvasMono}`;
-      ctx.textAlign = 'left';
-      ctx.fillText(from, 185, 885);
-      ctx.textAlign = 'right';
-      ctx.fillText(to, 895, 835);
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✈', 0, 0);
       ctx.restore();
 
-      // Boarding Pass Ticket Card
+      // City Labels inside Globe
       ctx.fillStyle = '#FFFFFF';
+      ctx.font = "700 40px 'DM Mono', monospace";
+      ctx.textAlign = 'center';
+      ctx.fillText(from, 340, 800);
+      ctx.fillText(to, 745, 745);
+
+      ctx.font = "500 22px 'DM Mono', monospace";
+      ctx.fillStyle = 'rgba(255,255,255,0.82)';
+      ctx.fillText(ev.enSubtitle || 'GREAT CIRCLE TRACK', 540, 685);
+      ctx.restore();
+
+      // --- Realistic Perforated Boarding Pass Ticket Stub ---
+      const tx = 76, ty = 1055, tw = 928, th = 560;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.12)';
+      ctx.shadowBlur = 28;
+      ctx.shadowOffsetY = 10;
+      ctx.fillStyle = '#FAF8F3';
       ctx.beginPath();
-      ctx.roundRect(80, 1040, 920, 560, 24);
+      ctx.roundRect(tx, ty, tw, th, 20);
       ctx.fill();
+      ctx.restore();
 
-      ctx.fillStyle = '#6E6A63';
-      ctx.font = `600 24px ${activeFontPreset.canvasMono}`;
+      // Ticket Side Punch Notches
+      ctx.fillStyle = '#EAE4D8';
+      for (let ny = ty + 55; ny < ty + th - 30; ny += 42) {
+        ctx.beginPath(); ctx.arc(tx, ny, 11, -Math.PI / 2, Math.PI / 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(tx + tw, ny, 11, Math.PI / 2, -Math.PI / 2); ctx.fill();
+      }
+
+      // Left Mini Barcode Strip
+      drawVerticalBarcode(ctx, tx + 38, ty + 48, 46, th - 96, '');
+
+      // Ticket Content Area
+      ctx.fillStyle = '#5A5751';
+      ctx.font = "500 22px 'DM Mono', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText('DEPARTURE / ARRIVAL', 130, 1110);
+      ctx.fillText('DEPART', tx + 115, ty + 78);
+      ctx.fillText('ARRIVE', tx + 395, ty + 78);
 
-      ctx.fillStyle = '#171717';
-      ctx.font = `700 54px ${activeFontPreset.canvasMono}`;
-      ctx.fillText(`${from} ${ev.time}  ➔  ${to} ${ev.arrTime || ''}`, 130, 1180);
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 50px 'DM Mono', monospace";
+      ctx.fillText(`${from} ${ev.time}`, tx + 115, ty + 142);
+      ctx.fillText(`/ ${to} ${ev.arrTime || '--:--'} ${flightMeta.dayShift}`, tx + 385, ty + 142);
 
-      ctx.font = `500 28px ${activeFontPreset.canvasBody}`;
-      ctx.fillStyle = '#4A4742';
-      ctx.fillText(ev.title, 130, 1245);
+      ctx.font = "500 24px 'DM Mono', monospace";
+      ctx.fillStyle = '#333';
+      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, tx + 115, ty + 205);
 
-      // Date + Timestamp Barcode
-      const stampDigits = (ev.visitedAt || '20261204-2340').replace(/[^0-9]/g, '').slice(0, 12);
-      drawBarcode(ctx, 130, 1410, 420, 110, stampDigits);
+      ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath(); ctx.moveTo(tx + 115, ty + 235); ctx.lineTo(tx + 720, ty + 235); ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#5A5751';
+      ctx.font = "500 22px 'DM Mono', monospace";
+      ctx.fillText('FLIGHT / ROUTE', tx + 115, ty + 285);
+      ctx.fillStyle = '#161616';
+      ctx.font = "800 46px 'Archivo', sans-serif";
+      ctx.fillText((ev.enSubtitle || ev.title).slice(0, 18), tx + 115, ty + 345);
+
+      // Vertical Tear Divider Line
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath(); ctx.moveTo(tx + 755, ty + 24); ctx.lineTo(tx + 755, ty + th - 24); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Right High-Density Vertical Barcode with Date+Timestamp
+      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
+      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '2340'}`;
+      drawVerticalBarcode(ctx, tx + 785, ty + 48, 105, th - 96, stampCode);
 
       // Destination Customs Arrival Stamp (入境章)
-      drawPostmark(ctx, 740, 1430, `ADMITTED · ${to}`, ev.visitedAt || `${to} ARRIVAL`);
+      drawCustomsStamp(ctx, tx + 555, ty + 395, `ADMITTED · ${to}`, `${ev.visitedAt || ev.arrTime || 'ARRIVAL'} · ${to} CUSTOMS`, '#B8332A');
     }
 
-    function drawTransitOrFerryTemplate(ctx, W, H, ev) {
+    function drawVerticalBarcode(ctx, x, y, w, h, label) {
+      ctx.fillStyle = '#161616';
+      const pattern = [6, 3, 2, 8, 3, 4, 2, 6, 3, 2, 5, 3, 7, 2, 4, 3];
+      let cy = y;
+      let idx = 0;
+      while (cy < y + h - 8) {
+        const barH = pattern[idx % pattern.length];
+        if (idx % 2 === 0) {
+          ctx.fillRect(x, cy, label ? w - 28 : w, Math.min(barH, y + h - cy));
+        }
+        cy += barH + 3;
+        idx++;
+      }
+      if (label) {
+        ctx.save();
+        ctx.translate(x + w - 6, y + h / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.font = "500 21px 'DM Mono', monospace";
+        ctx.textAlign = 'center';
+        ctx.fillText(label, 0, 0);
+        ctx.restore();
+      }
+    }
+
+    /* --- TEMPLATE C: MINI METRO GEOMETRIC RAIL DIAGRAM & PERFORATED FERRY TICKET --- */
+    function drawMiniMetroOrFerryStory(ctx, W, H, ev) {
       if (ev.type === 'ferry') {
-        // Dedicated Perforated Ferry Ticket Style (船票樣式)
-        ctx.fillStyle = '#FAF6EE';
-        ctx.beginPath();
-        ctx.roundRect(80, 420, 920, 1080, 24);
-        ctx.fill();
-        ctx.strokeStyle = '#1E3A5F';
-        ctx.lineWidth = 4;
-        ctx.stroke();
-
-        ctx.fillStyle = '#1E3A5F';
-        ctx.fillRect(80, 420, 920, 110);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = `700 34px ${activeFontPreset.canvasMono}`;
-        ctx.textAlign = 'left';
-        ctx.fillText('⛴️ BOARDING PASS · FERRY TICKET', 130, 488);
-
-        ctx.fillStyle = '#1E3A5F';
-        ctx.font = `700 64px ${activeFontPreset.canvasBody}`;
-        ctx.fillText(`${ev.fromCode || '高松港'} ➔ ${ev.toCode || '豐島'}`, 130, 650);
-
-        ctx.font = `500 32px ${activeFontPreset.canvasMono}`;
-        ctx.fillText(`SAILING: ${ev.time} — ARRIVAL: ${ev.arrTime || '--:--'}`, 130, 730);
-        ctx.fillText(`VESSEL / LINE: ${ev.enSubtitle || ev.title}`, 130, 790);
-
-        // Perforated Tear Line
-        ctx.setLineDash([16, 14]);
-        ctx.beginPath(); ctx.moveTo(80, 1140); ctx.lineTo(1000, 1140); ctx.stroke();
-        ctx.setLineDash([]);
-
-        drawPostmark(ctx, 720, 1320, 'EMBARKED ✓', ev.visitedAt || ev.time);
+        drawDedicatedFerryTicket(ctx, W, H, ev);
         return;
       }
 
-      // Mini Metro Geometric Rail Route Map (Real Geographic Bearing)
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.roundRect(80, 370, 920, 1180, 26);
-      ctx.fill();
+      const from = ev.fromCode || '起點站';
+      const via = ev.viaCode || '';
+      const to = ev.toCode || '終點站';
 
-      ctx.fillStyle = '#171717';
-      ctx.font = `700 32px ${activeFontPreset.canvasMono}`;
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 30px 'DM Mono', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText('MINI METRO TRANSIT DIAGRAM', 130, 445);
+      ctx.fillText(`02 TRANSIT ROUTE // ${ev.title.slice(0, 18)}`, 76, 360);
 
-      ctx.fillStyle = '#5C5953';
-      ctx.font = `500 28px ${activeFontPreset.canvasBody}`;
-      ctx.fillText(ev.enSubtitle || ev.title, 130, 495);
+      // Crisp Mini Metro Map Card
+      const mx = 76, my = 400, mw = 928, mh = 860;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.1)';
+      ctx.shadowBlur = 26;
+      ctx.fillStyle = '#F8F6F1';
+      ctx.beginPath();
+      ctx.roundRect(mx, my, mw, mh, 24);
+      ctx.fill();
+      ctx.clip();
 
-      // Compute geographic direction vector (lat/lng)
+      // Subtle River / Coastline Graphic Watermark (Mini Metro style)
+      ctx.strokeStyle = '#E2DDD2';
+      ctx.lineWidth = 68;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(mx - 40, my + 680);
+      ctx.lineTo(mx + 380, my + 680);
+      ctx.lineTo(mx + 560, my + 500);
+      ctx.lineTo(mx + mw + 60, my + 500);
+      ctx.stroke();
+
+      // Determine Real Geographic Orientation
       const dLat = (ev.toLat || 34.35) - (ev.fromLat || 34.73);
       const dLng = (ev.toLng || 134.04) - (ev.fromLng || 135.50);
       const goWest = dLng < 0;
-      const goSouth = dLat < 0;
 
-      const startX = goWest ? 820 : 240;
-      const startY = goSouth ? 640 : 1240;
-      const endX = goWest ? 260 : 820;
-      const endY = goSouth ? 1260 : 640;
-      const midX = (startX + endX) / 2;
-      const midY = (startY + endY) / 2;
+      // Coordinates for 45-degree octilinear Mini Metro nodes
+      const p1 = { x: goWest ? 800 : 220, y: 600 };
+      const p2 = { x: 540, y: 600 };
+      const p3 = { x: goWest ? 260 : 820, y: 980 };
 
-      // Leg 1 Line (Blue Shinkansen)
+      // Line 1: Shinkansen / Main Line (45-deg octilinear segment)
+      ctx.lineWidth = 24;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.lineWidth = 22;
-      ctx.strokeStyle = '#1D63B8';
+      ctx.strokeStyle = '#0F62B1';
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(midX, startY);
-      ctx.lineTo(midX, midY);
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
       ctx.stroke();
 
-      // Leg 2 Line (Magenta/Teal Local Express)
-      ctx.strokeStyle = '#D9386A';
+      // Line 2: Transfer / Connecting Line with 45-deg bend
+      ctx.strokeStyle = '#D62865';
+      const bendX = goWest ? 380 : 700;
       ctx.beginPath();
-      ctx.moveTo(midX, midY);
-      ctx.lineTo(midX, endY);
-      ctx.lineTo(endX, endY);
+      ctx.moveTo(p2.x, p2.y);
+      ctx.lineTo(bendX, 760);
+      ctx.lineTo(bendX, 880);
+      ctx.lineTo(p3.x, p3.y);
       ctx.stroke();
 
-      // Origin Station Square
+      // Node 1: Origin Square Station (Mini Metro Terminal)
       ctx.fillStyle = '#FFFFFF';
-      ctx.strokeStyle = '#171717';
-      ctx.lineWidth = 8;
-      ctx.fillRect(startX - 22, startY - 22, 44, 44);
-      ctx.strokeRect(startX - 22, startY - 22, 44, 44);
+      ctx.strokeStyle = '#161616';
+      ctx.lineWidth = 9;
+      ctx.fillRect(p1.x - 24, p1.y - 24, 48, 48);
+      ctx.strokeRect(p1.x - 24, p1.y - 24, 48, 48);
 
-      // Interchange Double Ring Station
-      ctx.beginPath(); ctx.arc(midX, midY, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.arc(midX, midY, 12, 0, Math.PI * 2); ctx.stroke();
-
-      // Destination Station Circle
-      ctx.beginPath(); ctx.arc(endX, endY, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-      // Station Labels
-      ctx.fillStyle = '#171717';
-      ctx.font = `700 36px ${activeFontPreset.canvasBody}`;
-      ctx.textAlign = 'center';
-      ctx.fillText(ev.fromCode || '起點站', startX, startY - 42);
-      ctx.fillText(ev.viaCode || '轉乘站', midX + (goWest ? -110 : 110), midY + 10);
-      ctx.fillText(ev.toCode || '終點站', endX, endY + 68);
-
-      if (ev.visitedAt) {
-        drawPostmark(ctx, 740, 1430, 'ARRIVED ✓', ev.visitedAt);
+      // Node 2: Interchange Double Circle Station
+      if (via) {
+        ctx.beginPath(); ctx.arc(p2.x, p2.y, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(p2.x, p2.y, 11, 0, Math.PI * 2); ctx.fillStyle = '#161616'; ctx.fill();
       }
-    }
 
-    function drawBarcode(ctx, x, y, w, h, codeText) {
-      ctx.fillStyle = '#171717';
-      let cursor = x;
-      for (let i = 0; i < 42; i++) {
-        const barW = (i % 3 === 0) ? 7 : 3;
-        if (i % 2 === 0) ctx.fillRect(cursor, y, barW, h - 24);
-        cursor += barW + 4;
+      // Node 3: Destination Circle Station
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath(); ctx.arc(p3.x, p3.y, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      // Station Typography & Line Badges
+      ctx.fillStyle = '#161616';
+      ctx.font = "900 46px 'Zen Kaku Gothic New', sans-serif";
+      ctx.textAlign = goWest ? 'right' : 'left';
+      ctx.fillText(from, p1.x + (goWest ? 20 : -20), p1.y - 52);
+      ctx.font = "500 26px 'DM Mono', monospace";
+      ctx.fillStyle = '#5A5751';
+      ctx.fillText(`DEP ${ev.time}`, p1.x + (goWest ? 20 : -20), p1.y - 110);
+
+      if (via) {
+        ctx.fillStyle = '#161616';
+        ctx.textAlign = 'center';
+        ctx.font = "900 42px 'Zen Kaku Gothic New', sans-serif";
+        ctx.fillText(via, p2.x, p2.y - 52);
+        ctx.font = "500 22px 'DM Mono', monospace";
+        ctx.fillStyle = '#0F62B1';
+        ctx.fillText('TRANSFER', p2.x, p2.y - 102);
       }
-      ctx.font = `600 20px ${activeFontPreset.canvasMono}`;
+
+      ctx.fillStyle = '#161616';
+      ctx.textAlign = goWest ? 'left' : 'right';
+      ctx.font = "900 46px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillText(to, p3.x + (goWest ? -20 : 20), p3.y + 72);
+      if (ev.arrTime) {
+        ctx.font = "500 26px 'DM Mono', monospace";
+        ctx.fillStyle = '#D62865';
+        ctx.fillText(`ARR ${ev.arrTime}`, p3.x + (goWest ? -20 : 20), p3.y + 112);
+      }
+
+      // Train Line Name Callouts
+      const parts = (ev.enSubtitle || ev.title).split('➔');
       ctx.textAlign = 'left';
-      ctx.fillText(codeText, x, y + h);
+      ctx.fillStyle = '#0F62B1';
+      ctx.font = "700 28px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillText((parts[0] || '').trim(), 130, 500);
+      if (parts[1]) {
+        ctx.fillStyle = '#D62865';
+        ctx.fillText(parts[1].trim(), 130, 1160);
+      }
+      ctx.restore();
+
+      // Bottom Ticket Summary & Completion Stamp
+      ctx.fillStyle = '#FAF8F3';
+      ctx.beginPath();
+      ctx.roundRect(76, 1300, 928, 320, 20);
+      ctx.fill();
+
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 38px 'Zen Kaku Gothic New', sans-serif";
+      ctx.textAlign = 'left';
+      ctx.fillText(ev.title.slice(0, 22), 124, 1385);
+
+      ctx.fillStyle = '#5A5751';
+      ctx.font = "500 25px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillText((ev.note || ev.enSubtitle || '').slice(0, 32), 124, 1445);
+
+      drawCustomsStamp(ctx, 770, 1480, 'TRANSIT COMPLETED ✓', ev.visitedAt || `${ev.time} LOGGED`, '#C84B31');
     }
 
-    function drawPostmark(ctx, cx, cy, line1, line2) {
+    function drawDedicatedFerryTicket(ctx, W, H, ev) {
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 30px 'DM Mono', monospace";
+      ctx.textAlign = 'left';
+      ctx.fillText('02 MARITIME PASS // FERRY EMBARKATION', 76, 360);
+
+      const tx = 76, ty = 410, tw = 928, th = 1200;
+      ctx.fillStyle = '#FAF7F0';
+      ctx.beginPath();
+      ctx.roundRect(tx, ty, tw, th, 24);
+      ctx.fill();
+      ctx.strokeStyle = '#1B4965';
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      // Navy Header Band
+      ctx.fillStyle = '#1B4965';
+      ctx.fillRect(tx, ty, tw, 130);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = "700 38px 'DM Mono', monospace";
+      ctx.fillText('⚓ PASSENGER FERRY TICKET · 乗船券', tx + 54, ty + 80);
+
+      // Ports
+      ctx.fillStyle = '#1B4965';
+      ctx.font = "900 66px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillText(`${ev.fromCode || '高松港'}  ➔  ${ev.toCode || '豐島'}`, tx + 60, ty + 290);
+
+      ctx.fillStyle = '#161616';
+      ctx.font = "700 36px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillText(ev.enSubtitle || ev.title, tx + 60, ty + 375);
+
+      ctx.font = "500 32px 'DM Mono', monospace";
+      ctx.fillStyle = '#4A4742';
+      ctx.fillText(`SAILING TIME: ${ev.time}   /   ARRIVAL: ${ev.arrTime || '--:--'}`, tx + 60, ty + 455);
+
+      if (ev.note) {
+        ctx.font = "500 26px 'Zen Kaku Gothic New', sans-serif";
+        ctx.fillText(ev.note.slice(0, 32), tx + 60, ty + 535);
+      }
+
+      // Perforated Tear Line
+      ctx.strokeStyle = '#1B4965';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([16, 14]);
+      ctx.beginPath(); ctx.moveTo(tx, ty + 820); ctx.lineTo(tx + tw, ty + 820); ctx.stroke();
+      ctx.setLineDash([]);
+
+      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
+      drawVerticalBarcode(ctx, tx + 60, ty + 880, 90, 250, '');
+
+      drawCustomsStamp(ctx, tx + 650, ty + 1010, 'EMBARKED ✓', ev.visitedAt || ev.time, '#C84B31');
+    }
+
+    function drawCustomsStamp(ctx, cx, cy, line1, line2, color) {
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate(-0.08);
-      ctx.strokeStyle = '#C84B31';
-      ctx.fillStyle = '#C84B31';
+      ctx.rotate(-0.07);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
       ctx.lineWidth = 4;
-      ctx.strokeRect(-165, -48, 330, 96);
-      ctx.font = `700 24px ${activeFontPreset.canvasMono}`;
+      ctx.beginPath();
+      ctx.roundRect(-195, -56, 390, 112, 12);
+      ctx.stroke();
+
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(-187, -48, 374, 96, 8);
+      ctx.stroke();
+
+      ctx.font = "700 24px 'DM Mono', monospace";
       ctx.textAlign = 'center';
       ctx.fillText(line1, 0, -8);
-      ctx.font = `600 20px ${activeFontPreset.canvasMono}`;
+      ctx.font = "500 20px 'DM Mono', monospace";
       ctx.fillText(line2, 0, 26);
       ctx.restore();
     }
 
-    // Native iOS Web Share API + Fallback
     async function shareOrSaveStory() {
       const canvas = document.getElementById('story-canvas');
       canvas.toBlob(async (blob) => {
         const file = new File([blob], `TABI-NOTE-${Date.now()}.png`, { type: 'image/png' });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            await navigator.share({
-              files: [file],
-              title: 'TABI NOTE 限動圖卡'
-            });
+            await navigator.share({ files: [file], title: 'TABI NOTE' });
             return;
           } catch (err) {}
         }
-        alert('請直接「長按」上方預覽圖片，即可選擇「加入『照片』」存進 iPhone 相簿！');
+        alert('請直接「長按」上方預覽圖，選擇「加入『照片』」儲存至相簿！');
       }, 'image/png');
     }
 
     function downloadStoryDesktop() {
       const canvas = document.getElementById('story-canvas');
-      const link = document.createElement('a');
-      link.download = `TABI-NOTE-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      const a = document.createElement('a');
+      a.download = `TABI-NOTE-${Date.now()}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
     }
 
     /* ==========================================================================
-       7. Add Event & JSON Import/Export
+       11. Modal Helpers & JSON Import/Export
        ========================================================================== */
-    function openAddEventModal() { document.getElementById('event-modal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    function saveNewEvent(e) {
-      e.preventDefault();
-      const fileInput = document.getElementById('ev-photo');
-      const finalize = (photoDataUrl) => {
-        const newEv = {
-          id: 'ev-' + Date.now(),
-          type: document.getElementById('ev-type').value,
-          time: document.getElementById('ev-time').value,
-          arrTime: document.getElementById('ev-arr-time').value,
-          homeTimeHint: '',
-          title: document.getElementById('ev-title').value,
-          enSubtitle: document.getElementById('ev-en').value,
-          fromCode: document.getElementById('ev-from').value,
-          toCode: document.getElementById('ev-to').value,
-          fromLat: parseFloat(document.getElementById('ev-lat').value) || 35.68,
-          fromLng: parseFloat(document.getElementById('ev-lng').value) || 139.76,
-          toLat: parseFloat(document.getElementById('ev-lat').value) || 35.68,
-          toLng: parseFloat(document.getElementById('ev-lng').value) || 139.76,
-          address: document.getElementById('ev-address').value,
-          mapUrl: document.getElementById('ev-map-url').value,
-          currency: document.getElementById('ev-curr').value,
-          cost: Number(document.getElementById('ev-cost').value) || 0,
-          note: document.getElementById('ev-note').value,
-          photo: photoDataUrl,
-          visitedAt: ''
-        };
-        appState.trips[currentTripIdx].days[currentDayIdx].events.push(newEv);
-        pinnedEventIds.add(newEv.id);
-        persist();
-        closeModal('event-modal');
-        e.target.reset();
-        renderAll();
-      };
-
-      if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (ev) => finalize(ev.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        finalize('');
-      }
-    }
 
     function exportJSON() {
       const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
@@ -1851,20 +2684,25 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         try {
-          appState = JSON.parse(ev.target.result);
-          persist();
-          renderAll();
-          alert('行程資料匯入成功！');
+          const parsed = JSON.parse(ev.target.result);
+          if (parsed && Array.isArray(parsed.trips)) {
+            appState = parsed;
+            persist();
+            renderAll();
+            alert('匯入成功！');
+          }
         } catch {
-          alert('JSON 格式不正確');
+          alert('JSON 檔案格式不正確');
         }
       };
       reader.readAsText(file);
     }
 
-    // Initialize App
+    // Boot
     window.addEventListener('resize', setupMobileScrollObserver);
-    initFontSwitcher();
+    initFormSelects();
+    generateRealPngAppIcon();
+    checkInitialLock();
     renderAll();
   </script>
 </body>
