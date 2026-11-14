@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#F2EFE9" />
   <title>TABI NOTE</title>
 
-  <!-- Google Fonts: Dela Gothic One + Archivo + DM Mono + Noto Sans TC (100% Traditional Chinese coverage) -->
+  <!-- Google Fonts: Dela Gothic One + Archivo + DM Mono + Noto Sans TC -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -62,7 +62,6 @@
       line-height: 1.55;
     }
 
-    /* Generous bottom scroll buffer so the last card easily enters focus on mobile */
     body {
       padding-bottom: calc(48vh + env(safe-area-inset-bottom, 20px));
     }
@@ -343,7 +342,6 @@
       color: var(--ink-muted);
     }
 
-    /* Real-Time NOW Active Event Highlight */
     .event-card.now-active {
       border: 2px solid var(--accent-rust);
       background: rgba(255, 250, 244, 0.92);
@@ -585,7 +583,7 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       border: 1px solid rgba(0,0,0,0.06);
       flex-shrink: 0;
-      max-width: min(320px, 78vw);
+      width: min(285px, 76vw);
     }
 
     .polaroid-viewport {
@@ -600,21 +598,42 @@
     .polaroid-viewport img {
       display: block;
       max-width: 100%;
-      max-height: 290px;
+      max-height: 280px;
       width: auto;
       height: auto;
       transition: transform 0.15s ease;
     }
 
+    /* High-visibility Polaroid Caption strictly bounded inside the paper frame */
     .polaroid-caption {
-      margin-top: 7px;
+      margin-top: 8px;
+      padding: 0 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .polaroid-caption-text {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .polaroid-caption-time {
       font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-size: 11px;
+      font-weight: 500;
       color: var(--accent-rust);
-      gap: 10px;
+      flex-shrink: 0;
     }
 
     .vintage-postmark {
@@ -727,7 +746,7 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     }
 
-    /* Bottom Dock (Clean 3-Item Layout) */
+    /* Bottom Dock (3 Items) */
     nav.bottom-dock {
       position: fixed;
       bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
@@ -764,7 +783,7 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.2);
     }
 
-    /* Modals — Mobile Width Overflow Strictly Locked */
+    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -845,7 +864,6 @@
     }
     .time-select-group select { flex: 1; min-width: 0; font-family: var(--font-mono); padding: 8px 6px; }
 
-    /* Structured Multi-Leg Train Editor */
     .transit-leg-box {
       background: rgba(255, 255, 255, 0.62);
       border: 1px solid rgba(0,0,0,0.12);
@@ -854,7 +872,6 @@
       margin-bottom: 8px;
     }
 
-    /* Multi-Photo Thumbnail Strip in Editor & Story Modal */
     .thumb-strip {
       display: flex;
       gap: 8px;
@@ -885,7 +902,7 @@
     }
     .crop-stage {
       width: 100%;
-      height: 180px;
+      height: 175px;
       overflow: hidden;
       border-radius: 8px;
       background: #000;
@@ -917,7 +934,6 @@
     }
     .tpl-btn.active { background: #161616; color: #FFF; }
 
-    /* Dual-Layer Paper Swatches */
     .paper-swatch-row {
       display: flex;
       align-items: center;
@@ -972,7 +988,6 @@
       background: #111;
     }
 
-    /* Password Lock Screen Overlay */
     #lock-overlay {
       position: fixed;
       inset: 0;
@@ -1084,7 +1099,7 @@
           <div id="checklist-container"></div>
         </div>
 
-        <!-- Per-Trip Isolated Budget Panel (Auto-excludes Cancelled events) -->
+        <!-- Per-Trip Isolated Budget Panel -->
         <div class="liquid-glass" style="border-radius:20px; padding:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">本趟旅程預算累計</h3>
@@ -1095,7 +1110,7 @@
       </div>
     </section>
 
-    <!-- VIEW 4: Keepsake Archive (典藏旅程 — Noto Sans TC Bold Heading) -->
+    <!-- VIEW 4: Keepsake Archive (典藏旅程) -->
     <section id="view-booklet" class="view-section">
       <div class="liquid-glass" style="border-radius:22px; padding:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
@@ -1117,7 +1132,7 @@
     <button class="dock-item" data-view="budget" onclick="switchView('budget', this)">清單/預算</button>
   </nav>
 
-  <!-- MODAL 1: Add / Edit Event Modal (Multi-Leg Train + Flight Terminals + Multi-Photo) -->
+  <!-- MODAL 1: Add / Edit Event Modal -->
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1162,12 +1177,12 @@
         </div>
 
         <label>行程
-          <input type="text" id="ev-title" required placeholder="例如：淡水 ➔ 南京復興 或 長榮航空 BR012" />
+          <input type="text" id="ev-title" required placeholder="例如：新木場駅 ➔ 銀座 ➔ 神谷町駅" />
         </label>
 
         <!-- Dedicated Flight Fields (Airport Codes + Terminals) -->
         <div id="flight-fields-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
-          <div style="font-size:11.5px; font-weight:700; margin-bottom:8px; color:var(--accent-blue);">✈️ 航班與機場航廈資訊（機票圖卡僅印機場代號）</div>
+          <div style="font-size:11.5px; font-weight:700; margin-bottom:8px; color:var(--accent-blue);">航班與機場航廈資訊（機票圖卡僅印機場代號）</div>
           <div class="form-row-2" style="margin-bottom:8px;">
             <label>出發機場代號<input type="text" id="fl-from-code" placeholder="TPE" /></label>
             <label>出發航廈 (選填)<input type="text" id="fl-from-term" placeholder="T2" /></label>
@@ -1182,7 +1197,7 @@
         <!-- Dedicated Multi-Leg Train / Subway Editor -->
         <div id="train-legs-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:11.5px; font-weight:700; color:var(--accent-rust);">🚃 分段車站與路線設定（自動配對台日美官方路線色）</span>
+            <span style="font-size:11.5px; font-weight:700; color:var(--accent-rust);">分段車站與路線設定（自動配對台日美官方路線色）</span>
             <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px;" onclick="addTrainLegRow()">＋ 新增轉乘段</button>
           </div>
           <div id="train-legs-container"></div>
@@ -1226,20 +1241,23 @@
           <textarea id="ev-note" rows="2" placeholder="車站出口、訂位網址 https://... 或 [訂位確認單](https://...)"></textarea>
         </label>
 
-        <label>上傳照片 (可一次多選多張照片，自動最佳化畫質與容量)
+        <label>上傳照片 (可一次多選多張照片)
           <input type="file" id="ev-photo" accept="image/*" multiple onchange="handleFormMultiPhotoSelect(event)" />
         </label>
 
-        <!-- Multi-Photo Gallery & Crop/Focus Adjustment Controls -->
+        <!-- Multi-Photo Gallery, Per-Photo Caption & Crop/Focus Adjustment Controls -->
         <div id="photo-edit-panel" class="crop-preview-box" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:11.5px;">
-            <span>相片管理 (<span id="photo-count-badge">0</span> 張) — 點選縮圖可個別調整或刪除</span>
+            <span>相片管理 (<span id="photo-count-badge">0</span> 張) — 點選縮圖可個別調整或加字</span>
             <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px; background:#C84B31; color:#FFF; border:none;" onclick="removeActivePhotoInForm()">刪除此張</button>
           </div>
           <div class="thumb-strip" id="form-thumb-strip"></div>
           <div class="crop-stage">
             <img id="form-crop-preview" src="" alt="Preview" />
           </div>
+          <label style="color:#EEE; margin-top:8px; font-size:11.5px;">拍立得底部文字 (選填，留空則顯示行程名稱，自動縮字不超出相紙)
+            <input type="text" id="ev-photo-caption" placeholder="例如：銀座轉車途中、豐島海風..." oninput="updateCropPreview()" style="margin-top:3px; padding:6px 9px; border-radius:8px; border:none; font-size:12.5px;" />
+          </label>
           <div class="form-row-3" style="margin-top:8px; font-size:11px;">
             <label style="color:#DDD;">縮放 (<span id="zoom-val">1.0</span>x)
               <input type="range" id="ev-photo-zoom" min="1" max="2.6" step="0.05" value="1" oninput="updateCropPreview()" />
@@ -1339,7 +1357,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: 9:16 IG Story Share Modal (Dual-Layer Paper Swatches + Photo Collage) -->
+  <!-- MODAL 5: 9:16 IG Story Share Modal -->
   <div class="modal-backdrop" id="story-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1358,16 +1376,19 @@
       <!-- Layer 2: Inner Card / Ticket Paper Swatches -->
       <div class="paper-swatch-row" id="inner-paper-swatch-row"></div>
 
-      <!-- Multi-Photo Selector + Collage / Crop Fine-Tune -->
+      <!-- Multi-Photo Selector + Caption + Collage / Crop Fine-Tune -->
       <div id="story-extra-controls" style="background:rgba(255,255,255,0.55); padding:10px; border-radius:12px; margin-bottom:8px; font-size:11.5px;">
         <div id="story-photo-picker-wrap" style="display:none; margin-bottom:8px;">
-          <div style="margin-bottom:4px; font-weight:700;">選擇要放入限動的照片（或上傳新照片）：</div>
-          <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
             <div class="thumb-strip" id="story-thumb-strip" style="flex:1;"></div>
             <label class="pill-btn" style="cursor:pointer; flex-shrink:0;">＋ 照片
               <input type="file" accept="image/*" multiple hidden onchange="uploadPhotoFromStoryModal(event)" />
             </label>
           </div>
+          <label style="display:flex; flex-direction:column; gap:3px; font-weight:700;">
+            拍立得底部手寫短註 (自動縮字防超出相紙)：
+            <input type="text" id="st-caption" placeholder="輸入想印在拍立得底部的文字..." oninput="syncStoryCrop()" style="padding:6px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.18); font-size:12.5px; font-family:var(--font-body);" />
+          </label>
         </div>
 
         <div id="flight-bg-row" style="display:none; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -1381,7 +1402,7 @@
         <div class="form-row-3">
           <label>相片縮放/大小<input type="range" id="st-zoom" min="0.75" max="2.4" step="0.05" value="1" oninput="syncStoryCrop()" /></label>
           <label>左右位置/焦點<input type="range" id="st-x" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
-          <label>上下位置/角度<input type="range" id="st-y" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
+          <label>上下位置/焦點<input type="range" id="st-y" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
         </div>
       </div>
 
@@ -1405,11 +1426,10 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     /* ==========================================================================
-       1. Optical Centering Helper & Pure Black Full-Bleed App Icon ("旅")
+       1. Optical Centering & Auto-Fit Text Helpers
        ========================================================================== */
     let cachedAppIconDataUrl = '';
 
-    // Precision optical center drawing using bounding box metrics so "旅" never clips or sinks
     function fillTextOpticallyCentered(ctx, text, centerX, centerY) {
       ctx.save();
       ctx.textAlign = 'center';
@@ -1420,6 +1440,64 @@
       const yOffset = (ascent - descent) / 2;
       ctx.fillText(text, centerX, centerY + yOffset);
       ctx.restore();
+    }
+
+    // Automatically shrinks font size so text NEVER overflows Polaroid paper or ticket bounds
+    function drawAutoFitSingleLine(ctx, text, x, y, maxWidth, initialSize, minSize, weight, family, align = 'left') {
+      if (!text) return;
+      ctx.save();
+      ctx.textAlign = align;
+      let sz = initialSize;
+      ctx.font = `${weight} ${sz}px ${family}`;
+      while (ctx.measureText(text).width > maxWidth && sz > minSize) {
+        sz -= 1;
+        ctx.font = `${weight} ${sz}px ${family}`;
+      }
+      let out = text;
+      if (ctx.measureText(out).width > maxWidth) {
+        while (out.length > 1 && ctx.measureText(out + '…').width > maxWidth) {
+          out = out.slice(0, -1);
+        }
+        out += '…';
+      }
+      ctx.fillText(out, x, y);
+      ctx.restore();
+    }
+
+    // Word/Token-aware multi-line wrapper so words like "BOEING 777-300ER" or "駅" never split awkwardly
+    function drawSmartWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+      if (!text) return;
+      const tokens = text.match(/([A-Za-z0-9._-]+|\s+|[^\sA-Za-z0-9._-])/g) || Array.from(text);
+      let line = '';
+      let lineCount = 0;
+
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        const testLine = line + tok;
+        if (ctx.measureText(testLine).width > maxWidth && line.trim().length > 0) {
+          // If only 1 character remains at the very end, slightly compress instead of orphaning 1 char
+          const remaining = tokens.slice(i).join('').trim();
+          if (remaining.length === 1 && lineCount === 0) {
+            ctx.fillText(testLine, x, y);
+            return;
+          }
+          lineCount++;
+          if (lineCount >= maxLines) {
+            let trimmed = line.trim();
+            while (trimmed.length > 1 && ctx.measureText(trimmed + '…').width > maxWidth) {
+              trimmed = trimmed.slice(0, -1);
+            }
+            ctx.fillText(trimmed + '…', x, y);
+            return;
+          }
+          ctx.fillText(line.trim(), x, y);
+          line = tok.trimStart();
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line.trim()) ctx.fillText(line.trim(), x, y);
     }
 
     async function generateRealPngAppIcon() {
@@ -1436,11 +1514,9 @@
         c.height = 512;
         const ctx = c.getContext('2d');
 
-        // Full-bleed Pure Obsidian Black Square (Let iOS apply native squircle mask cleanly without double border)
         ctx.fillStyle = '#080808';
         ctx.fillRect(0, 0, 512, 512);
 
-        // Optically centered "旅" in Dela Gothic One
         ctx.fillStyle = '#F7F5F0';
         ctx.font = "400 286px 'Dela Gothic One', sans-serif";
         fillTextOpticallyCentered(ctx, '旅', 256, 256);
@@ -1478,7 +1554,7 @@
     }
 
     /* ==========================================================================
-       2. Smart Image Compression Pipeline (Prevents localStorage 5MB Quota Crash)
+       2. Smart Image Compression Pipeline
        ========================================================================== */
     function compressImageFile(file, maxDim = 1440, quality = 0.82) {
       return new Promise((resolve) => {
@@ -1508,7 +1584,6 @@
     /* ==========================================================================
        3. Built-in Offline Station Coordinate Dictionary & Official Line Colors
        ========================================================================== */
-    // Instant high-accuracy coordinates for Taiwan, Tokyo, Kansai, SF & NYC stations so stations never stack
     const KNOWN_STATIONS_DB = {
       // Taipei Metro / Taiwan
       '淡水': { lat: 25.1678, lng: 121.4455 },
@@ -1580,8 +1655,16 @@
       '岡山': { lat: 34.6665, lng: 133.9181 },
       '高松': { lat: 34.3506, lng: 134.0465 },
 
-      // San Francisco / NYC
+      // San Francisco / NYC / Major Airports
+      'TPE': { lat: 25.0797, lng: 121.2342 },
+      'TSA': { lat: 25.0697, lng: 121.5525 },
+      'NRT': { lat: 35.7720, lng: 140.3929 },
+      'HND': { lat: 35.5494, lng: 139.7798 },
+      'KIX': { lat: 34.4320, lng: 135.2304 },
+      'LAX': { lat: 33.9416, lng: -118.4085 },
       'SFO': { lat: 37.6164, lng: -122.3910 },
+      'HNL': { lat: 21.3187, lng: -157.9225 },
+      'JFK': { lat: 40.6413, lng: -73.7781 },
       'Powell': { lat: 37.7844, lng: -122.4079 },
       'Embarcadero': { lat: 37.7929, lng: -122.3968 },
       'Times Sq': { lat: 40.7559, lng: -73.9871 },
@@ -1660,7 +1743,6 @@
       return null;
     }
 
-    // Timeout-Protected Geocoder (2.5s max wait so offline saving is instant)
     async function autoGeocodePlace(queryStr) {
       if (!queryStr) return null;
       const known = lookupKnownStationCoord(queryStr);
@@ -1777,7 +1859,7 @@
     }
 
     /* ==========================================================================
-       5. Dual-Layer Paper Swatches (Independent Outer BG & Inner Card Swatches)
+       5. Dual-Layer Paper Swatches
        ========================================================================== */
     const OUTER_PAPER_PALETTES = [
       { id: 'warm-cream', name: '暖米紙', bg: '#EAE4D8', ink: '#161616', muted: '#5A5751', stamp: '#C84B31', logoBox: '#161616', logoInk: '#F7F5F0' },
@@ -1835,7 +1917,7 @@
     }
 
     /* ==========================================================================
-       6. State & Auto-Migration from v2/v3/v4 to v5 (Zero Data Loss)
+       6. State & Auto-Migration
        ========================================================================== */
     const DEFAULT_STATE = {
       passcode: '',
@@ -1869,7 +1951,7 @@
                   enSubtitle: '東京メトロ有楽町線 ➔ 日比谷線',
                   transitLegs: [
                     { from: '新木場', to: '銀座', line: '東京メトロ有楽町線', color: '#C1A470', fromLat: 35.6458, fromLng: 139.8266, toLat: 35.6712, toLng: 139.7665 },
-                    { from: '銀座', to: '神谷町', line: '東京メトロ日比谷線', color: '#B5B5AC', fromLat: 35.6712, fromLng: 139.7665, toLat: 35.6630, toLng: 139.7450 }
+                    { from: '銀座', to: '神谷町', line: '日比谷線', color: '#B5B5AC', fromLat: 35.6712, fromLng: 139.7665, toLat: 35.6630, toLng: 139.7450 }
                   ],
                   fromLat: 35.6458, fromLng: 139.8266,
                   toLat: 35.6630, toLng: 139.7450,
@@ -1911,41 +1993,43 @@
           ]
         },
         {
-          id: 'trip-taipei-metro',
-          name: '02 台北捷運生活動線範例',
-          startDate: '2026-11-15',
+          id: 'trip-setouchi',
+          name: '02 瀨戶內海跳島策展',
+          startDate: '2026-10-02',
           homeTz: 'Asia/Taipei',
-          checklist: [],
+          checklist: [
+            { id: 'ck-201', text: '確認豐島美術館線上預約時段', done: true }
+          ],
           days: [
             {
               dayLabel: 'DAY 01',
               weatherIcon: '⛅',
-              weatherText: '台北舒適 23°C / 18°C',
-              sunrise: '06:12',
-              sunset: '17:08',
+              weatherText: '高松微風 21°C / 14°C',
+              sunrise: '06:05',
+              sunset: '17:45',
               events: [
                 {
-                  id: 'ev-301',
+                  id: 'ev-3',
                   type: 'train',
-                  startTz: 'Asia/Taipei',
-                  endTz: 'Asia/Taipei',
-                  time: '09:00',
-                  arrTime: '09:50',
-                  title: '淡水 ➔ 中山 ➔ 南京復興',
-                  enSubtitle: '淡水信義線 ➔ 松山新店線',
+                  startTz: 'Asia/Tokyo',
+                  endTz: 'Asia/Tokyo',
+                  time: '06:50',
+                  arrTime: '08:55',
+                  title: '新大阪 ➔ 岡山 ➔ 高松',
+                  enSubtitle: 'JR 山陽新幹線 さくら 543号 ➔ マリンライナー',
                   transitLegs: [
-                    { from: '淡水', to: '中山', line: '淡水信義線', color: '#E3002C', fromLat: 25.1678, fromLng: 121.4455, toLat: 25.0526, toLng: 121.5204 },
-                    { from: '中山', to: '南京復興', line: '松山新店線', color: '#008659', fromLat: 25.0526, fromLng: 139.5204, toLat: 25.0523, toLng: 121.5440 }
+                    { from: '新大阪', to: '岡山', line: 'JR 山陽新幹線 さくら 543号', color: '#005BAC', fromLat: 34.7335, fromLng: 135.5003, toLat: 34.6665, toLng: 133.9181 },
+                    { from: '岡山', to: '高松', line: 'マリンライナー', color: '#0072BC', fromLat: 34.6665, fromLng: 133.9181, toLat: 34.3506, toLng: 134.0465 }
                   ],
-                  fromLat: 25.1678, fromLng: 121.4455,
-                  toLat: 25.0523, toLng: 121.5440,
-                  address: '捷運南京復興站',
+                  fromLat: 34.7335, fromLng: 135.5003,
+                  toLat: 34.3506, toLng: 134.0465,
+                  address: '高松駅 香川県高松市浜ノ町',
                   mapUrl: '',
-                  currency: 'NT$',
-                  cost: 50,
-                  note: '於中山站轉乘松山新店線往松山方向兩站即達南京復興。',
+                  currency: '¥',
+                  cost: 6820,
+                  note: '岡山站轉乘快速 Marine Liner 橫越瀨戶大橋，車頭展望席風景極佳。',
                   photos: [],
-                  visitedAt: '2026/11/15 09:50',
+                  visitedAt: '2026/10/02 08:55',
                   cancelledAt: ''
                 }
               ]
@@ -1956,17 +2040,16 @@
     };
 
     function loadAndMigrateState() {
-      const raw = localStorage.getItem('tabi_note_state_v5')
+      const raw = localStorage.getItem('tabi_note_state_v6')
+        || localStorage.getItem('tabi_note_state_v5')
         || localStorage.getItem('tabi_note_state_v4')
-        || localStorage.getItem('tabi_note_state_v3')
-        || localStorage.getItem('tabi_note_state_v2');
+        || localStorage.getItem('tabi_note_state_v3');
 
       if (!raw) return DEFAULT_STATE;
       try {
         const parsed = JSON.parse(raw);
         if (!parsed || !Array.isArray(parsed.trips)) return DEFAULT_STATE;
 
-        // Migrate legacy single photo & legacy train fields into structured arrays
         parsed.trips.forEach(trip => {
           if (!Array.isArray(trip.checklist)) trip.checklist = [];
           (trip.days || []).forEach(day => {
@@ -1976,8 +2059,11 @@
                   data: ev.photo,
                   zoom: ev.photoZoom || 1,
                   x: ev.photoX || 0,
-                  y: ev.photoY || 0
+                  y: ev.photoY || 0,
+                  caption: ''
                 }] : [];
+              } else {
+                ev.photos.forEach(p => { if (typeof p.caption === 'undefined') p.caption = ''; });
               }
               if (ev.type === 'train' && (!Array.isArray(ev.transitLegs) || !ev.transitLegs.length)) {
                 const subParts = (ev.enSubtitle || '').split(/➔|->|→|換|轉|\//).map(s => s.trim()).filter(Boolean);
@@ -1985,25 +2071,10 @@
                 const line2 = subParts[1] || line1;
                 const legs = [];
                 if (ev.viaCode) {
-                  legs.push({
-                    from: ev.fromCode || '起點站',
-                    to: ev.viaCode,
-                    line: line1,
-                    color: ev.lineColor1 || detectLineColor(line1, '#E3002C').color
-                  });
-                  legs.push({
-                    from: ev.viaCode,
-                    to: ev.toCode || '終點站',
-                    line: line2,
-                    color: ev.lineColor2 || detectLineColor(line2, '#008659').color
-                  });
+                  legs.push({ from: ev.fromCode || '起點站', to: ev.viaCode, line: line1, color: ev.lineColor1 || detectLineColor(line1, '#E3002C').color });
+                  legs.push({ from: ev.viaCode, to: ev.toCode || '終點站', line: line2, color: ev.lineColor2 || detectLineColor(line2, '#008659').color });
                 } else {
-                  legs.push({
-                    from: ev.fromCode || '起點站',
-                    to: ev.toCode || '終點站',
-                    line: line1,
-                    color: ev.lineColor1 || detectLineColor(line1, '#0F62B1').color
-                  });
+                  legs.push({ from: ev.fromCode || '起點站', to: ev.toCode || '終點站', line: line1, color: ev.lineColor1 || detectLineColor(line1, '#0F62B1').color });
                 }
                 ev.transitLegs = legs;
               }
@@ -2024,7 +2095,6 @@
     let pinnedEventIds = new Set();
     let leafletMap = null;
 
-    // Editor & Story State
     let formPhotos = [];
     let activeFormPhotoIdx = 0;
     let activeStoryEvent = null;
@@ -2034,7 +2104,7 @@
 
     function persist() {
       try {
-        localStorage.setItem('tabi_note_state_v5', JSON.stringify(appState));
+        localStorage.setItem('tabi_note_state_v6', JSON.stringify(appState));
       } catch (e) {
         alert('儲存空間接近上限，請刪除部分舊照片或匯出 JSON 備份。');
       }
@@ -2201,7 +2271,7 @@
     }
 
     /* ==========================================================================
-       10. Render All Views + Dynamic Solar Gradient + Auto Chronological Sort
+       10. Render All Views + Dynamic Solar Gradient + Timeline
        ========================================================================== */
     function renderAll() {
       if (currentTripIdx >= appState.trips.length) currentTripIdx = 0;
@@ -2212,22 +2282,19 @@
 
       document.getElementById('trip-count-num').textContent = appState.trips.length;
 
-      // Trip Strip
       document.getElementById('trip-strip').innerHTML =
         `<span class="trip-label">TRIPS:</span>` +
         appState.trips.map((t, idx) => `
-          <button class="trip-tab ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx})">${t.name}</button>
+          <button class="trip-tab ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx})">${escapeHtml(t.name)}</button>
         `).join('') +
         `<button class="trip-tab" style="border-style:dashed;" onclick="createNewTripProject()">＋ 新增旅行</button>`;
 
-      // Day Pills
       document.getElementById('day-pills').innerHTML =
         trip.days.map((d, idx) => `
-          <button class="day-pill ${idx === currentDayIdx ? 'active' : ''}" onclick="selectDay(${idx})">${d.dayLabel}</button>
+          <button class="day-pill ${idx === currentDayIdx ? 'active' : ''}" onclick="selectDay(${idx})">${escapeHtml(d.dayLabel)}</button>
         `).join('') +
         `<button class="day-pill" onclick="addDay()">＋ DAY</button>`;
 
-      // Weather & Dynamic Solar Spectrum Gradient
       const sr = day.sunrise || '06:15';
       const ss = day.sunset || '17:15';
       document.getElementById('day-weather-icon').textContent = day.weatherIcon || '☀️';
@@ -2255,7 +2322,7 @@
 
       specBar.innerHTML = day.events.map(ev => {
         const pct = Math.min(98, Math.max(2, (timeToMinutes(ev.time) / 1440) * 100));
-        return `<div class="solar-dot" style="left:${pct}%;" title="${ev.time} ${ev.title}"></div>`;
+        return `<div class="solar-dot" style="left:${pct}%;" title="${ev.time} ${escapeHtml(ev.title)}"></div>`;
       }).join('');
 
       renderTimeline();
@@ -2320,13 +2387,12 @@
           ? computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz)
           : { durationText: '', dayShift: '' };
 
-        // Terminal info display on timeline card (not printed on boarding pass story)
         let subtitleDisplay = ev.enSubtitle || '';
         if (ev.type === 'flight' && (ev.fromTerminal || ev.toTerminal)) {
           const tInfo = `${ev.fromCode || ''}${ev.fromTerminal ? '(' + ev.fromTerminal + ')' : ''} ➔ ${ev.toCode || ''}${ev.toTerminal ? '(' + ev.toTerminal + ')' : ''}`;
           subtitleDisplay = subtitleDisplay ? `${tInfo} · ${subtitleDisplay}` : tInfo;
         } else if (ev.type === 'train' && Array.isArray(ev.transitLegs) && ev.transitLegs.length) {
-          subtitleDisplay = ev.transitLegs.map(l => `${l.line} (${l.from}➔${l.to})`).join(' 轉 ');
+          subtitleDisplay = ev.transitLegs.map(l => `${l.line} (${l.from}➔${l.to})`).join(' · ');
         }
 
         const photosArr = Array.isArray(ev.photos) ? ev.photos : [];
@@ -2348,7 +2414,6 @@
                 </div>
               </div>
 
-              <!-- Paired "完成" & "取消" Stamp Buttons -->
               <div class="stamp-btn-group" onclick="event.stopPropagation();">
                 <button class="stamp-action-btn ${isStamped ? 'stamped' : ''}" onclick="stampEvent('${ev.id}')">
                   ${isStamped ? '✓ 完成' : '完成'}
@@ -2368,21 +2433,23 @@
 
                 ${photosArr.length ? `
                   <div class="photo-gallery-strip">
-                    ${photosArr.map((p, pIdx) => `
-                      <div class="polaroid-frame">
-                        <div class="polaroid-viewport">
-                          <img src="${p.data}" alt="${escapeHtml(ev.title)}" style="transform: scale(${p.zoom || 1}) translate(${p.x || 0}%, ${p.y || 0}%);" />
+                    ${photosArr.map((p) => {
+                      const capText = (p.caption && p.caption.trim()) ? p.caption.trim() : ev.title;
+                      return `
+                        <div class="polaroid-frame">
+                          <div class="polaroid-viewport">
+                            <img src="${p.data}" alt="${escapeHtml(capText)}" style="transform: scale(${p.zoom || 1}) translate(${p.x || 0}%, ${p.y || 0}%);" />
+                          </div>
+                          <div class="polaroid-caption">
+                            <span class="polaroid-caption-text">${escapeHtml(capText)}</span>
+                            <span class="polaroid-caption-time">${ev.visitedAt || ev.cancelledAt || ev.time}</span>
+                          </div>
                         </div>
-                        <div class="polaroid-caption">
-                          <span>#${pIdx + 1} ARCHIVE</span>
-                          <span>${ev.visitedAt || ev.cancelledAt || ev.time}</span>
-                        </div>
-                      </div>
-                    `).join('')}
+                      `;
+                    }).join('')}
                   </div>
                 ` : ''}
 
-                <!-- Clean Text-Only Single-Row Footer Toolbar -->
                 <div class="card-footer-tools">
                   <button class="tool-chip" onclick="openEventModal('${ev.id}')">編輯</button>
                   <label class="tool-chip" style="cursor:pointer;">
@@ -2412,7 +2479,7 @@
 
       for (const file of files) {
         const compressed = await compressImageFile(file);
-        target.photos.push({ data: compressed, zoom: 1, x: 0, y: 0 });
+        target.photos.push({ data: compressed, zoom: 1, x: 0, y: 0, caption: '' });
       }
       pinnedEventIds.add(evId);
       persist();
@@ -2520,12 +2587,12 @@
           ${idx > 0 ? `<button type="button" class="pill-btn" style="padding:2px 7px; font-size:10.5px; color:#888;" onclick="this.closest('.transit-leg-box').remove()">移除此段</button>` : ''}
         </div>
         <div class="form-row-2" style="margin-bottom:6px;">
-          <label>上車站名<input type="text" class="leg-from" value="${escapeHtml(fromVal)}" placeholder="例如：淡水" /></label>
-          <label>下車站名<input type="text" class="leg-to" value="${escapeHtml(toVal)}" placeholder="例如：中山" /></label>
+          <label>上車站名<input type="text" class="leg-from" value="${escapeHtml(fromVal)}" placeholder="例如：新木場" /></label>
+          <label>下車站名<input type="text" class="leg-to" value="${escapeHtml(toVal)}" placeholder="例如：銀座" /></label>
         </div>
         <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:end;">
           <label>路線名稱 (自動辨識代表色)
-            <input type="text" class="leg-line" value="${escapeHtml(lineVal)}" placeholder="例如：淡水信義線 或 日比谷線" oninput="autoMatchLegRowColor(this)" />
+            <input type="text" class="leg-line" value="${escapeHtml(lineVal)}" placeholder="例如：有楽町線 或 日比谷線" oninput="autoMatchLegRowColor(this)" />
           </label>
           <label>路線色
             <input type="color" class="leg-color" value="${colorVal}" style="width:44px; height:35px; padding:2px; cursor:pointer;" />
@@ -2575,21 +2642,18 @@
         document.getElementById('ev-title').value = ev.title || '';
         document.getElementById('ev-en').value = ev.enSubtitle || '';
 
-        // Populate Flight fields
         document.getElementById('fl-from-code').value = ev.fromCode || '';
         document.getElementById('fl-from-term').value = ev.fromTerminal || '';
         document.getElementById('fl-to-code').value = ev.toCode || '';
         document.getElementById('fl-to-term').value = ev.toTerminal || '';
         document.getElementById('fl-number').value = ev.enSubtitle || '';
 
-        // Populate Train legs
         if (Array.isArray(ev.transitLegs) && ev.transitLegs.length) {
           ev.transitLegs.forEach(l => addTrainLegRow(l));
         } else {
           addTrainLegRow({ from: ev.fromCode || '', to: ev.toCode || '', line: ev.enSubtitle || '', color: '#E3002C' });
         }
 
-        // Populate Ferry fields
         document.getElementById('fe-from-port').value = ev.fromCode || '';
         document.getElementById('fe-to-port').value = ev.toCode || '';
         document.getElementById('fe-vessel').value = ev.enSubtitle || '';
@@ -2627,7 +2691,7 @@
       if (!files.length) return;
       for (const file of files) {
         const compressed = await compressImageFile(file);
-        formPhotos.push({ data: compressed, zoom: 1, x: 0, y: 0 });
+        formPhotos.push({ data: compressed, zoom: 1, x: 0, y: 0, caption: '' });
       }
       activeFormPhotoIdx = formPhotos.length - 1;
       e.target.value = '';
@@ -2662,6 +2726,7 @@
 
         const active = formPhotos[activeFormPhotoIdx];
         img.src = active.data;
+        document.getElementById('ev-photo-caption').value = active.caption || '';
         document.getElementById('ev-photo-zoom').value = active.zoom || 1;
         document.getElementById('ev-photo-x').value = active.x || 0;
         document.getElementById('ev-photo-y').value = active.y || 0;
@@ -2675,9 +2740,11 @@
 
     function updateCropPreview() {
       if (!formPhotos[activeFormPhotoIdx]) return;
+      const cap = document.getElementById('ev-photo-caption').value;
       const z = Number(document.getElementById('ev-photo-zoom').value);
       const x = Number(document.getElementById('ev-photo-x').value);
       const y = Number(document.getElementById('ev-photo-y').value);
+      formPhotos[activeFormPhotoIdx].caption = cap;
       formPhotos[activeFormPhotoIdx].zoom = z;
       formPhotos[activeFormPhotoIdx].x = x;
       formPhotos[activeFormPhotoIdx].y = y;
@@ -2717,6 +2784,10 @@
         toCode = document.getElementById('fl-to-code').value.trim().toUpperCase();
         toTerminal = document.getElementById('fl-to-term').value.trim();
         enSubtitle = document.getElementById('fl-number').value.trim();
+        const fAir = lookupKnownStationCoord(fromCode);
+        const tAir = lookupKnownStationCoord(toCode);
+        if (fAir) { fromLat = fAir.lat; fromLng = fAir.lng; }
+        if (tAir) { toLat = tAir.lat; toLng = tAir.lng; }
       } else if (evType === 'train') {
         const legBoxes = Array.from(document.querySelectorAll('#train-legs-container .transit-leg-box'));
         for (let i = 0; i < legBoxes.length; i++) {
@@ -2789,7 +2860,6 @@
         day.events.push(payload);
       }
 
-      // Automatic Chronological Sorting by Start Time
       day.events.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
 
       pinnedEventIds.add(payload.id);
@@ -2930,7 +3000,6 @@
         `).join('');
       }
 
-      // Budget Summary (Automatically excludes Cancelled events from totals)
       const totals = {};
       let rowsHtml = '';
       trip.days.forEach(d => {
@@ -3039,7 +3108,11 @@
     }
 
     /* ==========================================================================
-       14. 9:16 IG Story Generator (Dual-Layer Paper + Non-Overlapping Layout + Collage)
+       14. 9:16 IG Story Generator
+           - All-Circular Transit Nodes, Pure Station Names, Normal-Vector Label Placement
+           - True Orthographic Lat/Lng World Landmasses on Globe
+           - Right-Side Barcode on Boarding Pass
+           - Auto-Fit High-Contrast Polaroid Captions
        ========================================================================== */
     function openStoryModal(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
@@ -3071,6 +3144,7 @@
       `).join('');
 
       const cur = photos[activeStoryPhotoIdx];
+      document.getElementById('st-caption').value = cur ? (cur.caption || '') : '';
       document.getElementById('st-zoom').value = cur ? (cur.zoom || 1) : 1;
       document.getElementById('st-x').value = cur ? (cur.x || 0) : 0;
       document.getElementById('st-y').value = cur ? (cur.y || 0) : 0;
@@ -3088,7 +3162,7 @@
       if (!Array.isArray(activeStoryEvent.photos)) activeStoryEvent.photos = [];
       for (const f of files) {
         const comp = await compressImageFile(f);
-        activeStoryEvent.photos.push({ data: comp, zoom: 1, x: 0, y: 0 });
+        activeStoryEvent.photos.push({ data: comp, zoom: 1, x: 0, y: 0, caption: '' });
       }
       activeStoryPhotoIdx = activeStoryEvent.photos.length - 1;
       persist();
@@ -3110,6 +3184,7 @@
       if (!activeStoryEvent) return;
       const cur = (activeStoryEvent.photos || [])[activeStoryPhotoIdx];
       if (cur) {
+        cur.caption = document.getElementById('st-caption').value;
         cur.zoom = Number(document.getElementById('st-zoom').value);
         cur.x = Number(document.getElementById('st-x').value);
         cur.y = Number(document.getElementById('st-y').value);
@@ -3132,30 +3207,6 @@
       renderStoryCanvas();
     }
 
-    // Helper for wrapped multi-line canvas text within safe width (prevents text hitting stamp!)
-    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
-      if (!text) return;
-      const chars = Array.from(text);
-      let line = '';
-      let lineCount = 0;
-      for (let i = 0; i < chars.length; i++) {
-        const testLine = line + chars[i];
-        if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
-          lineCount++;
-          if (lineCount >= maxLines) {
-            ctx.fillText(line.slice(0, -1) + '…', x, y);
-            return;
-          }
-          ctx.fillText(line, x, y);
-          line = chars[i];
-          y += lineHeight;
-        } else {
-          line = testLine;
-        }
-      }
-      if (line) ctx.fillText(line, x, y);
-    }
-
     async function renderStoryCanvas() {
       const canvas = document.getElementById('story-canvas');
       const ctx = canvas.getContext('2d');
@@ -3165,11 +3216,10 @@
       const OP = activeOuterPaper;
       const IC = activeInnerCard;
 
-      // Layer 1: Outer Paper Background
       ctx.fillStyle = OP.bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Top Brand Header (Optically Centered "旅" so bottom is never clipped)
+      // Top Brand Header
       ctx.fillStyle = OP.logoBox;
       ctx.beginPath();
       ctx.roundRect(76, 215, 62, 62, 12);
@@ -3203,7 +3253,6 @@
         await drawMiniMetroOrFerryStory(ctx, W, H, ev, OP, IC);
       }
 
-      // Footer
       ctx.fillStyle = OP.muted;
       ctx.font = "500 22px 'DM Mono', monospace";
       ctx.textAlign = 'left';
@@ -3224,6 +3273,7 @@
       return { line1: 'SCHEDULED', line2: `${ev.time} LOGGED`, color: IC.stamp };
     }
 
+    /* --- TEMPLATE A: POLAROID WITH AUTO-FIT CAPTION --- */
     function drawPolaroidStory(ctx, W, H, ev, OP, IC) {
       return new Promise((resolve) => {
         ctx.save();
@@ -3237,26 +3287,29 @@
         ctx.restore();
 
         const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
+        const captionMain = (selectedPhoto && selectedPhoto.caption && selectedPhoto.caption.trim())
+          ? selectedPhoto.caption.trim()
+          : ev.title;
 
         const finishMeta = () => {
           ctx.fillStyle = IC.ink;
-          ctx.font = "700 42px 'Noto Sans TC', sans-serif";
-          ctx.textAlign = 'left';
-          ctx.fillText(ev.title.slice(0, 18), 124, 1340);
+          drawAutoFitSingleLine(ctx, captionMain, 124, 1340, 832, 42, 24, '700', "'Noto Sans TC', sans-serif", 'left');
 
-          ctx.fillStyle = IC.muted;
-          ctx.font = "600 25px 'Archivo', 'Noto Sans TC', sans-serif";
-          ctx.fillText((ev.enSubtitle || '').slice(0, 34), 124, 1390);
+          if (ev.enSubtitle) {
+            ctx.fillStyle = IC.muted;
+            drawAutoFitSingleLine(ctx, ev.enSubtitle, 124, 1392, 832, 25, 18, '600', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
+          }
 
           if (ev.note) {
             ctx.fillStyle = IC.ink;
             ctx.font = "500 23px 'Noto Sans TC', sans-serif";
             const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-            drawWrappedText(ctx, cleanNote, 124, 1440, 430, 32, 2);
+            drawSmartWrappedText(ctx, cleanNote, 124, 1445, 430, 32, 2);
           }
 
           ctx.fillStyle = IC.stamp;
           ctx.font = "500 26px 'DM Mono', monospace";
+          ctx.textAlign = 'left';
           ctx.fillText(`'26 ${ev.visitedAt || ev.cancelledAt || ev.time}`, 124, 1565);
 
           const st = getStampMetaForEvent(ev, IC);
@@ -3299,9 +3352,50 @@
       });
     }
 
-    /* --- TEMPLATE B: FLIGHT GLOBE + LEFT-ONLY BARCODE + NON-OVERLAPPING TICKET --- */
+    /* --- Real World Geographic Polygons for Orthographic Globe Projection --- */
+    const WORLD_LAND_POLYGONS = [
+      // Eurasian / East Asian Continental Coastline (Kamchatka -> Korea -> China -> Vietnam -> Malay -> India)
+      [[62,165],[60,150],[54,140],[45,135],[40,128],[35,126],[39,121],[35,119],[31,121],[25,119],[22,114],[20,106],[12,109],[8,103],[1,104],[14,98],[22,88],[15,80],[8,77],[22,69],[25,60],[40,50],[60,60],[68,120],[66,170]],
+      // Japan Honshu
+      [[41.5,140.8],[39.5,142.0],[35.7,140.8],[34.7,139.0],[34.6,135.5],[34.0,131.0],[35.5,133.0],[37.5,137.2],[40.0,139.8]],
+      // Japan Hokkaido
+      [[45.5,141.9],[44.3,145.3],[42.9,144.4],[42.0,140.5],[43.3,140.3]],
+      // Japan Kyushu & Shikoku
+      [[33.9,130.9],[33.0,131.8],[31.2,130.7],[32.8,129.8]],
+      [[34.3,134.6],[33.5,134.2],[32.8,132.5],[33.9,132.2]],
+      // Taiwan
+      [[25.3,121.6],[24.5,121.8],[22.0,120.8],[22.6,120.2],[24.8,120.9]],
+      // Philippines (Luzon & Mindanao)
+      [[18.5,121.5],[16.0,122.0],[13.0,123.8],[14.5,120.5],[18.0,120.5]],
+      [[9.8,125.5],[6.5,126.2],[6.0,124.2],[8.5,123.5]],
+      // Australia
+      [[-12,131],[-12,142],[-20,149],[-28,153],[-38,147],[-35,136],[-32,115],[-22,114],[-15,124]],
+      // North America (Alaska -> BC -> Seattle -> SF -> LA -> Baja -> Mexico -> East Coast)
+      [[70,-162],[65,-168],[60,-165],[55,-162],[59,-150],[58,-136],[50,-127],[47,-124],[40,-124],[37.7,-122.4],[34.0,-118.4],[28,-115],[23,-110],[31,-114],[20,-105],[16,-95],[18,-90],[21,-87],[25,-97],[29,-90],[25,-80],[35,-75],[42,-70],[47,-60],[60,-65],[70,-100]],
+      // Hawaiian Islands Chain
+      [[22.0,-159.5],[21.4,-157.9],[20.8,-156.3],[19.6,-155.5],[19.0,-155.8],[21.2,-158.2]]
+    ];
+
+    function projectOrthographic(latDeg, lonDeg, centerLatDeg, centerLonDeg, R) {
+      const toRad = Math.PI / 180;
+      const phi = latDeg * toRad;
+      const lam = lonDeg * toRad;
+      const phi0 = centerLatDeg * toRad;
+      const lam0 = centerLonDeg * toRad;
+
+      // Normalize longitude difference neatly across the International Date Line
+      let dLam = lam - lam0;
+      while (dLam > Math.PI) dLam -= Math.PI * 2;
+      while (dLam < -Math.PI) dLam += Math.PI * 2;
+
+      const cosC = Math.sin(phi0) * Math.sin(phi) + Math.cos(phi0) * Math.cos(phi) * Math.cos(dLam);
+      const x = R * Math.cos(phi) * Math.sin(dLam);
+      const y = -R * (Math.cos(phi0) * Math.sin(phi) - Math.sin(phi0) * Math.cos(phi) * Math.cos(dLam));
+      return { x, y, visible: cosC > -0.15 };
+    }
+
+    /* --- TEMPLATE B: ORTHOGRAPHIC GLOBE + RIGHT-SIDE BARCODE BOARDING PASS --- */
     function drawFlightStoryWithWorldMap(ctx, W, H, ev, OP, IC) {
-      // Strictly print Airport Codes only on Boarding Pass (no Terminal clutter)
       const from = (ev.fromCode || 'TPE').toUpperCase();
       const to = (ev.toCode || 'LAX').toUpperCase();
       const flightMeta = computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz);
@@ -3311,76 +3405,125 @@
       ctx.textAlign = 'left';
       ctx.fillText(`01 FLIGHT PATH // ${from} TO ${to}`, 76, 358);
 
-      const cx = 540, cy = 695, r = 295;
+      const cx = 540, cy = 695, r = 298;
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.clip();
 
+      // Determine true coordinates of origin & destination airports
+      const fKnown = lookupKnownStationCoord(from);
+      const tKnown = lookupKnownStationCoord(to);
+      const lat1 = fKnown ? fKnown.lat : (parseFloat(ev.fromLat) || 25.0797);
+      const lon1 = fKnown ? fKnown.lng : (parseFloat(ev.fromLng) || 121.2342);
+      const lat2 = tKnown ? tKnown.lat : (parseFloat(ev.toLat) || 33.9416);
+      const lon2 = tKnown ? tKnown.lng : (parseFloat(ev.toLng) || -118.4085);
+
+      // Compute midpoint longitude across Pacific or Atlantic accurately
+      let lon1Norm = lon1 < 0 ? lon1 + 360 : lon1;
+      let lon2Norm = lon2 < 0 ? lon2 + 360 : lon2;
+      let centerLon = (Math.abs(lon1 - lon2) > 180)
+        ? ((lon1Norm + lon2Norm) / 2)
+        : ((lon1 + lon2) / 2);
+      if (centerLon > 180) centerLon -= 360;
+      const centerLat = Math.max(15, Math.min(48, (lat1 + lat2) / 2 + 6));
+
       if (flightBgImage) {
         const s = Math.max((r * 2) / flightBgImage.width, (r * 2) / flightBgImage.height);
         ctx.drawImage(flightBgImage, cx - (flightBgImage.width * s) / 2, cy - (flightBgImage.height * s) / 2, flightBgImage.width * s, flightBgImage.height * s);
-        ctx.fillStyle = 'rgba(14, 22, 36, 0.45)';
+        ctx.fillStyle = 'rgba(12, 20, 34, 0.46)';
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
       } else {
-        const grad = ctx.createRadialGradient(cx - 70, cy - 70, 30, cx, cy, r);
-        grad.addColorStop(0, '#23324A');
-        grad.addColorStop(1, '#101826');
+        // Deep Atmospheric Ocean Sphere Gradient
+        const grad = ctx.createRadialGradient(cx - 75, cy - 85, 30, cx, cy, r);
+        grad.addColorStop(0, '#263B59');
+        grad.addColorStop(0.65, '#152236');
+        grad.addColorStop(1, '#0B1320');
         ctx.fillStyle = grad;
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
 
-        // Detailed Graticule & Realistic Pacific Rim Coastlines
-        ctx.strokeStyle = 'rgba(255,255,255,0.11)';
-        ctx.lineWidth = 1.5;
-        for (let latR = 70; latR < r; latR += 65) {
-          ctx.beginPath(); ctx.ellipse(cx, cy, r, latR, 0, 0, Math.PI * 2); ctx.stroke();
-          ctx.beginPath(); ctx.ellipse(cx, cy, latR, r, 0, 0, Math.PI * 2); ctx.stroke();
+        // True Spherical Graticule (Meridians & Parallels)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+        ctx.lineWidth = 1.3;
+        for (let latG = -60; latG <= 75; latG += 15) {
+          ctx.beginPath();
+          let started = false;
+          for (let lonG = -180; lonG <= 180; lonG += 6) {
+            const p = projectOrthographic(latG, lonG, centerLat, centerLon, r);
+            if (p.visible) {
+              if (!started) { ctx.moveTo(cx + p.x, cy + p.y); started = true; }
+              else ctx.lineTo(cx + p.x, cy + p.y);
+            } else { started = false; }
+          }
+          ctx.stroke();
+        }
+        for (let lonG = -180; lonG < 180; lonG += 20) {
+          ctx.beginPath();
+          let started = false;
+          for (let latG = -75; latG <= 75; latG += 5) {
+            const p = projectOrthographic(latG, lonG, centerLat, centerLon, r);
+            if (p.visible) {
+              if (!started) { ctx.moveTo(cx + p.x, cy + p.y); started = true; }
+              else ctx.lineTo(cx + p.x, cy + p.y);
+            } else { started = false; }
+          }
+          ctx.stroke();
         }
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-        ctx.lineWidth = 2;
-
-        // Detailed East Asia Coastline + Taiwan + Japan Archipelago
-        ctx.beginPath();
-        ctx.moveTo(240, 510); ctx.lineTo(310, 470); ctx.lineTo(360, 495);
-        ctx.lineTo(355, 550); ctx.lineTo(335, 610); ctx.lineTo(315, 675);
-        ctx.lineTo(290, 735); ctx.lineTo(245, 760); ctx.closePath();
-        ctx.fill(); ctx.stroke();
-
-        // Taiwan Island
-        ctx.beginPath(); ctx.ellipse(332, 725, 8, 18, 0.25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        // Japan Honshu / Kyushu
-        ctx.beginPath();
-        ctx.moveTo(385, 635); ctx.quadraticCurveTo(415, 605, 430, 560);
-        ctx.lineTo(442, 570); ctx.quadraticCurveTo(425, 620, 395, 648);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Detailed North America West Coast (Alaska -> California -> Baja)
-        ctx.beginPath();
-        ctx.moveTo(610, 440); ctx.lineTo(710, 420); ctx.lineTo(840, 470);
-        ctx.lineTo(840, 760); ctx.lineTo(790, 755); ctx.lineTo(755, 700);
-        ctx.lineTo(735, 645); ctx.lineTo(700, 570); ctx.lineTo(645, 505);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
+        // Render True Orthographic World Continents & Islands
+        ctx.fillStyle = 'rgba(198, 214, 232, 0.17)';
+        ctx.strokeStyle = 'rgba(220, 234, 248, 0.34)';
+        ctx.lineWidth = 1.8;
+        WORLD_LAND_POLYGONS.forEach(poly => {
+          ctx.beginPath();
+          let visCount = 0;
+          poly.forEach(([plat, plon], idx) => {
+            const pt = projectOrthographic(plat, plon, centerLat, centerLon, r);
+            if (pt.visible) visCount++;
+            if (idx === 0) ctx.moveTo(cx + pt.x, cy + pt.y);
+            else ctx.lineTo(cx + pt.x, cy + pt.y);
+          });
+          if (visCount > 0) {
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+        });
       }
 
-      // Great Circle Trajectory Arc
+      // Project Origin & Destination onto Globe
+      let pStart = projectOrthographic(lat1, lon1, centerLat, centerLon, r * 0.86);
+      let pEnd = projectOrthographic(lat2, lon2, centerLat, centerLon, r * 0.86);
+      const sx = cx + pStart.x, sy = cy + pStart.y;
+      const ex = cx + pEnd.x, ey = cy + pEnd.y;
+
+      // Great Circle Lofted Curve
+      const midX = (sx + ex) / 2;
+      const midY = Math.min(sy, ey) - 105;
+
+      // Subtle Glow under Flight Arc
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(midX, midY, ex, ey); ctx.stroke();
+
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 4.5;
       ctx.setLineDash([12, 10]);
-      ctx.beginPath();
-      ctx.moveTo(332, 725);
-      ctx.quadraticCurveTo(540, 495, 750, 680);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(midX, midY, ex, ey); ctx.stroke();
       ctx.setLineDash([]);
 
+      // Airport Beacons
       ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.arc(332, 725, 9, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(750, 680, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx, sy, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex, ey, 9, 0, Math.PI * 2); ctx.fill();
 
+      // Airplane Icon along Curve Apex
+      const apexX = 0.25 * sx + 0.5 * midX + 0.25 * ex;
+      const apexY = 0.25 * sy + 0.5 * midY + 0.25 * ey;
+      const angle = Math.atan2(ey - sy, ex - sx);
       ctx.save();
-      ctx.translate(540, 592);
-      ctx.rotate(-0.06);
+      ctx.translate(apexX, apexY);
+      ctx.rotate(angle);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '44px sans-serif';
       ctx.textAlign = 'center';
@@ -3388,14 +3531,20 @@
       ctx.fillText('✈', 0, 0);
       ctx.restore();
 
+      // Crisp Airport Code Labels inside Globe
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = "700 40px 'DM Mono', monospace";
+      ctx.font = "700 38px 'DM Mono', monospace";
       ctx.textAlign = 'center';
-      ctx.fillText(from, 332, 782);
-      ctx.fillText(to, 750, 738);
+      ctx.fillText(from, sx, sy + 48);
+      ctx.fillText(to, ex, ey + 48);
+
+      // Inner Rim Atmosphere Ring
+      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(cx, cy, r - 2, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
 
-      // --- Clean Boarding Pass Ticket (Left Barcode ONLY, Spacious Columns, Zero Overlap) ---
+      // --- Boarding Pass Ticket (Barcode on RIGHT side, Clean Left Columns, Zero Overlap) ---
       const tx = 76, ty = 1045, tw = 928, th = 570;
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.16)';
@@ -3414,23 +3563,9 @@
         ctx.beginPath(); ctx.arc(tx + tw, ny, 11, Math.PI / 2, -Math.PI / 2); ctx.fill();
       }
 
-      // Single Left Barcode Strip (With Date-Timestamp Code)
-      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
-      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '2340'}`;
-      drawVerticalBarcode(ctx, tx + 38, ty + 48, 86, th - 96, stampCode, IC.ink);
-
-      // Vertical Perforation Divider after Left Barcode
-      ctx.strokeStyle = IC.ink;
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = 2;
-      ctx.setLineDash([10, 10]);
-      ctx.beginPath(); ctx.moveTo(tx + 148, ty + 24); ctx.lineTo(tx + 148, ty + th - 24); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-
-      // Spacious Depart & Arrive Columns (Never collide!)
-      const col1X = tx + 185;
-      const col2X = tx + 555;
+      // Left Content Area (x: tx + 56 to tx + 740)
+      const col1X = tx + 56;
+      const col2X = tx + 405;
 
       ctx.fillStyle = IC.muted;
       ctx.font = "500 22px 'DM Mono', monospace";
@@ -3439,49 +3574,62 @@
       ctx.fillText('ARRIVAL', col2X, ty + 82);
 
       ctx.fillStyle = IC.ink;
-      ctx.font = "700 52px 'DM Mono', monospace";
-      ctx.fillText(`${from} ${ev.time}`, col1X, ty + 148);
-      ctx.fillText(`${to} ${ev.arrTime || '--:--'}`, col2X, ty + 148);
+      ctx.font = "700 50px 'DM Mono', monospace";
+      ctx.fillText(`${from} ${ev.time}`, col1X, ty + 146);
+      ctx.fillText(`${to} ${ev.arrTime || '--:--'}`, col2X, ty + 146);
 
       if (flightMeta.dayShift) {
-        ctx.font = "700 24px 'DM Mono', monospace";
+        ctx.font = "700 22px 'DM Mono', monospace";
         ctx.fillStyle = IC.stamp;
-        ctx.fillText(flightMeta.dayShift, col2X + 275, ty + 115);
+        ctx.fillText(flightMeta.dayShift, col2X + 265, ty + 112);
       }
 
       ctx.font = "500 23px 'DM Mono', monospace";
       ctx.fillStyle = IC.muted;
-      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, col1X, ty + 208);
+      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, col1X, ty + 206);
 
       // Horizontal Divider
       ctx.strokeStyle = IC.ink;
       ctx.globalAlpha = 0.22;
+      ctx.lineWidth = 2;
       ctx.setLineDash([8, 8]);
-      ctx.beginPath(); ctx.moveTo(col1X, ty + 240); ctx.lineTo(tx + tw - 48, ty + 240); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(col1X, ty + 238); ctx.lineTo(tx + 725, ty + 238); ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
 
-      // Left-side Flight / Aircraft Info (Strictly bounded to left half so right half is clear for Customs Stamp)
+      // Flight / Aircraft Row (Auto-Fit Single Line or Token-Safe Wrap so "777-300ER" never splits)
       ctx.fillStyle = IC.muted;
       ctx.font = "500 21px 'DM Mono', monospace";
-      ctx.fillText('FLIGHT / AIRCRAFT', col1X, ty + 292);
+      ctx.fillText('FLIGHT / AIRCRAFT', col1X, ty + 286);
 
       ctx.fillStyle = IC.ink;
-      ctx.font = "800 36px 'Archivo', 'Noto Sans TC', sans-serif";
-      drawWrappedText(ctx, ev.enSubtitle || ev.title, col1X, ty + 345, 340, 44, 2);
+      drawAutoFitSingleLine(ctx, ev.enSubtitle || ev.title, col1X, ty + 338, 650, 38, 24, '800', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
 
       if (ev.note) {
         ctx.fillStyle = IC.muted;
         ctx.font = "500 22px 'Noto Sans TC', sans-serif";
         const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-        drawWrappedText(ctx, cleanNote, col1X, ty + 455, 340, 30, 2);
+        drawSmartWrappedText(ctx, cleanNote, col1X, ty + 405, 310, 32, 3);
       }
 
-      // Bottom-Right Customs Stamp in Dedicated Clear Zone
+      // Customs Stamp placed cleanly to the left of the right-side barcode
       const st = ev.cancelledAt
         ? { line1: `CANCELLED · ${from}`, line2: ev.cancelledAt, color: '#64748B' }
         : { line1: `ADMITTED · ${to}`, line2: `${ev.visitedAt || ev.arrTime || 'ARRIVAL'} · ${to} CUSTOMS`, color: IC.stamp };
-      drawCustomsStamp(ctx, tx + 715, ty + 415, st.line1, st.line2, st.color);
+      drawCustomsStamp(ctx, tx + 555, ty + 435, st.line1, st.line2, st.color);
+
+      // Vertical Perforation Line before Right Barcode
+      ctx.strokeStyle = IC.ink;
+      ctx.globalAlpha = 0.24;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath(); ctx.moveTo(tx + 760, ty + 24); ctx.lineTo(tx + 760, ty + th - 24); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+
+      // Single Right-Side Barcode Strip (With Date-Timestamp Code)
+      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
+      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '2340'}`;
+      drawVerticalBarcode(ctx, tx + 788, ty + 48, 102, th - 96, stampCode, IC.ink);
     }
 
     function drawVerticalBarcode(ctx, x, y, w, h, label, inkColor) {
@@ -3509,7 +3657,7 @@
       }
     }
 
-    /* --- TEMPLATE C: MULTI-LEG MINI METRO DIAGRAM + TILTED PHOTO COLLAGE --- */
+    /* --- TEMPLATE C: ALL-CIRCULAR MINI METRO + PURE STATION NAMES + VECTOR COLLISION AVOIDANCE --- */
     async function drawMiniMetroOrFerryStory(ctx, W, H, ev, OP, IC) {
       if (ev.type === 'ferry') {
         drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC);
@@ -3517,9 +3665,7 @@
       }
 
       ctx.fillStyle = OP.ink;
-      ctx.font = "700 30px 'DM Mono', 'Noto Sans TC', monospace";
-      ctx.textAlign = 'left';
-      ctx.fillText(`02 TRANSIT ROUTE // ${ev.title.slice(0, 18)}`, 76, 358);
+      drawAutoFitSingleLine(ctx, `02 TRANSIT ROUTE // ${ev.title}`, 76, 358, 928, 30, 20, '700', "'DM Mono', 'Noto Sans TC', monospace", 'left');
 
       const mx = 76, my = 400, mw = 928, mh = 860;
       ctx.save();
@@ -3531,7 +3677,7 @@
       ctx.fill();
       ctx.clip();
 
-      // Subtle Technical Dot Grid (Replaces the fake static river!)
+      // Subtle Technical Dot Grid
       ctx.fillStyle = IC.ink;
       ctx.globalAlpha = 0.08;
       for (let gx = mx + 48; gx < mx + mw; gx += 48) {
@@ -3541,11 +3687,32 @@
       }
       ctx.globalAlpha = 1;
 
-      // Build Stations Chain from Structured transitLegs
       const legs = (Array.isArray(ev.transitLegs) && ev.transitLegs.length)
         ? ev.transitLegs
         : [{ from: ev.fromCode || '起點站', to: ev.toCode || '終點站', line: ev.enSubtitle || ev.title, color: '#0F62B1' }];
 
+      // 1. Top Dedicated Legend Header Zone (Auto-Fit so station names never truncate like "岡"!)
+      const legendCount = legs.length;
+      const legendBottomY = my + 44 + legendCount * 44;
+
+      legs.forEach((leg, i) => {
+        const badgeY = my + 34 + i * 44;
+        const c = leg.color || detectLineColor(leg.line, '#0F62B1').color;
+        ctx.fillStyle = c;
+        ctx.beginPath(); ctx.roundRect(mx + 40, badgeY, 20, 30, 6); ctx.fill();
+        ctx.fillStyle = IC.ink;
+        const legendText = `${leg.line} (${leg.from} ➔ ${leg.to})`;
+        drawAutoFitSingleLine(ctx, legendText, mx + 72, badgeY + 23, mw - 110, 25, 17, '700', "'Noto Sans TC', sans-serif", 'left');
+      });
+
+      // Subtle divider below Legend Zone so map never touches Legend
+      ctx.strokeStyle = IC.ink;
+      ctx.globalAlpha = 0.08;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(mx + 40, legendBottomY + 8); ctx.lineTo(mx + mw - 40, legendBottomY + 8); ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // 2. Build Station Nodes
       const stations = [];
       legs.forEach((leg, i) => {
         if (i === 0) {
@@ -3563,12 +3730,10 @@
           lat: leg.toLat || (kTo ? kTo.lat : null),
           lng: leg.toLng || (kTo ? kTo.lng : null),
           role: (i === legs.length - 1) ? 'dest' : 'transfer',
-          inColor: leg.color || detectLineColor(leg.line, '#0F62B1').color,
-          lineName: leg.line
+          inColor: leg.color || detectLineColor(leg.line, '#0F62B1').color
         });
       });
 
-      // Fallback well-spaced coordinates if any station lacks lat/lng (Guarantees zero station stacking!)
       const defaultPath = [
         { lat: 25.16, lng: 121.44 },
         { lat: 25.05, lng: 121.52 },
@@ -3590,333 +3755,32 @@
       const spanLat = Math.max(0.012, maxLat - minLat);
       const spanLng = Math.max(0.012, maxLng - minLng);
 
-      const padX = 200, padY = 200;
-      const boxW = mw - padX * 2;
-      const boxH = mh - padY * 2;
+      // Safe Map Bounding Box strictly below Legend and with room for labels
+      const hasPhotoSticker = Boolean((ev.photos || [])[activeStoryPhotoIdx]);
+      const mapLeft = mx + 175;
+      const mapRight = mx + mw - (hasPhotoSticker ? 340 : 175);
+      const mapTop = legendBottomY + 95;
+      const mapBottom = my + mh - 110;
+      const boxW = Math.max(240, mapRight - mapLeft);
+      const boxH = Math.max(240, mapBottom - mapTop);
 
       const pts = stations.map(s => ({
         ...s,
-        x: mx + padX + ((s.lng - minLng) / spanLng) * boxW,
-        y: my + padY + (1 - (s.lat - minLat) / spanLat) * boxH
+        x: mapLeft + ((s.lng - minLng) / spanLng) * boxW,
+        y: mapTop + (1 - (s.lat - minLat) / spanLat) * boxH
       }));
 
-      // Enforce Minimum Pixel Separation between any two stations so labels & icons never collide
-      for (let iter = 0; iter < 4; iter++) {
+      // Enforce Minimum Station Distance
+      for (let iter = 0; iter < 5; iter++) {
         for (let i = 0; i < pts.length; i++) {
           for (let j = i + 1; j < pts.length; j++) {
             const dx = pts[j].x - pts[i].x;
             const dy = pts[j].y - pts[i].y;
             const dist = Math.hypot(dx, dy);
-            const minDist = 210;
+            const minDist = 195;
             if (dist < minDist) {
               const angle = dist > 1 ? Math.atan2(dy, dx) : (j * 0.9);
               const push = (minDist - dist) / 2;
-              pts[i].x -= Math.cos(angle) * push;
-              pts[i].y -= Math.sin(angle) * push;
-              pts[j].x += Math.cos(angle) * push;
-              pts[j].y += Math.sin(angle) * push;
-            }
-          }
-        }
-      }
-
-      // Draw Octilinear 45-degree Mini Metro Segments for Each Leg
-      const drawOctilinearSegment = (a, b, strokeHex, bendFirst) => {
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const diag = Math.min(Math.abs(dx), Math.abs(dy));
-        const sx = Math.sign(dx) || 1;
-        const sy = Math.sign(dy) || 1;
-        const knee = bendFirst
-          ? { x: a.x + sx * diag, y: a.y + sy * diag }
-          : { x: b.x - sx * diag, y: b.y - sy * diag };
-
-        ctx.strokeStyle = strokeHex;
-        ctx.lineWidth = 24;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(knee.x, knee.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
-      };
-
-      for (let i = 0; i < pts.length - 1; i++) {
-        const segColor = pts[i + 1].inColor || '#0F62B1';
-        drawOctilinearSegment(pts[i], pts[i + 1], segColor, i % 2 === 0);
-      }
-
-      // Draw Station Nodes & Non-Overlapping Labels
-      pts.forEach((p, idx) => {
-        ctx.fillStyle = IC.cardBg;
-        ctx.strokeStyle = IC.ink;
-        ctx.lineWidth = 9;
-
-        if (p.role === 'origin') {
-          ctx.fillRect(p.x - 24, p.y - 24, 48, 48);
-          ctx.strokeRect(p.x - 24, p.y - 24, 48, 48);
-        } else if (p.role === 'transfer') {
-          ctx.beginPath(); ctx.arc(p.x, p.y, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = IC.ink;
-          ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, Math.PI * 2); ctx.fill();
-        } else {
-          ctx.beginPath(); ctx.arc(p.x, p.y, 25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        }
-
-        // Smart Label Placement (Above or Below based on vertical position)
-        const placeAbove = (idx === 0) ? (p.y > my + 240) : (idx % 2 === 1);
-        const labelY = placeAbove ? (p.y - 46) : (p.y + 68);
-        const subY = placeAbove ? (p.y - 90) : (p.y + 104);
-
-        ctx.fillStyle = IC.ink;
-        ctx.font = "900 40px 'Noto Sans TC', sans-serif";
-        ctx.textAlign = 'center';
-        ctx.fillText(p.name, p.x, labelY);
-
-        ctx.font = "500 22px 'DM Mono', monospace";
-        if (p.role === 'origin') {
-          ctx.fillStyle = IC.muted;
-          ctx.fillText(`DEP ${ev.time}`, p.x, subY);
-        } else if (p.role === 'transfer') {
-          ctx.fillStyle = p.inColor || IC.stamp;
-          ctx.fillText('TRANSFER', p.x, subY);
-        } else if (ev.arrTime) {
-          ctx.fillStyle = p.inColor || IC.stamp;
-          ctx.fillText(`ARR ${ev.arrTime}`, p.x, subY);
-        }
-      });
-
-      // Official Line Legend Badges at Top-Left of Diagram Card
-      ctx.textAlign = 'left';
-      legs.forEach((leg, i) => {
-        const badgeY = my + 38 + i * 48;
-        const c = leg.color || detectLineColor(leg.line, '#0F62B1').color;
-        ctx.fillStyle = c;
-        ctx.beginPath(); ctx.roundRect(mx + 40, badgeY, 22, 32, 6); ctx.fill();
-        ctx.fillStyle = IC.ink;
-        ctx.font = "700 26px 'Noto Sans TC', sans-serif";
-        ctx.fillText(`${leg.line} (${leg.from} ➔ ${leg.to})`.slice(0, 26), mx + 74, badgeY + 25);
-      });
-
-      // Optional Tilted Photo Collage Sticker inside Transit Diagram!
-      const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
-      if (selectedPhoto && selectedPhoto.data) {
-        await new Promise((resPhoto) => {
-          const img = new Image();
-          img.onload = () => {
-            ctx.save();
-            const z = selectedPhoto.zoom || 1;
-            const ox = ((selectedPhoto.x || 0) / 100) * 360;
-            const oy = ((selectedPhoto.y || 0) / 100) * 360;
-            const stickerX = mx + mw - 230 + ox;
-            const stickerY = my + 240 + oy;
-            const tiltRad = -0.065; // Natural -3.7 deg collage tilt
-
-            ctx.translate(stickerX, stickerY);
-            ctx.rotate(tiltRad);
-            ctx.scale(z, z);
-
-            const pw = 280, ph = 320;
-            ctx.shadowColor = 'rgba(0,0,0,0.22)';
-            ctx.shadowBlur = 24;
-            ctx.shadowOffsetY = 10;
-            ctx.fillStyle = '#FFFFFF';
-            ctx.beginPath();
-            ctx.roundRect(-pw / 2, -ph / 2, pw, ph, 10);
-            ctx.fill();
-            ctx.shadowColor = 'transparent';
-
-            // Washi Tape at top of tilted Polaroid
-            ctx.fillStyle = 'rgba(217, 119, 6, 0.38)';
-            ctx.fillRect(-48, -ph / 2 - 12, 96, 26);
-
-            const imgW = pw - 28, imgH = ph - 64;
-            const s = Math.max(imgW / img.width, imgH / img.height);
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(-imgW / 2, -ph / 2 + 14, imgW, imgH);
-            ctx.clip();
-            ctx.drawImage(img, -(img.width * s) / 2, -ph / 2 + 14 + (imgH - img.height * s) / 2, img.width * s, img.height * s);
-            ctx.restore();
-
-            ctx.fillStyle = '#161616';
-            ctx.font = "500 18px 'DM Mono', monospace";
-            ctx.textAlign = 'center';
-            ctx.fillText(ev.time, 0, ph / 2 - 18);
-
-            ctx.restore();
-            resPhoto();
-          };
-          img.onerror = () => resPhoto();
-          img.src = selectedPhoto.data;
-        });
-      }
-
-      ctx.restore();
-
-      // Bottom Ticket Summary Card (Left Text Strictly Wrapped away from Right Stamp!)
-      ctx.fillStyle = IC.subCardBg;
-      ctx.beginPath();
-      ctx.roundRect(76, 1300, 928, 320, 20);
-      ctx.fill();
-
-      ctx.fillStyle = IC.ink;
-      ctx.font = "700 36px 'Noto Sans TC', sans-serif";
-      ctx.textAlign = 'left';
-      drawWrappedText(ctx, ev.title, 120, 1380, 440, 46, 2);
-
-      ctx.fillStyle = IC.muted;
-      ctx.font = "500 23px 'Noto Sans TC', sans-serif";
-      const cleanNote = (ev.note || ev.enSubtitle || '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-      drawWrappedText(ctx, cleanNote, 120, 1480, 430, 32, 2);
-
-      const st = getStampMetaForEvent(ev, IC);
-      const stampTitle = ev.cancelledAt ? 'TRANSIT CANCELLED ✕' : 'TRANSIT COMPLETED ✓';
-      drawCustomsStamp(ctx, 775, 1485, stampTitle, st.line2, st.color);
-    }
-
-    function drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC) {
-      ctx.fillStyle = OP.ink;
-      ctx.font = "700 30px 'DM Mono', monospace";
-      ctx.textAlign = 'left';
-      ctx.fillText('02 MARITIME PASS // FERRY EMBARKATION', 76, 358);
-
-      const tx = 76, ty = 410, tw = 928, th = 1200;
-      ctx.fillStyle = IC.cardBg;
-      ctx.beginPath();
-      ctx.roundRect(tx, ty, tw, th, 24);
-      ctx.fill();
-      ctx.strokeStyle = IC.ink;
-      ctx.lineWidth = 4;
-      ctx.stroke();
-
-      ctx.fillStyle = '#1B4965';
-      ctx.fillRect(tx, ty, tw, 130);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = "700 36px 'DM Mono', 'Noto Sans TC', monospace";
-      ctx.fillText('PASSENGER FERRY TICKET · 乗船券', tx + 54, ty + 80);
-
-      ctx.fillStyle = IC.ink;
-      ctx.font = "900 60px 'Noto Sans TC', sans-serif";
-      ctx.fillText(`${ev.fromCode || '高松港'}  ➔  ${ev.toCode || '豐島'}`, tx + 60, ty + 290);
-
-      ctx.font = "700 34px 'Noto Sans TC', sans-serif";
-      ctx.fillText(ev.enSubtitle || ev.title, tx + 60, ty + 375);
-
-      ctx.font = "500 30px 'DM Mono', monospace";
-      ctx.fillStyle = IC.muted;
-      ctx.fillText(`SAILING: ${ev.time}   /   ARRIVAL: ${ev.arrTime || '--:--'}`, tx + 60, ty + 455);
-
-      if (ev.note) {
-        ctx.font = "500 25px 'Noto Sans TC', sans-serif";
-        const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-        drawWrappedText(ctx, cleanNote, tx + 60, ty + 535, 780, 36, 3);
-      }
-
-      ctx.strokeStyle = IC.ink;
-      ctx.globalAlpha = 0.35;
-      ctx.lineWidth = 3;
-      ctx.setLineDash([16, 14]);
-      ctx.beginPath(); ctx.moveTo(tx, ty + 820); ctx.lineTo(tx + tw, ty + 820); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-
-      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
-      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '0925'}`;
-      drawVerticalBarcode(ctx, tx + 60, ty + 870, 96, 260, stampCode, IC.ink);
-
-      const st = getStampMetaForEvent(ev, IC);
-      drawCustomsStamp(ctx, tx + 650, ty + 1010, ev.cancelledAt ? 'CANCELLED ✕' : 'EMBARKED ✓', st.line2, st.color);
-    }
-
-    function drawCustomsStamp(ctx, cx, cy, line1, line2, color) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(-0.07);
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.roundRect(-195, -56, 390, 112, 12);
-      ctx.stroke();
-
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(-187, -48, 374, 96, 8);
-      ctx.stroke();
-
-      ctx.font = "700 23px 'DM Mono', monospace";
-      ctx.textAlign = 'center';
-      ctx.fillText(line1, 0, -8);
-      ctx.font = "500 19px 'DM Mono', monospace";
-      ctx.fillText(line2, 0, 26);
-      ctx.restore();
-    }
-
-    async function shareOrSaveStory() {
-      const canvas = document.getElementById('story-canvas');
-      canvas.toBlob(async (blob) => {
-        const file = new File([blob], `TABI-NOTE-${Date.now()}.png`, { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], title: 'TABI NOTE' });
-            return;
-          } catch (err) {}
-        }
-        alert('請直接「長按」上方預覽圖，選擇「加入『照片』」儲存至相簿！');
-      }, 'image/png');
-    }
-
-    function downloadStoryDesktop() {
-      const canvas = document.getElementById('story-canvas');
-      const a = document.createElement('a');
-      a.download = `TABI-NOTE-${Date.now()}.png`;
-      a.href = canvas.toDataURL('image/png');
-      a.click();
-    }
-
-    /* ==========================================================================
-       15. Modal Helpers & JSON Import/Export
-       ========================================================================== */
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    function exportJSON() {
-      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `tabi-note-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-    }
-
-    function importJSON(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const parsed = JSON.parse(ev.target.result);
-          if (parsed && Array.isArray(parsed.trips)) {
-            localStorage.setItem('tabi_note_state_v5', JSON.stringify(parsed));
-            appState = loadAndMigrateState();
-            persist();
-            renderAll();
-            alert('匯入成功！');
-          }
-        } catch {
-          alert('JSON 檔案格式不正確');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // Boot
-    window.addEventListener('resize', setupMobileScrollObserver);
-    initFormSelects();
-    generateRealPngAppIcon();
-    checkInitialLock();
-    renderAll();
-    setInterval(renderTimeline, 60000);
-  </script>
-</body>
-</html>
+              pts[i].x = Math.max(mapLeft - 30, Math.min(mapRight + 30, pts[i].x - Math.cos(angle) * push));
+              pts[i].y = Math.max(mapTop - 20, Math.min(mapBottom + 20, pts[i].y - Math.sin(angle) * push));
+              pts[j].x = Math.max(mapLeft - 30, Math.min(mapRight + 3
