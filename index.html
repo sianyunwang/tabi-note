@@ -9,10 +9,10 @@
   <meta name="theme-color" content="#F2EFE9" />
   <title>TABI NOTE</title>
 
-  <!-- Google Fonts: Dela Gothic One + Archivo + DM Mono + Zen Kaku Gothic New -->
+  <!-- Google Fonts: Dela Gothic One + Archivo + DM Mono + Noto Sans TC (100% Traditional Chinese coverage) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
 
   <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
@@ -28,22 +28,22 @@
       --ink: #161616;
       --ink-muted: #5A5751;
       --accent-rust: #C84B31;
+      --accent-slate: #52606D;
       --accent-blue: #1B5E91;
-      --accent-green: #2A6F4E;
 
       /* Liquid Glass Tokens */
-      --glass-bg: rgba(255, 255, 255, 0.62);
-      --glass-bg-strong: rgba(255, 255, 255, 0.85);
-      --glass-border: rgba(255, 255, 255, 0.80);
+      --glass-bg: rgba(255, 255, 255, 0.64);
+      --glass-bg-strong: rgba(255, 255, 255, 0.86);
+      --glass-border: rgba(255, 255, 255, 0.82);
       --glass-edge: rgba(22, 22, 22, 0.12);
       --glass-shadow: 0 12px 34px -8px rgba(20, 20, 20, 0.09), inset 0 1px 0 0 rgba(255, 255, 255, 0.94);
       --glass-blur: blur(24px) saturate(185%);
 
-      /* Hardcore Transit Timetable Fonts */
-      --font-brand: 'Dela Gothic One', sans-serif;
-      --font-display: 'Archivo', sans-serif;
-      --font-mono: 'DM Mono', monospace;
-      --font-body: 'Zen Kaku Gothic New', sans-serif;
+      /* Consistent Typography: Noto Sans TC + Archivo + DM Mono */
+      --font-brand: 'Dela Gothic One', 'Noto Sans TC', sans-serif;
+      --font-display: 'Archivo', 'Noto Sans TC', sans-serif;
+      --font-mono: 'DM Mono', 'Noto Sans TC', monospace;
+      --font-body: 'Noto Sans TC', sans-serif;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -62,9 +62,9 @@
       line-height: 1.55;
     }
 
-    /* Extra bottom buffer (46vh) so the bottom-most card on mobile easily scrolls into focus */
+    /* Generous bottom scroll buffer so the last card easily enters focus on mobile */
     body {
-      padding-bottom: calc(46vh + env(safe-area-inset-bottom, 20px));
+      padding-bottom: calc(48vh + env(safe-area-inset-bottom, 20px));
     }
 
     .liquid-glass {
@@ -79,7 +79,7 @@
       background: var(--glass-bg-strong);
       backdrop-filter: blur(28px) saturate(200%);
       -webkit-backdrop-filter: blur(28px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.92);
       box-shadow: 0 18px 46px -10px rgba(18, 18, 18, 0.16), inset 0 1px 0 0 rgba(255, 255, 255, 0.96);
     }
 
@@ -111,15 +111,17 @@
     .logo-badge {
       width: 36px;
       height: 36px;
-      background: #141414;
+      background: #080808;
       color: #F7F5F0;
       border-radius: 9px;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: var(--font-brand);
       font-size: 20px;
       line-height: 1;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.25);
+      padding-bottom: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.22);
     }
 
     .brand-title {
@@ -206,7 +208,7 @@
       padding: 0 16px;
     }
 
-    /* Weather + Daylight Spectrum Bar */
+    /* Weather + Dynamic Daylight Spectrum Bar */
     .day-banner {
       border-radius: 20px;
       padding: 14px 16px;
@@ -291,15 +293,6 @@
       position: relative;
       height: 8px;
       border-radius: 999px;
-      background: linear-gradient(90deg,
-        #1B263B 0%,
-        #3D5A80 20%,
-        #F4A261 27%,
-        #E9C46A 50%,
-        #E76F51 75%,
-        #1B263B 84%,
-        #0D1B2A 100%
-      );
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
     }
 
@@ -336,13 +329,24 @@
 
     .event-card.visited {
       border-color: rgba(200, 75, 49, 0.38);
-      background: rgba(255, 252, 248, 0.74);
+      background: rgba(255, 252, 248, 0.76);
+    }
+
+    .event-card.cancelled {
+      border-color: rgba(82, 96, 109, 0.35);
+      background: rgba(238, 236, 232, 0.62);
+      opacity: 0.86;
+    }
+
+    .event-card.cancelled .card-title {
+      text-decoration: line-through;
+      color: var(--ink-muted);
     }
 
     /* Real-Time NOW Active Event Highlight */
     .event-card.now-active {
       border: 2px solid var(--accent-rust);
-      background: rgba(255, 250, 244, 0.90);
+      background: rgba(255, 250, 244, 0.92);
       box-shadow: 0 0 0 4px rgba(200, 75, 49, 0.14), 0 16px 38px -8px rgba(200, 75, 49, 0.22);
     }
 
@@ -370,26 +374,26 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
     }
 
     .card-left-meta {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
+      gap: 11px;
       flex: 1;
       min-width: 0;
     }
 
     .seq-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: #161616;
       color: #FFF;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
       display: grid;
       place-items: center;
@@ -397,6 +401,7 @@
       margin-top: 2px;
     }
     .event-card.visited .seq-badge, .event-card.now-active .seq-badge { background: var(--accent-rust); }
+    .event-card.cancelled .seq-badge { background: var(--accent-slate); }
 
     .time-block {
       font-family: var(--font-mono);
@@ -408,6 +413,7 @@
       align-items: center;
       gap: 6px;
     }
+    .event-card.cancelled .time-block { color: var(--accent-slate); }
 
     .tz-badge {
       font-size: 10.5px;
@@ -419,7 +425,7 @@
 
     .card-title {
       font-family: var(--font-body);
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 700;
       margin: 3px 0 0;
       color: var(--ink);
@@ -431,37 +437,60 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--ink-muted);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
       margin-top: 2px;
     }
 
-    /* Completion Button ("完成" vs "✓ 完成") */
-    .stamp-action-btn {
-      flex-shrink: 0;
-      padding: 6px 12px;
-      border-radius: 10px;
-      border: 1.5px dashed rgba(200, 75, 49, 0.58);
-      background: rgba(255, 255, 255, 0.45);
-      color: var(--accent-rust);
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
+    /* Dual Stamp Buttons ("完成" & "取消") */
+    .stamp-btn-group {
+      display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      flex-shrink: 0;
     }
 
+    .stamp-action-btn {
+      padding: 5px 10px;
+      border-radius: 9px;
+      border: 1.5px dashed rgba(200, 75, 49, 0.55);
+      background: rgba(255, 255, 255, 0.48);
+      color: var(--accent-rust);
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
     .stamp-action-btn:hover { background: rgba(200, 75, 49, 0.12); }
-
     .stamp-action-btn.stamped {
       border-style: solid;
       background: var(--accent-rust);
       color: #FFFFFF;
       border-color: var(--accent-rust);
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(200, 75, 49, 0.26);
+      box-shadow: 0 3px 10px rgba(200, 75, 49, 0.25);
+    }
+
+    .cancel-action-btn {
+      padding: 5px 10px;
+      border-radius: 9px;
+      border: 1.5px dashed rgba(82, 96, 109, 0.5);
+      background: rgba(255, 255, 255, 0.45);
+      color: var(--accent-slate);
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .cancel-action-btn:hover { background: rgba(82, 96, 109, 0.12); }
+    .cancel-action-btn.stamped {
+      border-style: solid;
+      background: var(--accent-slate);
+      color: #FFFFFF;
+      border-color: var(--accent-slate);
+      box-shadow: 0 3px 10px rgba(82, 96, 109, 0.25);
     }
 
     /* Responsive Accordion Body */
@@ -484,7 +513,7 @@
 
     .card-body-inner { overflow: hidden; min-height: 0; }
 
-    /* Speech Bubble Note Box — Top-Left Pointer Tail & Zero Prefix Text */
+    /* Speech Bubble Note Box — Top-Left Pointer Tail */
     .speech-note-bubble {
       position: relative;
       font-size: 13.5px;
@@ -493,13 +522,12 @@
       border: 1px solid rgba(22, 22, 22, 0.11);
       padding: 11px 14px;
       border-radius: 4px 16px 16px 16px;
-      margin: 12px 0 12px 4px;
+      margin: 10px 0 12px 4px;
       white-space: pre-line;
       word-break: break-word;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     }
 
-    /* Upward-left triangle tail pointing toward the title/time above */
     .speech-note-bubble::before {
       content: '';
       position: absolute;
@@ -541,16 +569,23 @@
     }
     .note-link-edit-btn:hover { background: #161616; color: #FFF; }
 
-    /* Polaroid Frame with Custom Crop/Zoom Support */
+    /* Multi-Photo Horizontal Gallery inside Event Card */
+    .photo-gallery-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 2px 10px;
+      scrollbar-width: thin;
+    }
+
     .polaroid-frame {
       background: #FFFFFF;
-      padding: 10px 10px 14px;
+      padding: 9px 9px 12px;
       border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       border: 1px solid rgba(0,0,0,0.06);
-      margin: 8px 0 12px;
-      display: inline-block;
-      max-width: 100%;
+      flex-shrink: 0;
+      max-width: min(320px, 78vw);
     }
 
     .polaroid-viewport {
@@ -560,27 +595,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      max-width: 100%;
     }
 
     .polaroid-viewport img {
       display: block;
       max-width: 100%;
-      max-height: 360px;
+      max-height: 290px;
       width: auto;
       height: auto;
       transition: transform 0.15s ease;
     }
 
     .polaroid-caption {
-      margin-top: 8px;
+      margin-top: 7px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--accent-rust);
-      gap: 12px;
+      gap: 10px;
     }
 
     .vintage-postmark {
@@ -597,14 +631,24 @@
       margin-bottom: 8px;
       background: rgba(200, 75, 49, 0.05);
     }
+    .vintage-postmark.cancelled-mark {
+      border-color: var(--accent-slate);
+      color: var(--accent-slate);
+      background: rgba(82, 96, 109, 0.07);
+    }
 
+    /* Clean Text-Only Single-Row Footer Toolbar */
     .card-footer-tools {
       display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
+      align-items: center;
+      gap: 6px;
       padding-top: 10px;
       border-top: 1px dashed rgba(0,0,0,0.11);
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .card-footer-tools::-webkit-scrollbar { display: none; }
 
     .tool-chip {
       font-size: 12px;
@@ -612,14 +656,16 @@
       padding: 5px 11px;
       border-radius: 8px;
       border: 1px solid var(--glass-edge);
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.78);
       color: var(--ink);
       text-decoration: none;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
       font-family: var(--font-body);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .tool-chip:hover { background: #161616; color: #FFF; }
     .tool-chip.share-btn {
@@ -628,6 +674,10 @@
       color: var(--accent-rust);
     }
     .tool-chip.share-btn:hover { background: var(--accent-rust); color: #FFF; }
+    .tool-chip.delete-btn {
+      margin-left: auto;
+      color: #8C867E;
+    }
 
     /* Map */
     .map-wrapper { border-radius: 22px; padding: 14px; }
@@ -677,7 +727,7 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     }
 
-    /* Bottom Dock (Clean 3-Item Layout for Mobile) */
+    /* Bottom Dock (Clean 3-Item Layout) */
     nav.bottom-dock {
       position: fixed;
       bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
@@ -732,7 +782,7 @@
 
     .modal-card {
       width: 100%;
-      max-width: min(510px, calc(100vw - 24px));
+      max-width: min(520px, calc(100vw - 24px));
       max-height: 90vh;
       overflow-y: auto;
       overflow-x: hidden;
@@ -781,7 +831,7 @@
       padding: 8px 10px;
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.18);
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.92);
       font-family: var(--font-body);
       font-size: 13px;
     }
@@ -795,6 +845,36 @@
     }
     .time-select-group select { flex: 1; min-width: 0; font-family: var(--font-mono); padding: 8px 6px; }
 
+    /* Structured Multi-Leg Train Editor */
+    .transit-leg-box {
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    /* Multi-Photo Thumbnail Strip in Editor & Story Modal */
+    .thumb-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 6px 0;
+    }
+    .thumb-item {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: #000;
+    }
+    .thumb-item.active { border-color: var(--accent-rust); }
+    .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+
     .crop-preview-box {
       background: #181818;
       border-radius: 12px;
@@ -805,7 +885,7 @@
     }
     .crop-stage {
       width: 100%;
-      height: 185px;
+      height: 180px;
       overflow: hidden;
       border-radius: 8px;
       background: #000;
@@ -837,14 +917,13 @@
     }
     .tpl-btn.active { background: #161616; color: #FFF; }
 
-    /* Story Paper Swatch Bar */
+    /* Dual-Layer Paper Swatches */
     .paper-swatch-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 6px;
-      margin: 8px 0;
-      padding: 8px 10px;
+      margin: 6px 0;
+      padding: 7px 10px;
       background: rgba(255,255,255,0.55);
       border-radius: 12px;
       overflow-x: auto;
@@ -853,7 +932,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 10px;
+      padding: 4px 9px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
@@ -932,10 +1011,10 @@
 
       <div class="toolbar-actions">
         <button class="pill-btn active" onclick="openEventModal()">＋ 新增行程</button>
-        <button class="pill-btn" onclick="openTripManagerModal()">🗂️ 旅行專案 (<span id="trip-count-num">1</span>)</button>
-        <button class="pill-btn rust" id="top-booklet-btn" onclick="switchView('booklet', null)">📖 典藏旅程</button>
-        <button class="pill-btn" id="lock-status-btn" onclick="openSecurityModal()">🔓 密碼鎖</button>
-        <button class="pill-btn" onclick="exportJSON()">匯出 JSON</button>
+        <button class="pill-btn" onclick="openTripManagerModal()">旅行專案 (<span id="trip-count-num">1</span>)</button>
+        <button class="pill-btn rust" id="top-booklet-btn" onclick="switchView('booklet', null)">典藏旅程</button>
+        <button class="pill-btn" id="lock-status-btn" onclick="openSecurityModal()">密碼鎖</button>
+        <button class="pill-btn" onclick="exportJSON()">匯出</button>
         <button class="pill-btn" onclick="document.getElementById('import-file').click()">匯入</button>
         <input type="file" id="import-file" accept=".json" hidden onchange="importJSON(event)" />
       </div>
@@ -946,12 +1025,12 @@
   </header>
 
   <main class="container">
-    <!-- Day Pills + Weather + Daylight Solar Trajectory -->
+    <!-- Day Pills + Weather + Dynamic Daylight Solar Trajectory -->
     <div class="day-banner liquid-glass">
       <div class="day-banner-top">
         <div class="day-pills" id="day-pills"></div>
         <div style="display:flex; align-items:center; gap:6px;">
-          <button class="pill-btn" id="tz-toggle-btn" onclick="toggleHomeTime()">🏠 家鄉時區對照：開</button>
+          <button class="pill-btn" id="tz-toggle-btn" onclick="toggleHomeTime()">家鄉時區對照：開</button>
         </div>
       </div>
 
@@ -964,9 +1043,9 @@
 
         <div class="solar-track-wrap">
           <div class="solar-labels">
-            <span id="sunrise-label">🌅 日出 06:15</span>
+            <span id="sunrise-label">日出 06:15</span>
             <span id="day-tz-label">時區：Asia/Tokyo</span>
-            <span id="sunset-label">🌇 日落 17:05</span>
+            <span id="sunset-label">日落 17:05</span>
           </div>
           <div class="solar-spectrum" id="solar-spectrum-bar"></div>
         </div>
@@ -982,8 +1061,8 @@
     <section id="view-map" class="view-section">
       <div class="map-wrapper liquid-glass">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <span style="font-family:var(--font-mono); font-size:12.5px; font-weight:600;">🗺️ ROUTE MAP · 今日地理動線</span>
-          <a id="gmaps-multi-route" href="#" target="_blank" rel="noopener" class="pill-btn active">地圖完整導航 ↗</a>
+          <span style="font-family:var(--font-mono); font-size:12.5px; font-weight:600;">ROUTE MAP · 今日地理動線</span>
+          <a id="gmaps-multi-route" href="#" target="_blank" rel="noopener" class="pill-btn active">地圖完整導航</a>
         </div>
         <div id="leaflet-map"></div>
       </div>
@@ -995,20 +1074,20 @@
         <!-- Checklist / Reminders Panel -->
         <div class="liquid-glass" style="border-radius:20px; padding:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">✅ 隨身清單與提醒事項</h3>
+            <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">隨身清單與提醒事項</h3>
             <span style="font-family:var(--font-mono); font-size:11px; color:var(--ink-muted);" id="checklist-trip-tag">本趟專屬</span>
           </div>
           <form onsubmit="addChecklistItem(event)" style="display:flex; gap:6px; margin-bottom:12px;">
-            <input type="text" id="new-todo-input" required placeholder="新增提醒（如：護照、Suica、加床信用卡...）" style="flex:1; min-width:0; padding:8px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.18); font-family:var(--font-body); font-size:13px;" />
+            <input type="text" id="new-todo-input" required placeholder="新增提醒（如：護照、網卡、加床信用卡...）" style="flex:1; min-width:0; padding:8px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.18); font-family:var(--font-body); font-size:13px;" />
             <button type="submit" class="pill-btn active" style="flex-shrink:0;">＋ 新增</button>
           </form>
           <div id="checklist-container"></div>
         </div>
 
-        <!-- Per-Trip Isolated Budget Panel -->
+        <!-- Per-Trip Isolated Budget Panel (Auto-excludes Cancelled events) -->
         <div class="liquid-glass" style="border-radius:20px; padding:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">💰 本趟旅程預算累計</h3>
+            <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">本趟旅程預算累計</h3>
             <span style="font-family:var(--font-mono); font-size:11px; color:var(--ink-muted);" id="budget-trip-tag">獨立計算</span>
           </div>
           <div id="budget-list"></div>
@@ -1016,7 +1095,7 @@
       </div>
     </section>
 
-    <!-- VIEW 4: Keepsake Archive (典藏旅程 — Zen Kaku Gothic New Bold Heading) -->
+    <!-- VIEW 4: Keepsake Archive (典藏旅程 — Noto Sans TC Bold Heading) -->
     <section id="view-booklet" class="view-section">
       <div class="liquid-glass" style="border-radius:22px; padding:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
@@ -1024,21 +1103,21 @@
             <h2 style="margin:0; font-family:var(--font-body); font-weight:900; font-size:22px; letter-spacing:0.02em;" id="booklet-trip-title">典藏旅程</h2>
             <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--ink-muted);" id="booklet-trip-meta">ARCHIVE EDITION</div>
           </div>
-          <button class="pill-btn active" onclick="window.print()">🖨️ 列印 / 存為 PDF</button>
+          <button class="pill-btn active" onclick="window.print()">列印 / 存為 PDF</button>
         </div>
         <div class="booklet-grid" id="booklet-grid"></div>
       </div>
     </section>
   </main>
 
-  <!-- Bottom Navigation Dock (Strictly 3 Clean Items) -->
+  <!-- Bottom Navigation Dock (3 Items) -->
   <nav class="bottom-dock liquid-glass-strong">
-    <button class="dock-item active" data-view="timeline" onclick="switchView('timeline', this)">📅 時間軸</button>
-    <button class="dock-item" data-view="map" onclick="switchView('map', this)">🗺️ 路線圖</button>
-    <button class="dock-item" data-view="budget" onclick="switchView('budget', this)">💰 清單/預算</button>
+    <button class="dock-item active" data-view="timeline" onclick="switchView('timeline', this)">時間軸</button>
+    <button class="dock-item" data-view="map" onclick="switchView('map', this)">路線圖</button>
+    <button class="dock-item" data-view="budget" onclick="switchView('budget', this)">清單/預算</button>
   </nav>
 
-  <!-- MODAL 1: Add / Edit Event Modal (Mobile Width Locked + Global TZ + Transit Colors) -->
+  <!-- MODAL 1: Add / Edit Event Modal (Multi-Leg Train + Flight Terminals + Multi-Photo) -->
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1083,36 +1162,47 @@
         </div>
 
         <label>行程
-          <input type="text" id="ev-title" required placeholder="例如：新木場駅 ➔ 銀座 ➔ 神谷町駅" />
+          <input type="text" id="ev-title" required placeholder="例如：淡水 ➔ 南京復興 或 長榮航空 BR012" />
         </label>
 
-        <label>副標 / 班次與路線名稱 (支援台日美地鐵自動配對官方路線色)
-          <input type="text" id="ev-en" placeholder="例如：東京メトロ有楽町線 ➔ 日比谷線 或 板南線" oninput="autoMatchTransitColorsFromInput()" />
+        <!-- Dedicated Flight Fields (Airport Codes + Terminals) -->
+        <div id="flight-fields-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
+          <div style="font-size:11.5px; font-weight:700; margin-bottom:8px; color:var(--accent-blue);">✈️ 航班與機場航廈資訊（機票圖卡僅印機場代號）</div>
+          <div class="form-row-2" style="margin-bottom:8px;">
+            <label>出發機場代號<input type="text" id="fl-from-code" placeholder="TPE" /></label>
+            <label>出發航廈 (選填)<input type="text" id="fl-from-term" placeholder="T2" /></label>
+          </div>
+          <div class="form-row-2" style="margin-bottom:8px;">
+            <label>抵達機場代號<input type="text" id="fl-to-code" placeholder="LAX" /></label>
+            <label>抵達航廈 (選填)<input type="text" id="fl-to-term" placeholder="TBIT" /></label>
+          </div>
+          <label>航班代號 / 機型<input type="text" id="fl-number" placeholder="BR012 · BOEING 777-300ER" /></label>
+        </div>
+
+        <!-- Dedicated Multi-Leg Train / Subway Editor -->
+        <div id="train-legs-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:11.5px; font-weight:700; color:var(--accent-rust);">🚃 分段車站與路線設定（自動配對台日美官方路線色）</span>
+            <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px;" onclick="addTrainLegRow()">＋ 新增轉乘段</button>
+          </div>
+          <div id="train-legs-container"></div>
+        </div>
+
+        <!-- Dedicated Ferry Fields -->
+        <div id="ferry-fields-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
+          <div class="form-row-2" style="margin-bottom:8px;">
+            <label>出發港口<input type="text" id="fe-from-port" placeholder="高松港" /></label>
+            <label>抵達港口<input type="text" id="fe-to-port" placeholder="豐島家浦港" /></label>
+          </div>
+          <label>船班 / 船公司名稱<input type="text" id="fe-vessel" placeholder="豊島フェリー 高速船" /></label>
+        </div>
+
+        <!-- Spot Subtitle -->
+        <label id="spot-subtitle-label">副標 / 補充說明 (選填)
+          <input type="text" id="ev-en" placeholder="例如：展覽時段或餐廳備註" />
         </label>
 
-        <div id="transit-endpoints-group" class="form-row-3">
-          <label>起點站/機場<input type="text" id="ev-from" placeholder="新木場 / TPE" /></label>
-          <label>轉乘站 (選填)<input type="text" id="ev-via" placeholder="銀座" /></label>
-          <label>終點站/機場<input type="text" id="ev-to" placeholder="神谷町 / LAX" /></label>
-        </div>
-
-        <!-- Transit Official Line Color Pickers (Auto-matched + Manual Override) -->
-        <div id="transit-color-group" class="form-row-2" style="display:none; background:rgba(255,255,255,0.55); padding:8px 10px; border-radius:10px;">
-          <label>第一段路線代表色
-            <div style="display:flex; align-items:center; gap:6px;">
-              <input type="color" id="ev-line-color1" value="#C1A470" style="width:42px; height:32px; padding:2px; cursor:pointer;" />
-              <span id="line-color1-hint" style="font-size:11px; color:var(--ink-muted);">自動匹配/自訂</span>
-            </div>
-          </label>
-          <label>轉乘後路線代表色
-            <div style="display:flex; align-items:center; gap:6px;">
-              <input type="color" id="ev-line-color2" value="#B5B5AC" style="width:42px; height:32px; padding:2px; cursor:pointer;" />
-              <span id="line-color2-hint" style="font-size:11px; color:var(--ink-muted);">自動匹配/自訂</span>
-            </div>
-          </label>
-        </div>
-
-        <label>地址或地標名稱 (自動抓取地圖座標與店家電話門牌)
+        <label>地址或地標名稱 (自動抓取地圖座標與店家詳情)
           <input type="text" id="ev-address" placeholder="例如：JR-East Hotel Mets Premier Tokyo Bay Shinkiba" />
         </label>
 
@@ -1136,16 +1226,17 @@
           <textarea id="ev-note" rows="2" placeholder="車站出口、訂位網址 https://... 或 [訂位確認單](https://...)"></textarea>
         </label>
 
-        <label>上傳照片
-          <input type="file" id="ev-photo" accept="image/*" onchange="handleFormPhotoSelect(event)" />
+        <label>上傳照片 (可一次多選多張照片，自動最佳化畫質與容量)
+          <input type="file" id="ev-photo" accept="image/*" multiple onchange="handleFormMultiPhotoSelect(event)" />
         </label>
 
-        <!-- Photo Remove & Crop/Focus Adjustment Controls -->
+        <!-- Multi-Photo Gallery & Crop/Focus Adjustment Controls -->
         <div id="photo-edit-panel" class="crop-preview-box" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:11.5px;">
-            <span>🖼️ 畫面構圖與裁切微調</span>
-            <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px; background:#C84B31; color:#FFF; border:none;" onclick="removeCurrentPhoto()">🗑️ 移除照片</button>
+            <span>相片管理 (<span id="photo-count-badge">0</span> 張) — 點選縮圖可個別調整或刪除</span>
+            <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px; background:#C84B31; color:#FFF; border:none;" onclick="removeActivePhotoInForm()">刪除此張</button>
           </div>
+          <div class="thumb-strip" id="form-thumb-strip"></div>
           <div class="crop-stage">
             <img id="form-crop-preview" src="" alt="Preview" />
           </div>
@@ -1171,7 +1262,7 @@
   <div class="modal-backdrop" id="trip-manager-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-size:15px;">🗂️ 旅行專案管理</strong>
+        <strong style="font-size:15px;">旅行專案管理</strong>
         <button class="pill-btn" onclick="closeModal('trip-manager-modal')">完成</button>
       </div>
 
@@ -1197,8 +1288,8 @@
       </div>
 
       <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.12); display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <span style="font-size:11.5px; color:var(--ink-muted);">📱 桌面「旅」字 Icon (Dela Gothic One)</span>
-        <button class="pill-btn" onclick="downloadAppIconPng()">⬇️ 下載 icon.png 備用</button>
+        <span style="font-size:11.5px; color:var(--ink-muted);">桌面「旅」字滿版純黑 Icon</span>
+        <button class="pill-btn" onclick="downloadAppIconPng()">下載 icon.png</button>
       </div>
     </div>
   </div>
@@ -1207,7 +1298,7 @@
   <div class="modal-backdrop" id="day-meta-modal">
     <div class="modal-card liquid-glass-strong" style="max-width:400px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-size:14px;">☀️ 當日天氣與日照光軌設定</strong>
+        <strong style="font-size:14px;">當日天氣與日照光軌設定</strong>
         <button class="pill-btn" onclick="closeModal('day-meta-modal')">關閉</button>
       </div>
       <div class="form-grid">
@@ -1234,7 +1325,7 @@
   <div class="modal-backdrop" id="security-modal">
     <div class="modal-card liquid-glass-strong" style="max-width:380px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-size:14px;">🔐 手冊獨立密碼鎖設定</strong>
+        <strong style="font-size:14px;">手冊獨立密碼鎖設定</strong>
         <button class="pill-btn" onclick="closeModal('security-modal')">關閉</button>
       </div>
       <p style="font-size:12px; color:var(--ink-muted); margin:8px 0;">設定密碼後，其他人打開連結需輸入密碼才能查看私人動線；留空則代表公開不設密碼。</p>
@@ -1248,49 +1339,62 @@
     </div>
   </div>
 
-  <!-- MODAL 5: 9:16 IG Story Share Modal (Paired Paper Swatches + 3 Templates) -->
+  <!-- MODAL 5: 9:16 IG Story Share Modal (Dual-Layer Paper Swatches + Photo Collage) -->
   <div class="modal-backdrop" id="story-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="font-family:var(--font-mono); font-size:13px;">📲 9:16 限動圖卡分享</strong>
+        <strong style="font-family:var(--font-mono); font-size:13px;">9:16 限動圖卡分享</strong>
         <button class="pill-btn" onclick="closeModal('story-modal')">關閉</button>
       </div>
 
       <div class="template-tabs">
-        <button class="tpl-btn active" data-tpl="polaroid" onclick="setStoryTemplate('polaroid')">📷 拍立得底片</button>
-        <button class="tpl-btn" data-tpl="flight" onclick="setStoryTemplate('flight')">✈️ 航空軌跡</button>
-        <button class="tpl-btn" data-tpl="transit" onclick="setStoryTemplate('transit')">🚃 鐵道 / 船票</button>
+        <button class="tpl-btn active" data-tpl="polaroid" onclick="setStoryTemplate('polaroid')">拍立得底片</button>
+        <button class="tpl-btn" data-tpl="flight" onclick="setStoryTemplate('flight')">航空軌跡</button>
+        <button class="tpl-btn" data-tpl="transit" onclick="setStoryTemplate('transit')">鐵道 / 船票</button>
       </div>
 
-      <!-- 5 Paired Paper Color Themes (Auto-inverting Ink & Contrast) -->
-      <div class="paper-swatch-row" id="paper-swatch-row"></div>
+      <!-- Layer 1: Outer Background Paper Swatches -->
+      <div class="paper-swatch-row" id="outer-paper-swatch-row"></div>
+      <!-- Layer 2: Inner Card / Ticket Paper Swatches -->
+      <div class="paper-swatch-row" id="inner-paper-swatch-row"></div>
 
-      <!-- Flight Overlay & Story Crop Fine-Tune -->
+      <!-- Multi-Photo Selector + Collage / Crop Fine-Tune -->
       <div id="story-extra-controls" style="background:rgba(255,255,255,0.55); padding:10px; border-radius:12px; margin-bottom:8px; font-size:11.5px;">
+        <div id="story-photo-picker-wrap" style="display:none; margin-bottom:8px;">
+          <div style="margin-bottom:4px; font-weight:700;">選擇要放入限動的照片（或上傳新照片）：</div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="thumb-strip" id="story-thumb-strip" style="flex:1;"></div>
+            <label class="pill-btn" style="cursor:pointer; flex-shrink:0;">＋ 照片
+              <input type="file" accept="image/*" multiple hidden onchange="uploadPhotoFromStoryModal(event)" />
+            </label>
+          </div>
+        </div>
+
         <div id="flight-bg-row" style="display:none; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <label class="pill-btn" style="cursor:pointer;">
-            ☁️ 疊加機窗背景照
+            疊加機窗背景照
             <input type="file" accept="image/*" hidden onchange="handleFlightBgUpload(event)" />
           </label>
           <button class="pill-btn" onclick="clearFlightBg()">恢復世界地圖底圖</button>
         </div>
+
         <div class="form-row-3">
-          <label>相片縮放<input type="range" id="st-zoom" min="1" max="2.5" step="0.05" value="1" oninput="syncStoryCrop()" /></label>
-          <label>左右焦點<input type="range" id="st-x" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
-          <label>上下焦點<input type="range" id="st-y" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
+          <label>相片縮放/大小<input type="range" id="st-zoom" min="0.75" max="2.4" step="0.05" value="1" oninput="syncStoryCrop()" /></label>
+          <label>左右位置/焦點<input type="range" id="st-x" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
+          <label>上下位置/角度<input type="range" id="st-y" min="-45" max="45" step="1" value="0" oninput="syncStoryCrop()" /></label>
         </div>
       </div>
 
       <div class="story-preview-stage">
         <img id="story-output-img" alt="9:16 Story Preview" />
         <div style="font-size:11px; color:var(--ink-muted); margin-top:8px; text-align:center;">
-          💡 iPhone 可直接<strong>長按上方圖片 ➔ 加入「照片」</strong>，或點擊下方分享
+          iPhone 可直接<strong>長按上方圖片 ➔ 加入「照片」</strong>，或點擊下方分享
         </div>
       </div>
 
       <div class="form-row-2">
-        <button class="pill-btn active" style="justify-content:center; padding:10px;" onclick="shareOrSaveStory()">📤 分享 / 儲存至相簿</button>
-        <button class="pill-btn" style="justify-content:center; padding:10px;" onclick="downloadStoryDesktop()">⬇️ 下載 PNG</button>
+        <button class="pill-btn active" style="justify-content:center; padding:10px;" onclick="shareOrSaveStory()">分享 / 儲存至相簿</button>
+        <button class="pill-btn" style="justify-content:center; padding:10px;" onclick="downloadStoryDesktop()">下載 PNG</button>
       </div>
     </div>
   </div>
@@ -1301,14 +1405,27 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     /* ==========================================================================
-       1. Guaranteed Dela Gothic One PNG App Icon ("旅") & PWA Setup
+       1. Optical Centering Helper & Pure Black Full-Bleed App Icon ("旅")
        ========================================================================== */
     let cachedAppIconDataUrl = '';
+
+    // Precision optical center drawing using bounding box metrics so "旅" never clips or sinks
+    function fillTextOpticallyCentered(ctx, text, centerX, centerY) {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      const m = ctx.measureText(text);
+      const ascent = m.actualBoundingBoxAscent || 0;
+      const descent = m.actualBoundingBoxDescent || 0;
+      const yOffset = (ascent - descent) / 2;
+      ctx.fillText(text, centerX, centerY + yOffset);
+      ctx.restore();
+    }
 
     async function generateRealPngAppIcon() {
       try {
         if (document.fonts) {
-          await document.fonts.load("400 268px 'Dela Gothic One'");
+          await document.fonts.load("400 280px 'Dela Gothic One'");
           await document.fonts.ready;
         }
       } catch (e) {}
@@ -1319,25 +1436,14 @@
         c.height = 512;
         const ctx = c.getContext('2d');
 
-        // Black Rounded Square
-        ctx.fillStyle = '#141414';
-        ctx.beginPath();
-        ctx.roundRect(0, 0, 512, 512, 112);
-        ctx.fill();
+        // Full-bleed Pure Obsidian Black Square (Let iOS apply native squircle mask cleanly without double border)
+        ctx.fillStyle = '#080808';
+        ctx.fillRect(0, 0, 512, 512);
 
-        // Subtle Inner Rim Highlight
-        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.roundRect(22, 22, 468, 468, 92);
-        ctx.stroke();
-
-        // "旅" in Dela Gothic One
+        // Optically centered "旅" in Dela Gothic One
         ctx.fillStyle = '#F7F5F0';
-        ctx.font = "400 272px 'Dela Gothic One', sans-serif";
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('旅', 256, 270);
+        ctx.font = "400 286px 'Dela Gothic One', sans-serif";
+        fillTextOpticallyCentered(ctx, '旅', 256, 256);
 
         cachedAppIconDataUrl = c.toDataURL('image/png');
         document.getElementById('apple-touch-icon').href = cachedAppIconDataUrl;
@@ -1348,11 +1454,11 @@
           short_name: 'TABI NOTE',
           start_url: '.',
           display: 'standalone',
-          background_color: '#F2EFE9',
-          theme_color: '#141414',
+          background_color: '#080808',
+          theme_color: '#080808',
           icons: [
             { src: cachedAppIconDataUrl, sizes: '180x180', type: 'image/png', purpose: 'any' },
-            { src: cachedAppIconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+            { src: cachedAppIconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any' }
           ]
         };
         const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
@@ -1360,8 +1466,7 @@
       };
 
       renderIcon();
-      // Second pass after 800ms to guarantee Google Font glyphs are rasterized on slow connections
-      setTimeout(renderIcon, 800);
+      setTimeout(renderIcon, 900);
     }
 
     function downloadAppIconPng() {
@@ -1373,21 +1478,129 @@
     }
 
     /* ==========================================================================
-       2. Global Transit Official Line Color Dictionary (Taiwan, Japan, SF, NYC)
+       2. Smart Image Compression Pipeline (Prevents localStorage 5MB Quota Crash)
        ========================================================================== */
+    function compressImageFile(file, maxDim = 1440, quality = 0.82) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            const c = document.createElement('canvas');
+            c.width = w;
+            c.height = h;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => resolve(e.target.result);
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ==========================================================================
+       3. Built-in Offline Station Coordinate Dictionary & Official Line Colors
+       ========================================================================== */
+    // Instant high-accuracy coordinates for Taiwan, Tokyo, Kansai, SF & NYC stations so stations never stack
+    const KNOWN_STATIONS_DB = {
+      // Taipei Metro / Taiwan
+      '淡水': { lat: 25.1678, lng: 121.4455 },
+      '北投': { lat: 25.1318, lng: 121.4986 },
+      '劍潭': { lat: 25.0848, lng: 121.5250 },
+      '圓山': { lat: 25.0714, lng: 121.5201 },
+      '民權西路': { lat: 25.0629, lng: 121.5193 },
+      '雙連': { lat: 25.0578, lng: 121.5206 },
+      '中山': { lat: 25.0526, lng: 121.5204 },
+      '台北車站': { lat: 25.0478, lng: 121.5170 },
+      '臺北車站': { lat: 25.0478, lng: 121.5170 },
+      '西門': { lat: 25.0421, lng: 121.5083 },
+      '中正紀念堂': { lat: 25.0327, lng: 121.5182 },
+      '東門': { lat: 25.0338, lng: 121.5287 },
+      '大安': { lat: 25.0330, lng: 121.5435 },
+      '台北101': { lat: 25.0331, lng: 121.5632 },
+      '象山': { lat: 25.0328, lng: 121.5701 },
+      '松江南京': { lat: 25.0520, lng: 121.5330 },
+      '南京復興': { lat: 25.0523, lng: 121.5440 },
+      '台北小巨蛋': { lat: 25.0517, lng: 121.5515 },
+      '南京三民': { lat: 25.0515, lng: 121.5637 },
+      '松山': { lat: 25.0500, lng: 121.5777 },
+      '忠孝新生': { lat: 25.0423, lng: 121.5329 },
+      '忠孝復興': { lat: 25.0416, lng: 121.5438 },
+      '忠孝敦化': { lat: 25.0415, lng: 121.5511 },
+      '國父紀念館': { lat: 25.0413, lng: 121.5575 },
+      '市政府': { lat: 25.0411, lng: 121.5652 },
+      '南港': { lat: 25.0521, lng: 121.6066 },
+      '板橋': { lat: 25.0138, lng: 121.4622 },
+      '古亭': { lat: 25.0263, lng: 121.5229 },
+      '公館': { lat: 25.0149, lng: 121.5342 },
+      '新店': { lat: 24.9578, lng: 121.5375 },
+      '桃園': { lat: 25.0108, lng: 121.2153 },
+      '台中': { lat: 24.1118, lng: 120.6156 },
+      '臺中': { lat: 24.1118, lng: 120.6156 },
+      '左營': { lat: 22.6874, lng: 120.3075 },
+      '高雄': { lat: 22.6396, lng: 120.3026 },
+
+      // Tokyo / Japan
+      '新木場': { lat: 35.6458, lng: 139.8266 },
+      '豊洲': { lat: 35.6550, lng: 139.7960 },
+      '月島': { lat: 35.6644, lng: 139.7845 },
+      '銀座': { lat: 35.6712, lng: 139.7665 },
+      '有楽町': { lat: 35.6750, lng: 139.7633 },
+      '東京': { lat: 35.6812, lng: 139.7671 },
+      '日比谷': { lat: 35.6749, lng: 139.7596 },
+      '霞ケ関': { lat: 35.6738, lng: 139.7509 },
+      '神谷町': { lat: 35.6630, lng: 139.7450 },
+      '六本木': { lat: 35.6628, lng: 139.7314 },
+      '恵比寿': { lat: 35.6467, lng: 139.7101 },
+      '中目黒': { lat: 35.6443, lng: 139.6991 },
+      '渋谷': { lat: 35.6580, lng: 139.7016 },
+      '表参道': { lat: 35.6652, lng: 139.7123 },
+      '原宿': { lat: 35.6702, lng: 139.7027 },
+      '新宿': { lat: 35.6896, lng: 139.7005 },
+      '池袋': { lat: 35.7295, lng: 139.7109 },
+      '上野': { lat: 35.7141, lng: 139.7774 },
+      '浅草': { lat: 35.7119, lng: 139.7983 },
+      '秋葉原': { lat: 35.6983, lng: 139.7731 },
+      '品川': { lat: 35.6284, lng: 139.7387 },
+      '五反田': { lat: 35.6264, lng: 139.7234 },
+      '下北沢': { lat: 35.6616, lng: 139.6666 },
+      '鎌倉': { lat: 35.3190, lng: 139.5504 },
+      '片瀬江ノ島': { lat: 35.3088, lng: 139.4832 },
+      '新大阪': { lat: 34.7335, lng: 135.5003 },
+      '大阪': { lat: 34.7024, lng: 135.4959 },
+      '梅田': { lat: 34.7055, lng: 135.4983 },
+      '京都': { lat: 34.9858, lng: 135.7588 },
+      '岡山': { lat: 34.6665, lng: 133.9181 },
+      '高松': { lat: 34.3506, lng: 134.0465 },
+
+      // San Francisco / NYC
+      'SFO': { lat: 37.6164, lng: -122.3910 },
+      'Powell': { lat: 37.7844, lng: -122.4079 },
+      'Embarcadero': { lat: 37.7929, lng: -122.3968 },
+      'Times Sq': { lat: 40.7559, lng: -73.9871 },
+      'Grand Central': { lat: 40.7527, lng: -73.9772 }
+    };
+
     const GLOBAL_TRANSIT_COLORS = [
-      // Taiwan (TRTC Taipei Metro, Taoyuan Airport MRT, KRTC, THSR, TRA)
-      { keys: ['淡水信義', '紅線', 'tamsui', 'red line'], color: '#E3002C', name: '北捷紅線' },
-      { keys: ['板南', '藍線', 'bannan'], color: '#0070BD', name: '北捷板南藍' },
-      { keys: ['松山新店', '綠線', 'songshan'], color: '#008659', name: '北捷綠線' },
-      { keys: ['中和新蘆', '橘線', 'zhonghe'], color: '#F8B61C', name: '北捷橘線' },
-      { keys: ['文湖', '棕線', 'wenhu'], color: '#C48C31', name: '北捷文湖棕' },
-      { keys: ['環狀', '黃線', 'circular'], color: '#FEDB00', name: '北捷環狀黃' },
-      { keys: ['機捷', '機場捷運', 'taoyuan airport'], color: '#8246AF', name: '桃園機捷紫' },
-      { keys: ['高鐵', 'thsr', '新幹線'], color: '#DD5C14', name: '高鐵標準橘' },
+      // Taiwan
+      { keys: ['淡水信義', '紅線', 'tamsui', 'red line'], color: '#E3002C', name: '北捷淡水信義紅線' },
+      { keys: ['板南', '藍線', 'bannan'], color: '#0070BD', name: '北捷板南藍線' },
+      { keys: ['松山新店', '綠線', 'songshan'], color: '#008659', name: '北捷松山新店綠線' },
+      { keys: ['中和新蘆', '橘線', 'zhonghe'], color: '#F8B61C', name: '北捷中和新蘆橘線' },
+      { keys: ['文湖', '棕線', 'wenhu'], color: '#C48C31', name: '北捷文湖棕線' },
+      { keys: ['環狀', '黃線', 'circular'], color: '#FEDB00', name: '北捷環狀黃線' },
+      { keys: ['機捷', '機場捷運', 'taoyuan airport'], color: '#8246AF', name: '桃園機捷紫線' },
+      { keys: ['高鐵', 'thsr'], color: '#DD5C14', name: '台灣高鐵橘' },
       { keys: ['台鐵', '臺鐵', 'tra', '自強', '普悠瑪', '太魯閣'], color: '#0047BA', name: '台鐵深藍' },
 
-      // Tokyo Metro & Toei Subway & JR East/West
+      // Japan
       { keys: ['銀座線', 'ginza'], color: '#FF9500', name: '東京Metro銀座線' },
       { keys: ['丸ノ内', '丸之內', 'marunouchi'], color: '#F62E36', name: '東京Metro丸之內線' },
       { keys: ['日比谷', 'hibiya'], color: '#B5B5AC', name: '東京Metro日比谷線' },
@@ -1404,31 +1617,29 @@
       { keys: ['山手線', 'yamanote'], color: '#9ACD32', name: 'JR山手線' },
       { keys: ['中央線', 'chuo'], color: '#F15A22', name: 'JR中央線' },
       { keys: ['京浜東北', '京濱東北', 'keihin'], color: '#00B2E5', name: 'JR京濱東北線' },
-      { keys: ['山陽新幹線', '東海道新幹線', 'さくら', 'のぞみ', 'shinkansen'], color: '#005BAC', name: 'JR新幹線藍' },
+      { keys: ['新幹線', 'さくら', 'のぞみ', 'shinkansen'], color: '#005BAC', name: 'JR新幹線藍' },
       { keys: ['瀬戸大橋', '瀨戶大橋', 'マリンライナー', 'marine liner'], color: '#0072BC', name: 'JR瀨戶大橋線' },
       { keys: ['成田エクスプレス', 'nex', 'narita express'], color: '#E60012', name: 'N’EX成田特快' },
       { keys: ['ゆりかもめ', '百合海鷗', 'yurikamome'], color: '#00A0DE', name: '百合海鷗號' },
       { keys: ['江ノ電', '江之電', 'enoden'], color: '#2A7F40', name: '江之電綠' },
 
-      // San Francisco (BART & Muni Metro)
-      { keys: ['bart yellow', 'antioch', 'sfo bart', 'bart黃'], color: '#FFE800', name: 'SF BART Yellow' },
-      { keys: ['bart red', 'richmond', 'millbrae', 'bart紅'], color: '#ED1C24', name: 'SF BART Red' },
-      { keys: ['bart blue', 'dublin', 'daly city', 'bart藍'], color: '#0099D8', name: 'SF BART Blue' },
+      // SF & NYC
+      { keys: ['bart yellow', 'antioch', 'bart黃'], color: '#FFE800', name: 'SF BART Yellow' },
+      { keys: ['bart red', 'richmond', 'bart紅'], color: '#ED1C24', name: 'SF BART Red' },
+      { keys: ['bart blue', 'dublin', 'bart藍'], color: '#0099D8', name: 'SF BART Blue' },
       { keys: ['bart green', 'berryessa', 'bart綠'], color: '#4DB848', name: 'SF BART Green' },
       { keys: ['bart orange', 'bart橘'], color: '#F7931D', name: 'SF BART Orange' },
-      { keys: ['muni', 'powell', 'cable car'], color: '#C8102E', name: 'SF Muni Red' },
-
-      // New York City (MTA Subway)
-      { keys: ['mta 1', 'mta 2', 'mta 3', '1 train', '2 train', '3 train', 'broadway-seventh'], color: '#EE352E', name: 'NYC MTA 1/2/3 Red' },
-      { keys: ['mta 4', 'mta 5', 'mta 6', '4 train', '5 train', '6 train', 'lexington'], color: '#00933C', name: 'NYC MTA 4/5/6 Green' },
-      { keys: ['mta 7', '7 train', 'flushing'], color: '#B933AD', name: 'NYC MTA 7 Purple' },
-      { keys: ['mta a', 'mta c', 'mta e', 'a train', 'c train', 'e train', 'eighth ave'], color: '#0039A6', name: 'NYC MTA A/C/E Blue' },
-      { keys: ['mta b', 'mta d', 'mta f', 'mta m', 'f train', 'sixth ave'], color: '#FF6319', name: 'NYC MTA B/D/F/M Orange' },
-      { keys: ['mta n', 'mta q', 'mta r', 'mta w', 'n train', 'q train', 'r train'], color: '#FCCC0A', name: 'NYC MTA N/Q/R/W Yellow' },
-      { keys: ['mta l', 'l train', '14 st-canarsie'], color: '#A7A9AC', name: 'NYC MTA L Gray' }
+      { keys: ['muni', 'cable car'], color: '#C8102E', name: 'SF Muni Red' },
+      { keys: ['mta 1', 'mta 2', 'mta 3', '1 train', '2 train', '3 train'], color: '#EE352E', name: 'NYC MTA 1/2/3' },
+      { keys: ['mta 4', 'mta 5', 'mta 6', '4 train', '5 train', '6 train'], color: '#00933C', name: 'NYC MTA 4/5/6' },
+      { keys: ['mta 7', '7 train'], color: '#B933AD', name: 'NYC MTA 7' },
+      { keys: ['mta a', 'mta c', 'mta e', 'a train', 'c train', 'e train'], color: '#0039A6', name: 'NYC MTA A/C/E' },
+      { keys: ['mta b', 'mta d', 'mta f', 'mta m', 'f train'], color: '#FF6319', name: 'NYC MTA B/D/F/M' },
+      { keys: ['mta n', 'mta q', 'mta r', 'mta w', 'n train', 'q train'], color: '#FCCC0A', name: 'NYC MTA N/Q/R/W' },
+      { keys: ['mta l', 'l train'], color: '#A7A9AC', name: 'NYC MTA L' }
     ];
 
-    function detectLineColor(textSegment, fallbackHex) {
+    function detectLineColor(textSegment, fallbackHex = '#0F62B1') {
       if (!textSegment) return { color: fallbackHex, name: '自訂路線色' };
       const lower = textSegment.toLowerCase();
       for (const item of GLOBAL_TRANSIT_COLORS) {
@@ -1439,23 +1650,41 @@
       return { color: fallbackHex, name: '自訂路線色' };
     }
 
-    function autoMatchTransitColorsFromInput() {
-      const sub = document.getElementById('ev-en').value || document.getElementById('ev-title').value;
-      const parts = sub.split(/➔|->|→|\//);
-      const seg1 = parts[0] || sub;
-      const seg2 = parts[1] || parts[0] || '';
+    function lookupKnownStationCoord(stationName) {
+      if (!stationName) return null;
+      const clean = stationName.replace(/(捷運|駅|站|Station|MRT)/gi, '').trim();
+      if (KNOWN_STATIONS_DB[clean]) return { ...KNOWN_STATIONS_DB[clean] };
+      for (const [k, v] of Object.entries(KNOWN_STATIONS_DB)) {
+        if (clean.includes(k) || k.includes(clean)) return { ...v };
+      }
+      return null;
+    }
 
-      const m1 = detectLineColor(seg1, '#0F62B1');
-      const m2 = detectLineColor(seg2, '#D62865');
+    // Timeout-Protected Geocoder (2.5s max wait so offline saving is instant)
+    async function autoGeocodePlace(queryStr) {
+      if (!queryStr) return null;
+      const known = lookupKnownStationCoord(queryStr);
+      if (known) return known;
 
-      document.getElementById('ev-line-color1').value = m1.color;
-      document.getElementById('line-color1-hint').textContent = m1.name;
-      document.getElementById('ev-line-color2').value = m2.color;
-      document.getElementById('line-color2-hint').textContent = m2.name;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 2500);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(queryStr)}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data && data[0]) {
+          return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        }
+      } catch (e) {
+        clearTimeout(timer);
+      }
+      return null;
     }
 
     /* ==========================================================================
-       3. Full World IANA Timezones + Dynamic Offset Calculation
+       4. Full World IANA Timezones + Dynamic Offset Calculation
        ========================================================================== */
     const PINNED_TIMEZONES = [
       'Asia/Taipei',
@@ -1532,8 +1761,8 @@
       return (h || 0) * 60 + (m || 0);
     }
 
-    // Check if an event is currently happening in its target timezone
     function isEventHappeningNow(ev, idx, allEvents) {
+      if (ev.cancelledAt) return false;
       try {
         const tz = ev.startTz || 'Asia/Tokyo';
         const nowStr = new Date().toLocaleTimeString('en-GB', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit' });
@@ -1548,99 +1777,65 @@
     }
 
     /* ==========================================================================
-       4. 5 Paired Story Paper Themes (Auto-Inverting Ink for Dark/Light Papers)
+       5. Dual-Layer Paper Swatches (Independent Outer BG & Inner Card Swatches)
        ========================================================================== */
-    const STORY_PAPER_THEMES = [
-      {
-        id: 'warm-cream',
-        name: '暖米紙',
-        bg: '#EAE4D8',
-        cardBg: '#FFFFFF',
-        subCardBg: '#FAF8F3',
-        ink: '#161616',
-        muted: '#5A5751',
-        stamp: '#C84B31',
-        river: '#E2DDD2',
-        logoBox: '#161616',
-        logoInk: '#F7F5F0'
-      },
-      {
-        id: 'museum-white',
-        name: '美術館白',
-        bg: '#F6F6F4',
-        cardBg: '#FFFFFF',
-        subCardBg: '#FFFFFF',
-        ink: '#111111',
-        muted: '#666666',
-        stamp: '#E04F26',
-        river: '#E8E8E3',
-        logoBox: '#111111',
-        logoInk: '#FFFFFF'
-      },
-      {
-        id: 'kraft-retro',
-        name: '復古牛皮',
-        bg: '#D5C3A5',
-        cardBg: '#F4EDE0',
-        subCardBg: '#EFE6D5',
-        ink: '#231A12',
-        muted: '#5C4938',
-        stamp: '#A63423',
-        river: '#C7B291',
-        logoBox: '#231A12',
-        logoInk: '#F4EDE0'
-      },
-      {
-        id: 'midnight-navy',
-        name: '午夜深藍',
-        bg: '#101826',
-        cardBg: '#1B263B',
-        subCardBg: '#162032',
-        ink: '#F4F6F9',
-        muted: '#94A3B8',
-        stamp: '#F59E0B',
-        river: '#253552',
-        logoBox: '#F4F6F9',
-        logoInk: '#101826'
-      },
-      {
-        id: 'transit-carbon',
-        name: '鐵道炭黑',
-        bg: '#141414',
-        cardBg: '#222222',
-        subCardBg: '#1C1C1C',
-        ink: '#FAFAFA',
-        muted: '#A1A1AA',
-        stamp: '#FF5A36',
-        river: '#2E2E2E',
-        logoBox: '#FAFAFA',
-        logoInk: '#141414'
-      }
+    const OUTER_PAPER_PALETTES = [
+      { id: 'warm-cream', name: '暖米紙', bg: '#EAE4D8', ink: '#161616', muted: '#5A5751', stamp: '#C84B31', logoBox: '#161616', logoInk: '#F7F5F0' },
+      { id: 'museum-white', name: '美術館白', bg: '#F6F6F4', ink: '#111111', muted: '#666666', stamp: '#E04F26', logoBox: '#111111', logoInk: '#FFFFFF' },
+      { id: 'kraft-retro', name: '復古牛皮', bg: '#D5C3A5', ink: '#231A12', muted: '#5C4938', stamp: '#A63423', logoBox: '#231A12', logoInk: '#F4EDE0' },
+      { id: 'midnight-navy', name: '午夜深藍', bg: '#101826', ink: '#F4F6F9', muted: '#94A3B8', stamp: '#F59E0B', logoBox: '#F4F6F9', logoInk: '#101826' },
+      { id: 'transit-carbon', name: '鐵道炭黑', bg: '#141414', ink: '#FAFAFA', muted: '#A1A1AA', stamp: '#FF5A36', logoBox: '#FAFAFA', logoInk: '#141414' }
     ];
 
-    let activePaperTheme = STORY_PAPER_THEMES[0];
+    const INNER_CARD_PALETTES = [
+      { id: 'pure-white', name: '純白票卡', cardBg: '#FFFFFF', subCardBg: '#FAF8F3', ink: '#161616', muted: '#5A5751', stamp: '#C84B31' },
+      { id: 'ivory-ticket', name: '暖米票卡', cardBg: '#FAF6EE', subCardBg: '#F3EDE0', ink: '#1D1A16', muted: '#5C5549', stamp: '#B8332A' },
+      { id: 'kraft-card', name: '牛皮票卡', cardBg: '#E6D7BE', subCardBg: '#DECBA9', ink: '#231A12', muted: '#5C4938', stamp: '#9E2A1C' },
+      { id: 'navy-card', name: '深藍票卡', cardBg: '#1B283D', subCardBg: '#152032', ink: '#F4F6F9', muted: '#94A3B8', stamp: '#F59E0B' },
+      { id: 'carbon-card', name: '炭黑票卡', cardBg: '#222222', subCardBg: '#1B1B1B', ink: '#FAFAFA', muted: '#A1A1AA', stamp: '#FF5A36' }
+    ];
+
+    let activeOuterPaper = OUTER_PAPER_PALETTES[0];
+    let activeInnerCard = INNER_CARD_PALETTES[0];
 
     function initPaperSwatches() {
-      const row = document.getElementById('paper-swatch-row');
-      row.innerHTML = `<span style="font-size:11px; font-weight:700; color:var(--ink-muted); flex-shrink:0;">色紙：</span>` +
-        STORY_PAPER_THEMES.map(p => `
-          <button type="button" class="swatch-pill ${p.id === activePaperTheme.id ? 'active' : ''}" onclick="selectPaperTheme('${p.id}')">
+      document.getElementById('outer-paper-swatch-row').innerHTML =
+        `<span style="font-size:11px; font-weight:700; color:var(--ink-muted); flex-shrink:0;">外層底紙：</span>` +
+        OUTER_PAPER_PALETTES.map(p => `
+          <button type="button" class="swatch-pill ${p.id === activeOuterPaper.id ? 'active' : ''}" onclick="selectOuterPaper('${p.id}')">
             <span class="swatch-dot" style="background:${p.bg};"></span>
+            <span>${p.name}</span>
+          </button>
+        `).join('');
+
+      document.getElementById('inner-paper-swatch-row').innerHTML =
+        `<span style="font-size:11px; font-weight:700; color:var(--ink-muted); flex-shrink:0;">內層票卡：</span>` +
+        INNER_CARD_PALETTES.map(p => `
+          <button type="button" class="swatch-pill ${p.id === activeInnerCard.id ? 'active' : ''}" onclick="selectInnerCard('${p.id}')">
+            <span class="swatch-dot" style="background:${p.cardBg};"></span>
             <span>${p.name}</span>
           </button>
         `).join('');
     }
 
-    function selectPaperTheme(id) {
-      const found = STORY_PAPER_THEMES.find(p => p.id === id);
+    function selectOuterPaper(id) {
+      const found = OUTER_PAPER_PALETTES.find(p => p.id === id);
       if (!found) return;
-      activePaperTheme = found;
+      activeOuterPaper = found;
+      initPaperSwatches();
+      renderStoryCanvas();
+    }
+
+    function selectInnerCard(id) {
+      const found = INNER_CARD_PALETTES.find(p => p.id === id);
+      if (!found) return;
+      activeInnerCard = found;
       initPaperSwatches();
       renderStoryCanvas();
     }
 
     /* ==========================================================================
-       5. Default Rich State (Multi-Trip, Checklist, Custom Links, Transit Colors)
+       6. State & Auto-Migration from v2/v3/v4 to v5 (Zero Data Loss)
        ========================================================================== */
     const DEFAULT_STATE = {
       passcode: '',
@@ -1672,22 +1867,20 @@
                   arrTime: '12:55',
                   title: '新木場駅 ➔ 銀座 ➔ 神谷町駅',
                   enSubtitle: '東京メトロ有楽町線 ➔ 日比谷線',
-                  fromCode: '新木場',
-                  viaCode: '銀座',
-                  toCode: '神谷町',
-                  lineColor1: '#C1A470',
-                  lineColor2: '#B5B5AC',
+                  transitLegs: [
+                    { from: '新木場', to: '銀座', line: '東京メトロ有楽町線', color: '#C1A470', fromLat: 35.6458, fromLng: 139.8266, toLat: 35.6712, toLng: 139.7665 },
+                    { from: '銀座', to: '神谷町', line: '東京メトロ日比谷線', color: '#B5B5AC', fromLat: 35.6712, fromLng: 139.7665, toLat: 35.6630, toLng: 139.7450 }
+                  ],
                   fromLat: 35.6458, fromLng: 139.8266,
-                  viaLat: 35.6712, viaLng: 139.7665,
                   toLat: 35.6630, toLng: 139.7450,
                   address: 'JR-East Hotel Mets Premier Tokyo Bay Shinkiba',
                   mapUrl: '',
                   currency: '¥',
                   cost: 210,
                   note: '中午先於新木場站飯店寄放行李，晚間再持信用卡辦理加床入住手續。[一休訂房確認單](https://www.ikyu.com/)',
-                  photo: '',
-                  photoZoom: 1, photoX: 0, photoY: 0,
-                  visitedAt: '2026/11/30 12:56'
+                  photos: [],
+                  visitedAt: '2026/11/30 12:56',
+                  cancelledAt: ''
                 },
                 {
                   id: 'ev-2',
@@ -1699,91 +1892,61 @@
                   title: '長榮航空 BR012 桃園 ➔ 洛杉磯',
                   enSubtitle: 'BR012 · BOEING 777-300ER',
                   fromCode: 'TPE',
-                  viaCode: '',
+                  fromTerminal: 'T2',
                   toCode: 'LAX',
-                  lineColor1: '#005BAC',
-                  lineColor2: '#005BAC',
+                  toTerminal: 'TBIT',
                   fromLat: 25.0797, fromLng: 121.2342,
-                  viaLat: 30.0, viaLng: 180.0,
                   toLat: 33.9416, toLng: -118.4085,
                   address: 'Los Angeles International Airport (LAX)',
                   mapUrl: '',
                   currency: 'NT$',
                   cost: 34500,
                   note: '跨越國際換日線，降落後直接前往 In-N-Out 與 Trader Joe’s 採買。',
-                  photo: '',
-                  photoZoom: 1, photoX: 0, photoY: 0,
-                  visitedAt: '2026/12/04 19:35'
+                  photos: [],
+                  visitedAt: '2026/12/04 19:35',
+                  cancelledAt: ''
                 }
               ]
             }
           ]
         },
         {
-          id: 'trip-setouchi',
-          name: '02 瀨戶內海跳島策展',
-          startDate: '2026-10-02',
+          id: 'trip-taipei-metro',
+          name: '02 台北捷運生活動線範例',
+          startDate: '2026-11-15',
           homeTz: 'Asia/Taipei',
-          checklist: [
-            { id: 'ck-201', text: '確認豐島美術館線上預約時段', done: true },
-            { id: 'ck-202', text: '準備高松港高速船現金零錢', done: false }
-          ],
+          checklist: [],
           days: [
             {
               dayLabel: 'DAY 01',
               weatherIcon: '⛅',
-              weatherText: '高松微風 21°C / 14°C',
-              sunrise: '06:05',
-              sunset: '17:45',
+              weatherText: '台北舒適 23°C / 18°C',
+              sunrise: '06:12',
+              sunset: '17:08',
               events: [
                 {
-                  id: 'ev-3',
+                  id: 'ev-301',
                   type: 'train',
-                  startTz: 'Asia/Tokyo',
-                  endTz: 'Asia/Tokyo',
-                  time: '06:50',
-                  arrTime: '08:55',
-                  title: '新大阪 ➔ 岡山 ➔ 高松',
-                  enSubtitle: 'JR 山陽新幹線 さくら 543号 ➔ マリンライナー',
-                  fromCode: '新大阪',
-                  viaCode: '岡山',
-                  toCode: '高松',
-                  lineColor1: '#005BAC',
-                  lineColor2: '#0072BC',
-                  fromLat: 34.7335, fromLng: 135.5003,
-                  viaLat: 34.6665, viaLng: 133.9181,
-                  toLat: 34.3506, toLng: 134.0465,
-                  address: '高松駅 香川県高松市浜ノ町',
+                  startTz: 'Asia/Taipei',
+                  endTz: 'Asia/Taipei',
+                  time: '09:00',
+                  arrTime: '09:50',
+                  title: '淡水 ➔ 中山 ➔ 南京復興',
+                  enSubtitle: '淡水信義線 ➔ 松山新店線',
+                  transitLegs: [
+                    { from: '淡水', to: '中山', line: '淡水信義線', color: '#E3002C', fromLat: 25.1678, fromLng: 121.4455, toLat: 25.0526, toLng: 121.5204 },
+                    { from: '中山', to: '南京復興', line: '松山新店線', color: '#008659', fromLat: 25.0526, fromLng: 139.5204, toLat: 25.0523, toLng: 121.5440 }
+                  ],
+                  fromLat: 25.1678, fromLng: 121.4455,
+                  toLat: 25.0523, toLng: 121.5440,
+                  address: '捷運南京復興站',
                   mapUrl: '',
-                  currency: '¥',
-                  cost: 6820,
-                  note: '岡山站轉乘快速 Marine Liner 橫越瀨戶大橋，車頭展望席風景極佳。',
-                  photo: '',
-                  photoZoom: 1, photoX: 0, photoY: 0,
-                  visitedAt: '2026/10/02 08:55'
-                },
-                {
-                  id: 'ev-4',
-                  type: 'ferry',
-                  startTz: 'Asia/Tokyo',
-                  endTz: 'Asia/Tokyo',
-                  time: '09:25',
-                  arrTime: '10:00',
-                  title: '高松港 ➔ 豐島家浦港 高速船',
-                  enSubtitle: '豊島フェリー · TESHIMA HIGH-SPEED FERRY',
-                  fromCode: '高松港',
-                  viaCode: '',
-                  toCode: '豐島家浦港',
-                  fromLat: 34.3547, fromLng: 134.0489,
-                  toLat: 34.4872, toLng: 134.0631,
-                  address: '家浦港 香川県小豆郡土庄町豊島家浦',
-                  mapUrl: '',
-                  currency: '¥',
-                  cost: 1350,
-                  note: '開船前 20 分鐘現場買票，抵達家浦港後租電動腳踏車直奔豐島美術館。',
-                  photo: '',
-                  photoZoom: 1, photoX: 0, photoY: 0,
-                  visitedAt: ''
+                  currency: 'NT$',
+                  cost: 50,
+                  note: '於中山站轉乘松山新店線往松山方向兩站即達南京復興。',
+                  photos: [],
+                  visitedAt: '2026/11/15 09:50',
+                  cancelledAt: ''
                 }
               ]
             }
@@ -1792,24 +1955,93 @@
       ]
     };
 
-    let appState = JSON.parse(localStorage.getItem('tabi_note_state_v4')) || DEFAULT_STATE;
+    function loadAndMigrateState() {
+      const raw = localStorage.getItem('tabi_note_state_v5')
+        || localStorage.getItem('tabi_note_state_v4')
+        || localStorage.getItem('tabi_note_state_v3')
+        || localStorage.getItem('tabi_note_state_v2');
+
+      if (!raw) return DEFAULT_STATE;
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.trips)) return DEFAULT_STATE;
+
+        // Migrate legacy single photo & legacy train fields into structured arrays
+        parsed.trips.forEach(trip => {
+          if (!Array.isArray(trip.checklist)) trip.checklist = [];
+          (trip.days || []).forEach(day => {
+            (day.events || []).forEach(ev => {
+              if (!Array.isArray(ev.photos)) {
+                ev.photos = ev.photo ? [{
+                  data: ev.photo,
+                  zoom: ev.photoZoom || 1,
+                  x: ev.photoX || 0,
+                  y: ev.photoY || 0
+                }] : [];
+              }
+              if (ev.type === 'train' && (!Array.isArray(ev.transitLegs) || !ev.transitLegs.length)) {
+                const subParts = (ev.enSubtitle || '').split(/➔|->|→|換|轉|\//).map(s => s.trim()).filter(Boolean);
+                const line1 = subParts[0] || ev.enSubtitle || '路線 1';
+                const line2 = subParts[1] || line1;
+                const legs = [];
+                if (ev.viaCode) {
+                  legs.push({
+                    from: ev.fromCode || '起點站',
+                    to: ev.viaCode,
+                    line: line1,
+                    color: ev.lineColor1 || detectLineColor(line1, '#E3002C').color
+                  });
+                  legs.push({
+                    from: ev.viaCode,
+                    to: ev.toCode || '終點站',
+                    line: line2,
+                    color: ev.lineColor2 || detectLineColor(line2, '#008659').color
+                  });
+                } else {
+                  legs.push({
+                    from: ev.fromCode || '起點站',
+                    to: ev.toCode || '終點站',
+                    line: line1,
+                    color: ev.lineColor1 || detectLineColor(line1, '#0F62B1').color
+                  });
+                }
+                ev.transitLegs = legs;
+              }
+              if (typeof ev.cancelledAt === 'undefined') ev.cancelledAt = '';
+            });
+          });
+        });
+        return parsed;
+      } catch (e) {
+        return DEFAULT_STATE;
+      }
+    }
+
+    let appState = loadAndMigrateState();
     let currentTripIdx = 0;
     let currentDayIdx = 0;
     let showHomeTime = true;
     let pinnedEventIds = new Set();
     let leafletMap = null;
 
-    let tempPhotoData = '';
+    // Editor & Story State
+    let formPhotos = [];
+    let activeFormPhotoIdx = 0;
     let activeStoryEvent = null;
+    let activeStoryPhotoIdx = 0;
     let activeStoryTemplate = 'polaroid';
     let flightBgImage = null;
 
     function persist() {
-      localStorage.setItem('tabi_note_state_v4', JSON.stringify(appState));
+      try {
+        localStorage.setItem('tabi_note_state_v5', JSON.stringify(appState));
+      } catch (e) {
+        alert('儲存空間接近上限，請刪除部分舊照片或匯出 JSON 備份。');
+      }
     }
 
     /* ==========================================================================
-       6. Initialize Time Dropdowns & All Global IANA Timezones
+       7. Initialize Time Dropdowns & All Global IANA Timezones
        ========================================================================== */
     function initFormSelects() {
       const sh = document.getElementById('ev-start-hh');
@@ -1833,12 +2065,10 @@
       sm.innerHTML = mHtml;
       em.innerHTML = `<option value="">--</option>` + mHtml;
 
-      // Build Pinned + Full World Timezones
       let allZones = [...PINNED_TIMEZONES];
       try {
         if (Intl && typeof Intl.supportedValuesOf === 'function') {
-          const supported = Intl.supportedValuesOf('timeZone');
-          supported.forEach(z => { if (!allZones.includes(z)) allZones.push(z); });
+          Intl.supportedValuesOf('timeZone').forEach(z => { if (!allZones.includes(z)) allZones.push(z); });
         }
       } catch (e) {}
 
@@ -1857,7 +2087,7 @@
     }
 
     /* ==========================================================================
-       7. Smart Note Hyperlink Parser & Custom Link Label Editor
+       8. Smart Note Hyperlink Parser & Custom Link Label Editor
        ========================================================================== */
     function escapeHtml(str) {
       return String(str)
@@ -1872,20 +2102,18 @@
       let safe = escapeHtml(noteText);
       const linksFound = [];
 
-      // 1. Parse [Custom Label](https://...)
       safe = safe.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (match, label, url) => {
         const idx = linksFound.length;
         linksFound.push({ label, url, raw: match });
-        return `<a class="note-link-chip" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation();">🔗 ${label} ↗</a><button class="note-link-edit-btn" title="修改連結顯示名稱" onclick="event.stopPropagation(); promptCustomLinkLabel('${evId}', ${idx})">✎ 連結名稱</button>`;
+        return `<a class="note-link-chip" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation();">🔗 ${label}</a><button class="note-link-edit-btn" title="修改連結名稱" onclick="event.stopPropagation(); promptCustomLinkLabel('${evId}', ${idx})">連結名稱</button>`;
       });
 
-      // 2. Parse bare URLs not inside markdown syntax
       safe = safe.replace(/(^|[\s\n])(https?:\/\/[^\s<]+)/g, (match, prefix, url) => {
         const idx = linksFound.length;
         let shortHost = '開啟連結';
         try { shortHost = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
         linksFound.push({ label: shortHost, url, raw: url });
-        return `${prefix}<a class="note-link-chip" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation();">🔗 ${shortHost} ↗</a><button class="note-link-edit-btn" title="修改連結顯示名稱" onclick="event.stopPropagation(); promptCustomLinkLabel('${evId}', ${idx})">✎ 連結名稱</button>`;
+        return `${prefix}<a class="note-link-chip" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation();">🔗 ${shortHost}</a><button class="note-link-edit-btn" title="修改連結名稱" onclick="event.stopPropagation(); promptCustomLinkLabel('${evId}', ${idx})">連結名稱</button>`;
       });
 
       return safe;
@@ -1896,9 +2124,7 @@
       const ev = day.events.find(e => e.id === evId);
       if (!ev || !ev.note) return;
 
-      // Extract matches in order
       const tokens = [];
-      let working = ev.note;
       const mdRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
       let m;
       while ((m = mdRegex.exec(ev.note)) !== null) {
@@ -1928,13 +2154,13 @@
     }
 
     /* ==========================================================================
-       8. Password Lock System
+       9. Password Lock System
        ========================================================================== */
     function checkInitialLock() {
       const pass = appState.passcode;
       const unlocked = localStorage.getItem('tabi_note_unlocked') === pass;
       const btn = document.getElementById('lock-status-btn');
-      btn.textContent = pass ? '🔒 密碼保護中' : '🔓 密碼鎖';
+      btn.textContent = pass ? '密碼保護中' : '密碼鎖';
 
       if (pass && !unlocked) {
         document.getElementById('lock-overlay').classList.add('locked');
@@ -1975,7 +2201,7 @@
     }
 
     /* ==========================================================================
-       9. Render Trips, Weather, Solar Trajectory, Timeline & Quick Photo Upload
+       10. Render All Views + Dynamic Solar Gradient + Auto Chronological Sort
        ========================================================================== */
     function renderAll() {
       if (currentTripIdx >= appState.trips.length) currentTripIdx = 0;
@@ -1992,7 +2218,7 @@
         appState.trips.map((t, idx) => `
           <button class="trip-tab ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx})">${t.name}</button>
         `).join('') +
-        `<button class="trip-tab" style="border-style:dashed;" onclick="createNewTripProject()">＋ 新增旅行分頁</button>`;
+        `<button class="trip-tab" style="border-style:dashed;" onclick="createNewTripProject()">＋ 新增旅行</button>`;
 
       // Day Pills
       document.getElementById('day-pills').innerHTML =
@@ -2001,16 +2227,32 @@
         `).join('') +
         `<button class="day-pill" onclick="addDay()">＋ DAY</button>`;
 
-      // Weather & Solar Spectrum Bar
+      // Weather & Dynamic Solar Spectrum Gradient
+      const sr = day.sunrise || '06:15';
+      const ss = day.sunset || '17:15';
       document.getElementById('day-weather-icon').textContent = day.weatherIcon || '☀️';
       document.getElementById('day-weather-text').textContent = day.weatherText || '晴朗 18°C';
-      document.getElementById('sunrise-label').textContent = `🌅 日出 ${day.sunrise || '06:15'}`;
-      document.getElementById('sunset-label').textContent = `🌇 日落 ${day.sunset || '17:15'}`;
+      document.getElementById('sunrise-label').textContent = `日出 ${sr}`;
+      document.getElementById('sunset-label').textContent = `日落 ${ss}`;
+
+      const srPct = Math.min(45, Math.max(5, Math.round((timeToMinutes(sr) / 1440) * 100)));
+      const ssPct = Math.min(95, Math.max(55, Math.round((timeToMinutes(ss) / 1440) * 100)));
+      const midPct = Math.round((srPct + ssPct) / 2);
+
+      const specBar = document.getElementById('solar-spectrum-bar');
+      specBar.style.background = `linear-gradient(90deg,
+        #1B263B 0%,
+        #3D5A80 ${Math.max(0, srPct - 5)}%,
+        #F4A261 ${srPct}%,
+        #E9C46A ${midPct}%,
+        #E76F51 ${ssPct}%,
+        #1B263B ${Math.min(100, ssPct + 6)}%,
+        #0D1B2A 100%
+      )`;
 
       const firstEvTz = (day.events[0] && day.events[0].startTz) || trip.homeTz || 'Asia/Tokyo';
       document.getElementById('day-tz-label').textContent = `時區：${formatTzOptionLabel(firstEvTz)}`;
 
-      const specBar = document.getElementById('solar-spectrum-bar');
       specBar.innerHTML = day.events.map(ev => {
         const pct = Math.min(98, Math.max(2, (timeToMinutes(ev.time) / 1440) * 100));
         return `<div class="solar-dot" style="left:${pct}%;" title="${ev.time} ${ev.title}"></div>`;
@@ -2045,7 +2287,7 @@
 
     function toggleHomeTime() {
       showHomeTime = !showHomeTime;
-      document.getElementById('tz-toggle-btn').textContent = `🏠 家鄉時區對照：${showHomeTime ? '開' : '關'}`;
+      document.getElementById('tz-toggle-btn').textContent = `家鄉時區對照：${showHomeTime ? '開' : '關'}`;
       renderTimeline();
     }
 
@@ -2068,9 +2310,9 @@
 
       listEl.innerHTML = day.events.map((ev, idx) => {
         const isStamped = Boolean(ev.visitedAt);
+        const isCancelled = Boolean(ev.cancelledAt);
         const isNow = isEventHappeningNow(ev, idx, day.events);
         const isPinned = pinnedEventIds.has(ev.id) || isNow;
-        const typeIcon = ev.type === 'flight' ? '✈️' : ev.type === 'train' ? '🚃' : ev.type === 'ferry' ? '⛴️' : '📍';
         const mapsUrl = buildGoogleMapsHref(ev);
 
         const homeCompare = computeHomeTimeComparison(ev.time, ev.startTz || 'Asia/Tokyo', trip.homeTz || 'Asia/Taipei');
@@ -2078,59 +2320,78 @@
           ? computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz)
           : { durationText: '', dayShift: '' };
 
-        const z = ev.photoZoom || 1;
-        const px = ev.photoX || 0;
-        const py = ev.photoY || 0;
+        // Terminal info display on timeline card (not printed on boarding pass story)
+        let subtitleDisplay = ev.enSubtitle || '';
+        if (ev.type === 'flight' && (ev.fromTerminal || ev.toTerminal)) {
+          const tInfo = `${ev.fromCode || ''}${ev.fromTerminal ? '(' + ev.fromTerminal + ')' : ''} ➔ ${ev.toCode || ''}${ev.toTerminal ? '(' + ev.toTerminal + ')' : ''}`;
+          subtitleDisplay = subtitleDisplay ? `${tInfo} · ${subtitleDisplay}` : tInfo;
+        } else if (ev.type === 'train' && Array.isArray(ev.transitLegs) && ev.transitLegs.length) {
+          subtitleDisplay = ev.transitLegs.map(l => `${l.line} (${l.from}➔${l.to})`).join(' 轉 ');
+        }
+
+        const photosArr = Array.isArray(ev.photos) ? ev.photos : [];
 
         return `
-          <article class="event-card liquid-glass ${isStamped ? 'visited' : ''} ${isNow ? 'now-active' : ''} ${isPinned ? '' : 'mobile-collapsed'}" data-ev-id="${ev.id}">
+          <article class="event-card liquid-glass ${isStamped ? 'visited' : ''} ${isCancelled ? 'cancelled' : ''} ${isNow ? 'now-active' : ''} ${isPinned ? '' : 'mobile-collapsed'}" data-ev-id="${ev.id}">
             <div class="card-header" onclick="togglePinCard('${ev.id}')">
               <div class="card-left-meta">
                 <div class="seq-badge">${idx + 1}</div>
                 <div style="min-width:0; flex:1;">
                   <div class="time-block">
                     ${isNow ? `<span class="now-live-pill">● NOW 進行中</span>` : ''}
-                    <span>${typeIcon} ${ev.time}${ev.arrTime ? ' ➔ ' + ev.arrTime : ''} ${flightMeta.dayShift}</span>
-                    ${flightMeta.durationText ? `<span class="tz-badge">⏱ ${flightMeta.durationText}</span>` : ''}
-                    ${showHomeTime && homeCompare ? `<span class="tz-badge">🏠 ${homeCompare}</span>` : ''}
+                    <span>${ev.time}${ev.arrTime ? ' ➔ ' + ev.arrTime : ''} ${flightMeta.dayShift}</span>
+                    ${flightMeta.durationText ? `<span class="tz-badge">${flightMeta.durationText}</span>` : ''}
+                    ${showHomeTime && homeCompare ? `<span class="tz-badge">${homeCompare}</span>` : ''}
                   </div>
-                  <h2 class="card-title">${ev.title}</h2>
-                  ${ev.enSubtitle ? `<div class="card-subtitle-en">${ev.enSubtitle}</div>` : ''}
+                  <h2 class="card-title">${escapeHtml(ev.title)}</h2>
+                  ${subtitleDisplay ? `<div class="card-subtitle-en">${escapeHtml(subtitleDisplay)}</div>` : ''}
                 </div>
               </div>
 
-              <button class="stamp-action-btn ${isStamped ? 'stamped' : ''}" onclick="event.stopPropagation(); stampEvent('${ev.id}')">
-                ${isStamped ? '✓ 完成' : '完成'}
-              </button>
+              <!-- Paired "完成" & "取消" Stamp Buttons -->
+              <div class="stamp-btn-group" onclick="event.stopPropagation();">
+                <button class="stamp-action-btn ${isStamped ? 'stamped' : ''}" onclick="stampEvent('${ev.id}')">
+                  ${isStamped ? '✓ 完成' : '完成'}
+                </button>
+                <button class="cancel-action-btn ${isCancelled ? 'stamped' : ''}" onclick="cancelEvent('${ev.id}')">
+                  ${isCancelled ? '✕ 取消' : '取消'}
+                </button>
+              </div>
             </div>
 
             <div class="card-body-wrapper">
               <div class="card-body-inner">
                 ${isStamped ? `<div class="vintage-postmark">✓ COMPLETED · ${ev.visitedAt}</div>` : ''}
+                ${isCancelled ? `<div class="vintage-postmark cancelled-mark">✕ CANCELLED · ${ev.cancelledAt}</div>` : ''}
 
                 ${ev.note ? `<div class="speech-note-bubble">${formatNoteWithSmartLinks(ev.note, ev.id)}</div>` : ''}
 
-                ${ev.photo ? `
-                  <div class="polaroid-frame">
-                    <div class="polaroid-viewport">
-                      <img src="${ev.photo}" alt="${ev.title}" style="transform: scale(${z}) translate(${px}%, ${py}%);" />
-                    </div>
-                    <div class="polaroid-caption">
-                      <span>${ev.fromCode && ev.toCode ? `${ev.fromCode} ➔ ${ev.toCode}` : 'ARCHIVE PHOTO'}</span>
-                      <span>${ev.visitedAt || ev.time}</span>
-                    </div>
+                ${photosArr.length ? `
+                  <div class="photo-gallery-strip">
+                    ${photosArr.map((p, pIdx) => `
+                      <div class="polaroid-frame">
+                        <div class="polaroid-viewport">
+                          <img src="${p.data}" alt="${escapeHtml(ev.title)}" style="transform: scale(${p.zoom || 1}) translate(${p.x || 0}%, ${p.y || 0}%);" />
+                        </div>
+                        <div class="polaroid-caption">
+                          <span>#${pIdx + 1} ARCHIVE</span>
+                          <span>${ev.visitedAt || ev.cancelledAt || ev.time}</span>
+                        </div>
+                      </div>
+                    `).join('')}
                   </div>
                 ` : ''}
 
+                <!-- Clean Text-Only Single-Row Footer Toolbar -->
                 <div class="card-footer-tools">
-                  <button class="tool-chip" onclick="openEventModal('${ev.id}')">✎ 編輯</button>
+                  <button class="tool-chip" onclick="openEventModal('${ev.id}')">編輯</button>
                   <label class="tool-chip" style="cursor:pointer;">
-                    📷 照片
-                    <input type="file" accept="image/*" hidden onchange="quickUploadCardPhoto(event, '${ev.id}')" />
+                    照片
+                    <input type="file" accept="image/*" multiple hidden onchange="quickUploadCardPhotos(event, '${ev.id}')" />
                   </label>
-                  <a class="tool-chip" href="${mapsUrl}" target="_blank" rel="noopener">📍 地圖 ↗</a>
+                  <a class="tool-chip" href="${mapsUrl}" target="_blank" rel="noopener">地圖</a>
                   <button class="tool-chip share-btn" onclick="openStoryModal('${ev.id}')">分享</button>
-                  <button class="tool-chip" onclick="deleteEvent('${ev.id}')" style="margin-left:auto; color:#888;">刪除</button>
+                  <button class="tool-chip delete-btn" onclick="deleteEvent('${ev.id}')">刪除</button>
                 </div>
               </div>
             </div>
@@ -2141,24 +2402,21 @@
       setupMobileScrollObserver();
     }
 
-    function quickUploadCardPhoto(e, evId) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const day = appState.trips[currentTripIdx].days[currentDayIdx];
-        const target = day.events.find(item => item.id === evId);
-        if (target) {
-          target.photo = ev.target.result;
-          target.photoZoom = 1;
-          target.photoX = 0;
-          target.photoY = 0;
-          pinnedEventIds.add(evId);
-          persist();
-          renderAll();
-        }
-      };
-      reader.readAsDataURL(file);
+    async function quickUploadCardPhotos(e, evId) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      const target = day.events.find(item => item.id === evId);
+      if (!target) return;
+      if (!Array.isArray(target.photos)) target.photos = [];
+
+      for (const file of files) {
+        const compressed = await compressImageFile(file);
+        target.photos.push({ data: compressed, zoom: 1, x: 0, y: 0 });
+      }
+      pinnedEventIds.add(evId);
+      persist();
+      renderAll();
     }
 
     let scrollObserver = null;
@@ -2176,7 +2434,7 @@
           }
           entry.target.classList.toggle('mobile-collapsed', !entry.isIntersecting);
         });
-      }, { root: null, rootMargin: '-20% 0px -22% 0px', threshold: 0.08 });
+      }, { root: null, rootMargin: '-18% 0px -20% 0px', threshold: 0.08 });
 
       cards.forEach(c => scrollObserver.observe(c));
     }
@@ -2188,6 +2446,16 @@
       if (el) el.classList.toggle('mobile-collapsed', !pinnedEventIds.has(evId));
     }
 
+    function formatNowTimestamp() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      return `${yyyy}/${mm}/${dd} ${hh}:${min}`;
+    }
+
     function stampEvent(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       const ev = day.events.find(e => e.id === evId);
@@ -2195,20 +2463,29 @@
       if (ev.visitedAt) {
         ev.visitedAt = '';
       } else {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        ev.visitedAt = `${yyyy}/${mm}/${dd} ${hh}:${min}`;
+        ev.visitedAt = formatNowTimestamp();
+        ev.cancelledAt = '';
+      }
+      persist();
+      renderAll();
+    }
+
+    function cancelEvent(evId) {
+      const day = appState.trips[currentTripIdx].days[currentDayIdx];
+      const ev = day.events.find(e => e.id === evId);
+      if (!ev) return;
+      if (ev.cancelledAt) {
+        ev.cancelledAt = '';
+      } else {
+        ev.cancelledAt = formatNowTimestamp();
+        ev.visitedAt = '';
       }
       persist();
       renderAll();
     }
 
     function deleteEvent(evId) {
-      if (!confirm('確定刪除此行程？')) return;
+      if (!confirm('確定刪除此行程？（若只是來不及前往，建議點選卡片右上角的「取消」蓋章保留回憶）')) return;
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       day.events = day.events.filter(e => e.id !== evId);
       persist();
@@ -2216,18 +2493,62 @@
     }
 
     /* ==========================================================================
-       10. Two-Way Event Editor + 3-Point Geocoding + Transit Colors
+       11. Structured Multi-Leg Train Editor & Flight Terminal Editor
        ========================================================================== */
     function handleEventTypeChange() {
       const t = document.getElementById('ev-type').value;
-      document.getElementById('transit-endpoints-group').style.display = (t === 'spot') ? 'none' : 'grid';
-      document.getElementById('transit-color-group').style.display = (t === 'train') ? 'grid' : 'none';
+      document.getElementById('flight-fields-box').style.display = (t === 'flight') ? 'block' : 'none';
+      document.getElementById('train-legs-box').style.display = (t === 'train') ? 'block' : 'none';
+      document.getElementById('ferry-fields-box').style.display = (t === 'ferry') ? 'block' : 'none';
+      document.getElementById('spot-subtitle-label').style.display = (t === 'spot') ? 'flex' : 'none';
+    }
+
+    function addTrainLegRow(legData = null) {
+      const container = document.getElementById('train-legs-container');
+      const idx = container.children.length;
+      const defaultColor = idx === 0 ? '#E3002C' : '#008659';
+      const fromVal = legData ? legData.from : '';
+      const toVal = legData ? legData.to : '';
+      const lineVal = legData ? legData.line : '';
+      const colorVal = legData ? (legData.color || defaultColor) : defaultColor;
+
+      const div = document.createElement('div');
+      div.className = 'transit-leg-box';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:11px; font-weight:700;">
+          <span>第 ${idx + 1} 段路線</span>
+          ${idx > 0 ? `<button type="button" class="pill-btn" style="padding:2px 7px; font-size:10.5px; color:#888;" onclick="this.closest('.transit-leg-box').remove()">移除此段</button>` : ''}
+        </div>
+        <div class="form-row-2" style="margin-bottom:6px;">
+          <label>上車站名<input type="text" class="leg-from" value="${escapeHtml(fromVal)}" placeholder="例如：淡水" /></label>
+          <label>下車站名<input type="text" class="leg-to" value="${escapeHtml(toVal)}" placeholder="例如：中山" /></label>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:end;">
+          <label>路線名稱 (自動辨識代表色)
+            <input type="text" class="leg-line" value="${escapeHtml(lineVal)}" placeholder="例如：淡水信義線 或 日比谷線" oninput="autoMatchLegRowColor(this)" />
+          </label>
+          <label>路線色
+            <input type="color" class="leg-color" value="${colorVal}" style="width:44px; height:35px; padding:2px; cursor:pointer;" />
+          </label>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function autoMatchLegRowColor(inputEl) {
+      const box = inputEl.closest('.transit-leg-box');
+      const colorInput = box.querySelector('.leg-color');
+      const matched = detectLineColor(inputEl.value, colorInput.value);
+      if (matched.name !== '自訂路線色') {
+        colorInput.value = matched.color;
+      }
     }
 
     function openEventModal(editEvId = null) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       const form = document.querySelector('#event-modal form');
       form.reset();
+      document.getElementById('train-legs-container').innerHTML = '';
 
       if (editEvId) {
         const ev = day.events.find(e => e.id === editEvId);
@@ -2253,21 +2574,34 @@
 
         document.getElementById('ev-title').value = ev.title || '';
         document.getElementById('ev-en').value = ev.enSubtitle || '';
-        document.getElementById('ev-from').value = ev.fromCode || '';
-        document.getElementById('ev-via').value = ev.viaCode || '';
-        document.getElementById('ev-to').value = ev.toCode || '';
-        document.getElementById('ev-line-color1').value = ev.lineColor1 || '#0F62B1';
-        document.getElementById('ev-line-color2').value = ev.lineColor2 || '#D62865';
+
+        // Populate Flight fields
+        document.getElementById('fl-from-code').value = ev.fromCode || '';
+        document.getElementById('fl-from-term').value = ev.fromTerminal || '';
+        document.getElementById('fl-to-code').value = ev.toCode || '';
+        document.getElementById('fl-to-term').value = ev.toTerminal || '';
+        document.getElementById('fl-number').value = ev.enSubtitle || '';
+
+        // Populate Train legs
+        if (Array.isArray(ev.transitLegs) && ev.transitLegs.length) {
+          ev.transitLegs.forEach(l => addTrainLegRow(l));
+        } else {
+          addTrainLegRow({ from: ev.fromCode || '', to: ev.toCode || '', line: ev.enSubtitle || '', color: '#E3002C' });
+        }
+
+        // Populate Ferry fields
+        document.getElementById('fe-from-port').value = ev.fromCode || '';
+        document.getElementById('fe-to-port').value = ev.toCode || '';
+        document.getElementById('fe-vessel').value = ev.enSubtitle || '';
+
         document.getElementById('ev-address').value = ev.address || '';
         document.getElementById('ev-map-url').value = ev.mapUrl || '';
         document.getElementById('ev-curr').value = ev.currency || 'NT$';
         document.getElementById('ev-cost').value = ev.cost || 0;
         document.getElementById('ev-note').value = ev.note || '';
 
-        tempPhotoData = ev.photo || '';
-        document.getElementById('ev-photo-zoom').value = ev.photoZoom || 1;
-        document.getElementById('ev-photo-x').value = ev.photoX || 0;
-        document.getElementById('ev-photo-y').value = ev.photoY || 0;
+        formPhotos = Array.isArray(ev.photos) ? JSON.parse(JSON.stringify(ev.photos)) : [];
+        activeFormPhotoIdx = 0;
       } else {
         document.getElementById('event-modal-heading').textContent = '新增行程';
         document.getElementById('ev-id').value = '';
@@ -2278,12 +2612,9 @@
         document.getElementById('ev-start-mm').value = '00';
         document.getElementById('ev-end-hh').value = '';
         document.getElementById('ev-end-mm').value = '';
-        document.getElementById('ev-line-color1').value = '#0F62B1';
-        document.getElementById('ev-line-color2').value = '#D62865';
-        tempPhotoData = '';
-        document.getElementById('ev-photo-zoom').value = 1;
-        document.getElementById('ev-photo-x').value = 0;
-        document.getElementById('ev-photo-y').value = 0;
+        addTrainLegRow();
+        formPhotos = [];
+        activeFormPhotoIdx = 0;
       }
 
       handleEventTypeChange();
@@ -2291,69 +2622,80 @@
       document.getElementById('event-modal').classList.add('open');
     }
 
-    function handleFormPhotoSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        tempPhotoData = ev.target.result;
-        document.getElementById('ev-photo-zoom').value = 1;
-        document.getElementById('ev-photo-x').value = 0;
-        document.getElementById('ev-photo-y').value = 0;
-        refreshPhotoEditPanel();
-      };
-      reader.readAsDataURL(file);
+    async function handleFormMultiPhotoSelect(e) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      for (const file of files) {
+        const compressed = await compressImageFile(file);
+        formPhotos.push({ data: compressed, zoom: 1, x: 0, y: 0 });
+      }
+      activeFormPhotoIdx = formPhotos.length - 1;
+      e.target.value = '';
+      refreshPhotoEditPanel();
     }
 
-    function removeCurrentPhoto() {
-      tempPhotoData = '';
-      document.getElementById('ev-photo').value = '';
+    function selectFormPhotoThumb(idx) {
+      activeFormPhotoIdx = idx;
+      refreshPhotoEditPanel();
+    }
+
+    function removeActivePhotoInForm() {
+      if (!formPhotos.length) return;
+      formPhotos.splice(activeFormPhotoIdx, 1);
+      if (activeFormPhotoIdx >= formPhotos.length) activeFormPhotoIdx = Math.max(0, formPhotos.length - 1);
       refreshPhotoEditPanel();
     }
 
     function refreshPhotoEditPanel() {
       const panel = document.getElementById('photo-edit-panel');
       const img = document.getElementById('form-crop-preview');
-      if (tempPhotoData) {
+      const strip = document.getElementById('form-thumb-strip');
+      document.getElementById('photo-count-badge').textContent = formPhotos.length;
+
+      if (formPhotos.length > 0) {
         panel.style.display = 'block';
-        img.src = tempPhotoData;
+        strip.innerHTML = formPhotos.map((p, idx) => `
+          <div class="thumb-item ${idx === activeFormPhotoIdx ? 'active' : ''}" onclick="selectFormPhotoThumb(${idx})">
+            <img src="${p.data}" alt="thumb" />
+          </div>
+        `).join('');
+
+        const active = formPhotos[activeFormPhotoIdx];
+        img.src = active.data;
+        document.getElementById('ev-photo-zoom').value = active.zoom || 1;
+        document.getElementById('ev-photo-x').value = active.x || 0;
+        document.getElementById('ev-photo-y').value = active.y || 0;
         updateCropPreview();
       } else {
         panel.style.display = 'none';
         img.src = '';
+        strip.innerHTML = '';
       }
     }
 
     function updateCropPreview() {
-      const z = document.getElementById('ev-photo-zoom').value;
-      const x = document.getElementById('ev-photo-x').value;
-      const y = document.getElementById('ev-photo-y').value;
-      document.getElementById('zoom-val').textContent = Number(z).toFixed(2);
+      if (!formPhotos[activeFormPhotoIdx]) return;
+      const z = Number(document.getElementById('ev-photo-zoom').value);
+      const x = Number(document.getElementById('ev-photo-x').value);
+      const y = Number(document.getElementById('ev-photo-y').value);
+      formPhotos[activeFormPhotoIdx].zoom = z;
+      formPhotos[activeFormPhotoIdx].x = x;
+      formPhotos[activeFormPhotoIdx].y = y;
+      document.getElementById('zoom-val').textContent = z.toFixed(2);
       document.getElementById('form-crop-preview').style.transform = `scale(${z}) translate(${x}%, ${y}%)`;
-    }
-
-    async function autoGeocodePlace(queryStr) {
-      if (!queryStr) return null;
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(queryStr)}`);
-        const data = await res.json();
-        if (data && data[0]) {
-          return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-        }
-      } catch (e) {}
-      return null;
     }
 
     async function saveEventForm(e) {
       e.preventDefault();
       const saveBtn = document.getElementById('save-ev-btn');
-      saveBtn.textContent = '正在定位與儲存...';
+      saveBtn.textContent = '儲存中...';
       saveBtn.disabled = true;
 
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       const editId = document.getElementById('ev-id').value;
       const existing = editId ? day.events.find(x => x.id === editId) : null;
 
+      const evType = document.getElementById('ev-type').value;
       const startStr = `${document.getElementById('ev-start-hh').value}:${document.getElementById('ev-start-mm').value}`;
       const eh = document.getElementById('ev-end-hh').value;
       const em = document.getElementById('ev-end-mm').value;
@@ -2361,58 +2703,83 @@
 
       const titleVal = document.getElementById('ev-title').value.trim();
       const addrVal = document.getElementById('ev-address').value.trim();
-      const fromVal = document.getElementById('ev-from').value.trim();
-      const viaVal = document.getElementById('ev-via').value.trim();
-      const toVal = document.getElementById('ev-to').value.trim();
 
-      let fromLat = existing ? existing.fromLat : 35.6812;
-      let fromLng = existing ? existing.fromLng : 139.7671;
-      let viaLat = existing ? existing.viaLat : null;
-      let viaLng = existing ? existing.viaLng : null;
-      let toLat = existing ? existing.toLat : 35.6812;
-      let toLng = existing ? existing.toLng : 139.7671;
+      let fromCode = '', toCode = '', fromTerminal = '', toTerminal = '', enSubtitle = '';
+      let transitLegs = [];
+      let fromLat = existing ? existing.fromLat : 25.0478;
+      let fromLng = existing ? existing.fromLng : 121.5170;
+      let toLat = existing ? existing.toLat : 25.0478;
+      let toLng = existing ? existing.toLng : 121.5170;
 
-      const geoTarget = addrVal || toVal || titleVal;
+      if (evType === 'flight') {
+        fromCode = document.getElementById('fl-from-code').value.trim().toUpperCase();
+        fromTerminal = document.getElementById('fl-from-term').value.trim();
+        toCode = document.getElementById('fl-to-code').value.trim().toUpperCase();
+        toTerminal = document.getElementById('fl-to-term').value.trim();
+        enSubtitle = document.getElementById('fl-number').value.trim();
+      } else if (evType === 'train') {
+        const legBoxes = Array.from(document.querySelectorAll('#train-legs-container .transit-leg-box'));
+        for (let i = 0; i < legBoxes.length; i++) {
+          const b = legBoxes[i];
+          const fName = b.querySelector('.leg-from').value.trim() || `站點 ${i + 1}`;
+          const tName = b.querySelector('.leg-to').value.trim() || `站點 ${i + 2}`;
+          const lName = b.querySelector('.leg-line').value.trim() || `路線 ${i + 1}`;
+          const lColor = b.querySelector('.leg-color').value || '#0F62B1';
+
+          const fGeo = await autoGeocodePlace(`${fName} 站`);
+          const tGeo = await autoGeocodePlace(`${tName} 站`);
+
+          transitLegs.push({
+            from: fName,
+            to: tName,
+            line: lName,
+            color: lColor,
+            fromLat: fGeo ? fGeo.lat : null,
+            fromLng: fGeo ? fGeo.lng : null,
+            toLat: tGeo ? tGeo.lat : null,
+            toLng: tGeo ? tGeo.lng : null
+          });
+        }
+        if (transitLegs.length) {
+          fromCode = transitLegs[0].from;
+          toCode = transitLegs[transitLegs.length - 1].to;
+          enSubtitle = transitLegs.map(l => l.line).join(' ➔ ');
+          if (transitLegs[0].fromLat) { fromLat = transitLegs[0].fromLat; fromLng = transitLegs[0].fromLng; }
+          const lastLeg = transitLegs[transitLegs.length - 1];
+          if (lastLeg.toLat) { toLat = lastLeg.toLat; toLng = lastLeg.toLng; }
+        }
+      } else if (evType === 'ferry') {
+        fromCode = document.getElementById('fe-from-port').value.trim();
+        toCode = document.getElementById('fe-to-port').value.trim();
+        enSubtitle = document.getElementById('fe-vessel').value.trim();
+      } else {
+        enSubtitle = document.getElementById('ev-en').value.trim();
+      }
+
+      const geoTarget = addrVal || toCode || titleVal;
       const geoResult = await autoGeocodePlace(geoTarget);
       if (geoResult) { toLat = geoResult.lat; toLng = geoResult.lng; }
 
-      if (fromVal) {
-        const fromGeo = await autoGeocodePlace(fromVal);
-        if (fromGeo) { fromLat = fromGeo.lat; fromLng = fromGeo.lng; }
-      } else {
-        fromLat = toLat; fromLng = toLng;
-      }
-
-      if (viaVal) {
-        const viaGeo = await autoGeocodePlace(viaVal);
-        if (viaGeo) { viaLat = viaGeo.lat; viaLng = viaGeo.lng; }
-      }
-
       const payload = {
         id: existing ? existing.id : 'ev-' + Date.now(),
-        type: document.getElementById('ev-type').value,
+        type: evType,
         startTz: document.getElementById('ev-start-tz').value,
         endTz: document.getElementById('ev-end-tz').value,
         time: startStr,
         arrTime: endStr,
         title: titleVal,
-        enSubtitle: document.getElementById('ev-en').value.trim(),
-        fromCode: fromVal,
-        viaCode: viaVal,
-        toCode: toVal,
-        lineColor1: document.getElementById('ev-line-color1').value || '#0F62B1',
-        lineColor2: document.getElementById('ev-line-color2').value || '#D62865',
-        fromLat, fromLng, viaLat, viaLng, toLat, toLng,
+        enSubtitle,
+        fromCode, fromTerminal, toCode, toTerminal,
+        transitLegs,
+        fromLat, fromLng, toLat, toLng,
         address: addrVal,
         mapUrl: document.getElementById('ev-map-url').value.trim(),
         currency: document.getElementById('ev-curr').value,
         cost: Number(document.getElementById('ev-cost').value) || 0,
         note: document.getElementById('ev-note').value,
-        photo: tempPhotoData,
-        photoZoom: Number(document.getElementById('ev-photo-zoom').value) || 1,
-        photoX: Number(document.getElementById('ev-photo-x').value) || 0,
-        photoY: Number(document.getElementById('ev-photo-y').value) || 0,
-        visitedAt: existing ? existing.visitedAt : ''
+        photos: formPhotos,
+        visitedAt: existing ? existing.visitedAt : '',
+        cancelledAt: existing ? existing.cancelledAt : ''
       };
 
       if (existing) {
@@ -2421,6 +2788,9 @@
       } else {
         day.events.push(payload);
       }
+
+      // Automatic Chronological Sorting by Start Time
+      day.events.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
 
       pinnedEventIds.add(payload.id);
       persist();
@@ -2431,7 +2801,7 @@
     }
 
     /* ==========================================================================
-       11. Trip Manager, Day Weather & Per-Trip Checklist / Budget
+       12. Trip Manager, Day Weather & Per-Trip Checklist / Budget
        ========================================================================== */
     function openTripManagerModal() {
       const trip = appState.trips[currentTripIdx];
@@ -2441,7 +2811,7 @@
 
       document.getElementById('tm-list').innerHTML = appState.trips.map((t, idx) => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.7); border-radius:10px;">
-          <span style="font-size:13px; font-weight:700;">${t.name} (${t.days.length} 天)</span>
+          <span style="font-size:13px; font-weight:700;">${escapeHtml(t.name)} (${t.days.length} 天)</span>
           <button class="pill-btn ${idx === currentTripIdx ? 'active' : ''}" onclick="selectTrip(${idx}); openTripManagerModal();">切換</button>
         </div>
       `).join('');
@@ -2509,7 +2879,6 @@
       renderAll();
     }
 
-    // Per-Trip Isolated Checklist & Budget
     function addChecklistItem(e) {
       e.preventDefault();
       const input = document.getElementById('new-todo-input');
@@ -2545,7 +2914,6 @@
       document.getElementById('checklist-trip-tag').textContent = trip.name;
       document.getElementById('budget-trip-tag').textContent = trip.name;
 
-      // Render Checklist
       const ckList = trip.checklist || [];
       const ckEl = document.getElementById('checklist-container');
       if (!ckList.length) {
@@ -2557,12 +2925,12 @@
               <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem('${item.id}')" style="width:17px; height:17px;" />
               <span>${escapeHtml(item.text)}</span>
             </label>
-            <button class="pill-btn" style="padding:2px 8px; font-size:11px; color:#888;" onclick="deleteChecklistItem('${item.id}')">✕</button>
+            <button class="pill-btn" style="padding:2px 8px; font-size:11px; color:#888;" onclick="deleteChecklistItem('${item.id}')">刪除</button>
           </div>
         `).join('');
       }
 
-      // Render Per-Trip Isolated Budget
+      // Budget Summary (Automatically excludes Cancelled events from totals)
       const totals = {};
       let rowsHtml = '';
       trip.days.forEach(d => {
@@ -2570,9 +2938,10 @@
           const c = ev.currency || 'NT$';
           const amt = Number(ev.cost) || 0;
           if (amt > 0) {
-            totals[c] = (totals[c] || 0) + amt;
-            rowsHtml += `<div style="display:flex; justify-content:space-between; padding:9px 10px; border-bottom:1px solid rgba(0,0,0,0.07); font-size:13.5px;">
-              <span>${d.dayLabel} · ${ev.title}</span>
+            const isCanc = Boolean(ev.cancelledAt);
+            if (!isCanc) totals[c] = (totals[c] || 0) + amt;
+            rowsHtml += `<div style="display:flex; justify-content:space-between; padding:9px 10px; border-bottom:1px solid rgba(0,0,0,0.07); font-size:13.5px; ${isCanc ? 'opacity:0.48; text-decoration:line-through;' : ''}">
+              <span>${d.dayLabel} · ${escapeHtml(ev.title)} ${isCanc ? '(已取消不計入)' : ''}</span>
               <strong style="font-family:var(--font-mono);">${c} ${amt.toLocaleString()}</strong>
             </div>`;
           }
@@ -2590,15 +2959,22 @@
       const cards = [];
       trip.days.forEach(d => {
         d.events.forEach(ev => {
+          const statusBadge = ev.visitedAt
+            ? `<span style="color:var(--accent-rust);">✓ COMPLETED ${ev.visitedAt}</span>`
+            : ev.cancelledAt
+              ? `<span style="color:var(--accent-slate);">✕ CANCELLED ${ev.cancelledAt}</span>`
+              : `<span>SCHEDULED</span>`;
+          const firstPhoto = (Array.isArray(ev.photos) && ev.photos[0]) ? ev.photos[0].data : '';
+
           cards.push(`
-            <div class="booklet-card">
-              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--accent-rust);">
+            <div class="booklet-card" style="${ev.cancelledAt ? 'opacity:0.78; background:#F4F2EE;' : ''}">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px;">
                 <span>${d.dayLabel} · ${ev.time}</span>
-                <span>${ev.visitedAt ? '✓ ' + ev.visitedAt : 'SCHEDULED'}</span>
+                ${statusBadge}
               </div>
-              <h4 style="margin:6px 0 4px; font-size:16px; font-family:var(--font-body); font-weight:700;">${ev.title}</h4>
-              ${ev.enSubtitle ? `<div style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">${ev.enSubtitle}</div>` : ''}
-              ${ev.photo ? `<img src="${ev.photo}" style="width:100%; border-radius:8px; margin-bottom:8px; object-fit:contain; background:#F4F2ED; max-height:220px;" />` : ''}
+              <h4 style="margin:6px 0 4px; font-size:16px; font-family:var(--font-body); font-weight:700; ${ev.cancelledAt ? 'text-decoration:line-through;' : ''}">${escapeHtml(ev.title)}</h4>
+              ${ev.enSubtitle ? `<div style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">${escapeHtml(ev.enSubtitle)}</div>` : ''}
+              ${firstPhoto ? `<img src="${firstPhoto}" style="width:100%; border-radius:8px; margin-bottom:8px; object-fit:contain; background:#F4F2ED; max-height:220px;" />` : ''}
               ${ev.note ? `<div style="font-size:12.5px; color:#333; background:#F7F5F0; padding:8px 10px; border-radius:10px;">${formatNoteWithSmartLinks(ev.note, ev.id)}</div>` : ''}
             </div>
           `);
@@ -2608,7 +2984,7 @@
     }
 
     /* ==========================================================================
-       12. Views & Route Map
+       13. Views & Route Map
        ========================================================================== */
     function switchView(viewName, btn) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -2640,7 +3016,7 @@
           coords.push([lat, lng]);
           placeNames.push(encodeURIComponent(ev.address || ev.title));
           L.marker([lat, lng]).addTo(leafletMap)
-            .bindPopup(`<strong>#${idx + 1} ${ev.title}</strong><br/>${ev.time}`);
+            .bindPopup(`<strong>#${idx + 1} ${escapeHtml(ev.title)}</strong><br/>${ev.time}`);
         }
       });
 
@@ -2663,24 +3039,62 @@
     }
 
     /* ==========================================================================
-       13. 9:16 IG Story Generator (Paired Paper Themes + Dynamic 3-Point Mini Metro)
+       14. 9:16 IG Story Generator (Dual-Layer Paper + Non-Overlapping Layout + Collage)
        ========================================================================== */
     function openStoryModal(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
       activeStoryEvent = day.events.find(e => e.id === evId);
       if (!activeStoryEvent) return;
-
-      document.getElementById('st-zoom').value = activeStoryEvent.photoZoom || 1;
-      document.getElementById('st-x').value = activeStoryEvent.photoX || 0;
-      document.getElementById('st-y').value = activeStoryEvent.photoY || 0;
+      if (!Array.isArray(activeStoryEvent.photos)) activeStoryEvent.photos = [];
+      activeStoryPhotoIdx = 0;
 
       if (activeStoryEvent.type === 'flight') activeStoryTemplate = 'flight';
       else if (activeStoryEvent.type === 'train' || activeStoryEvent.type === 'ferry') activeStoryTemplate = 'transit';
       else activeStoryTemplate = 'polaroid';
 
       initPaperSwatches();
+      refreshStoryPhotoPicker();
       setStoryTemplate(activeStoryTemplate);
       document.getElementById('story-modal').classList.add('open');
+    }
+
+    function refreshStoryPhotoPicker() {
+      const wrap = document.getElementById('story-photo-picker-wrap');
+      const strip = document.getElementById('story-thumb-strip');
+      const photos = activeStoryEvent ? (activeStoryEvent.photos || []) : [];
+
+      wrap.style.display = 'block';
+      strip.innerHTML = photos.map((p, idx) => `
+        <div class="thumb-item ${idx === activeStoryPhotoIdx ? 'active' : ''}" onclick="selectStoryPhoto(${idx})">
+          <img src="${p.data}" alt="story-thumb" />
+        </div>
+      `).join('');
+
+      const cur = photos[activeStoryPhotoIdx];
+      document.getElementById('st-zoom').value = cur ? (cur.zoom || 1) : 1;
+      document.getElementById('st-x').value = cur ? (cur.x || 0) : 0;
+      document.getElementById('st-y').value = cur ? (cur.y || 0) : 0;
+    }
+
+    function selectStoryPhoto(idx) {
+      activeStoryPhotoIdx = idx;
+      refreshStoryPhotoPicker();
+      renderStoryCanvas();
+    }
+
+    async function uploadPhotoFromStoryModal(e) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length || !activeStoryEvent) return;
+      if (!Array.isArray(activeStoryEvent.photos)) activeStoryEvent.photos = [];
+      for (const f of files) {
+        const comp = await compressImageFile(f);
+        activeStoryEvent.photos.push({ data: comp, zoom: 1, x: 0, y: 0 });
+      }
+      activeStoryPhotoIdx = activeStoryEvent.photos.length - 1;
+      persist();
+      renderTimeline();
+      refreshStoryPhotoPicker();
+      renderStoryCanvas();
     }
 
     function setStoryTemplate(tpl) {
@@ -2694,11 +3108,14 @@
 
     function syncStoryCrop() {
       if (!activeStoryEvent) return;
-      activeStoryEvent.photoZoom = Number(document.getElementById('st-zoom').value);
-      activeStoryEvent.photoX = Number(document.getElementById('st-x').value);
-      activeStoryEvent.photoY = Number(document.getElementById('st-y').value);
-      persist();
-      renderTimeline();
+      const cur = (activeStoryEvent.photos || [])[activeStoryPhotoIdx];
+      if (cur) {
+        cur.zoom = Number(document.getElementById('st-zoom').value);
+        cur.x = Number(document.getElementById('st-x').value);
+        cur.y = Number(document.getElementById('st-y').value);
+        persist();
+        renderTimeline();
+      }
       renderStoryCanvas();
     }
 
@@ -2715,103 +3132,139 @@
       renderStoryCanvas();
     }
 
+    // Helper for wrapped multi-line canvas text within safe width (prevents text hitting stamp!)
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+      if (!text) return;
+      const chars = Array.from(text);
+      let line = '';
+      let lineCount = 0;
+      for (let i = 0; i < chars.length; i++) {
+        const testLine = line + chars[i];
+        if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
+          lineCount++;
+          if (lineCount >= maxLines) {
+            ctx.fillText(line.slice(0, -1) + '…', x, y);
+            return;
+          }
+          ctx.fillText(line, x, y);
+          line = chars[i];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) ctx.fillText(line, x, y);
+    }
+
     async function renderStoryCanvas() {
       const canvas = document.getElementById('story-canvas');
       const ctx = canvas.getContext('2d');
       const W = 1080, H = 1920;
       const ev = activeStoryEvent;
       const trip = appState.trips[currentTripIdx];
-      const P = activePaperTheme;
+      const OP = activeOuterPaper;
+      const IC = activeInnerCard;
 
-      // Theme Paper Background
-      ctx.fillStyle = P.bg;
+      // Layer 1: Outer Paper Background
+      ctx.fillStyle = OP.bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Top Brand Header (Auto-Inverting Logo Box & Ink)
-      ctx.fillStyle = P.logoBox;
+      // Top Brand Header (Optically Centered "旅" so bottom is never clipped)
+      ctx.fillStyle = OP.logoBox;
       ctx.beginPath();
-      ctx.roundRect(76, 220, 62, 62, 12);
+      ctx.roundRect(76, 215, 62, 62, 12);
       ctx.fill();
 
-      ctx.fillStyle = P.logoInk;
-      ctx.font = "400 38px 'Dela Gothic One', sans-serif";
-      ctx.textAlign = 'center';
-      ctx.fillText('旅', 107, 265);
+      ctx.fillStyle = OP.logoInk;
+      ctx.font = "400 36px 'Dela Gothic One', sans-serif";
+      fillTextOpticallyCentered(ctx, '旅', 107, 246);
 
       ctx.textAlign = 'left';
-      ctx.fillStyle = P.ink;
+      ctx.fillStyle = OP.ink;
       ctx.font = "400 34px 'Dela Gothic One', sans-serif";
-      ctx.fillText('TABI NOTE', 156, 263);
+      ctx.fillText('TABI NOTE', 156, 259);
 
-      ctx.font = "500 24px 'DM Mono', monospace";
-      ctx.fillStyle = P.muted;
+      ctx.font = "500 23px 'DM Mono', 'Noto Sans TC', monospace";
+      ctx.fillStyle = OP.muted;
       ctx.textAlign = 'right';
-      ctx.fillText(trip.name.slice(0, 24), 1004, 260);
+      ctx.fillText(trip.name.slice(0, 24), 1004, 256);
 
-      ctx.strokeStyle = P.ink;
-      ctx.globalAlpha = 0.28;
+      ctx.strokeStyle = OP.ink;
+      ctx.globalAlpha = 0.25;
       ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(76, 304); ctx.lineTo(1004, 304); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(76, 302); ctx.lineTo(1004, 302); ctx.stroke();
       ctx.globalAlpha = 1;
 
       if (activeStoryTemplate === 'polaroid') {
-        await drawPolaroidStory(ctx, W, H, ev, P);
+        await drawPolaroidStory(ctx, W, H, ev, OP, IC);
       } else if (activeStoryTemplate === 'flight') {
-        drawFlightStoryWithWorldMap(ctx, W, H, ev, P);
+        drawFlightStoryWithWorldMap(ctx, W, H, ev, OP, IC);
       } else if (activeStoryTemplate === 'transit') {
-        drawMiniMetroOrFerryStory(ctx, W, H, ev, P);
+        await drawMiniMetroOrFerryStory(ctx, W, H, ev, OP, IC);
       }
 
       // Footer
-      ctx.fillStyle = P.muted;
+      ctx.fillStyle = OP.muted;
       ctx.font = "500 22px 'DM Mono', monospace";
       ctx.textAlign = 'left';
       ctx.fillText('#TABINOTE', 76, 1730);
       ctx.textAlign = 'right';
-      ctx.fillText(ev.visitedAt || ev.time, 1004, 1730);
+      ctx.fillText(ev.visitedAt || ev.cancelledAt || ev.time, 1004, 1730);
 
       document.getElementById('story-output-img').src = canvas.toDataURL('image/png', 0.96);
     }
 
-    function drawPolaroidStory(ctx, W, H, ev, P) {
+    function getStampMetaForEvent(ev, IC) {
+      if (ev.cancelledAt) {
+        return { line1: 'CANCELLED ✕', line2: ev.cancelledAt, color: '#64748B' };
+      }
+      if (ev.visitedAt) {
+        return { line1: 'COMPLETED ✓', line2: ev.visitedAt, color: IC.stamp };
+      }
+      return { line1: 'SCHEDULED', line2: `${ev.time} LOGGED`, color: IC.stamp };
+    }
+
+    function drawPolaroidStory(ctx, W, H, ev, OP, IC) {
       return new Promise((resolve) => {
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,0.18)';
         ctx.shadowBlur = 36;
         ctx.shadowOffsetY = 16;
-        ctx.fillStyle = P.cardBg;
+        ctx.fillStyle = IC.cardBg;
         ctx.beginPath();
         ctx.roundRect(76, 350, 928, 1280, 18);
         ctx.fill();
         ctx.restore();
 
-        const finishMeta = () => {
-          ctx.fillStyle = P.ink;
-          ctx.font = "700 44px 'Zen Kaku Gothic New', sans-serif";
-          ctx.textAlign = 'left';
-          ctx.fillText(ev.title.slice(0, 20), 124, 1345);
+        const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
 
-          ctx.fillStyle = P.muted;
-          ctx.font = "600 26px 'Archivo', sans-serif";
-          ctx.fillText((ev.enSubtitle || '').slice(0, 40), 124, 1396);
+        const finishMeta = () => {
+          ctx.fillStyle = IC.ink;
+          ctx.font = "700 42px 'Noto Sans TC', sans-serif";
+          ctx.textAlign = 'left';
+          ctx.fillText(ev.title.slice(0, 18), 124, 1340);
+
+          ctx.fillStyle = IC.muted;
+          ctx.font = "600 25px 'Archivo', 'Noto Sans TC', sans-serif";
+          ctx.fillText((ev.enSubtitle || '').slice(0, 34), 124, 1390);
 
           if (ev.note) {
-            ctx.fillStyle = P.ink;
-            ctx.font = "500 24px 'Zen Kaku Gothic New', sans-serif";
-            ctx.fillText(ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').slice(0, 34), 124, 1450);
+            ctx.fillStyle = IC.ink;
+            ctx.font = "500 23px 'Noto Sans TC', sans-serif";
+            const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+            drawWrappedText(ctx, cleanNote, 124, 1440, 430, 32, 2);
           }
 
-          ctx.fillStyle = P.stamp;
-          ctx.font = "500 28px 'DM Mono', monospace";
-          ctx.fillText(`'26 ${ev.visitedAt || ev.time}`, 124, 1555);
+          ctx.fillStyle = IC.stamp;
+          ctx.font = "500 26px 'DM Mono', monospace";
+          ctx.fillText(`'26 ${ev.visitedAt || ev.cancelledAt || ev.time}`, 124, 1565);
 
-          if (ev.visitedAt) {
-            drawCustomsStamp(ctx, 780, 1510, 'COMPLETED ✓', ev.visitedAt, P.stamp);
-          }
+          const st = getStampMetaForEvent(ev, IC);
+          drawCustomsStamp(ctx, 775, 1505, st.line1, st.line2, st.color);
           resolve();
         };
 
-        if (ev.photo) {
+        if (selectedPhoto && selectedPhoto.data) {
           const img = new Image();
           img.onload = () => {
             const boxX = 118, boxY = 392, boxW = 844, boxH = 870;
@@ -2819,25 +3272,25 @@
             ctx.beginPath();
             ctx.rect(boxX, boxY, boxW, boxH);
             ctx.clip();
-            ctx.fillStyle = P.subCardBg;
+            ctx.fillStyle = IC.subCardBg;
             ctx.fillRect(boxX, boxY, boxW, boxH);
 
             const baseScale = Math.min(boxW / img.width, boxH / img.height);
-            const z = ev.photoZoom || 1;
+            const z = selectedPhoto.zoom || 1;
             const dw = img.width * baseScale * z;
             const dh = img.height * baseScale * z;
-            const ox = ((ev.photoX || 0) / 100) * boxW;
-            const oy = ((ev.photoY || 0) / 100) * boxH;
+            const ox = ((selectedPhoto.x || 0) / 100) * boxW;
+            const oy = ((selectedPhoto.y || 0) / 100) * boxH;
 
             ctx.drawImage(img, boxX + (boxW - dw) / 2 + ox, boxY + (boxH - dh) / 2 + oy, dw, dh);
             ctx.restore();
             finishMeta();
           };
-          img.src = ev.photo;
+          img.src = selectedPhoto.data;
         } else {
-          ctx.fillStyle = P.subCardBg;
+          ctx.fillStyle = IC.subCardBg;
           ctx.fillRect(118, 392, 844, 870);
-          ctx.fillStyle = P.muted;
+          ctx.fillStyle = IC.muted;
           ctx.font = "500 28px 'DM Mono', monospace";
           ctx.textAlign = 'center';
           ctx.fillText('TABI NOTE ARCHIVE', 540, 830);
@@ -2846,17 +3299,19 @@
       });
     }
 
-    function drawFlightStoryWithWorldMap(ctx, W, H, ev, P) {
+    /* --- TEMPLATE B: FLIGHT GLOBE + LEFT-ONLY BARCODE + NON-OVERLAPPING TICKET --- */
+    function drawFlightStoryWithWorldMap(ctx, W, H, ev, OP, IC) {
+      // Strictly print Airport Codes only on Boarding Pass (no Terminal clutter)
       const from = (ev.fromCode || 'TPE').toUpperCase();
       const to = (ev.toCode || 'LAX').toUpperCase();
       const flightMeta = computeFlightDurationAndShift(ev.time, ev.arrTime, ev.startTz, ev.endTz);
 
-      ctx.fillStyle = P.ink;
+      ctx.fillStyle = OP.ink;
       ctx.font = "700 30px 'DM Mono', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText(`01 FLIGHT PATH // ${from} TO ${to}`, 76, 360);
+      ctx.fillText(`01 FLIGHT PATH // ${from} TO ${to}`, 76, 358);
 
-      const cx = 540, cy = 700, r = 300;
+      const cx = 540, cy = 695, r = 295;
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -2865,54 +3320,69 @@
       if (flightBgImage) {
         const s = Math.max((r * 2) / flightBgImage.width, (r * 2) / flightBgImage.height);
         ctx.drawImage(flightBgImage, cx - (flightBgImage.width * s) / 2, cy - (flightBgImage.height * s) / 2, flightBgImage.width * s, flightBgImage.height * s);
-        ctx.fillStyle = 'rgba(18, 26, 42, 0.45)';
+        ctx.fillStyle = 'rgba(14, 22, 36, 0.45)';
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
       } else {
-        const grad = ctx.createRadialGradient(cx - 60, cy - 60, 40, cx, cy, r);
-        grad.addColorStop(0, '#2B3548');
-        grad.addColorStop(1, '#151C28');
+        const grad = ctx.createRadialGradient(cx - 70, cy - 70, 30, cx, cy, r);
+        grad.addColorStop(0, '#23324A');
+        grad.addColorStop(1, '#101826');
         ctx.fillStyle = grad;
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
 
-        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        // Detailed Graticule & Realistic Pacific Rim Coastlines
+        ctx.strokeStyle = 'rgba(255,255,255,0.11)';
         ctx.lineWidth = 1.5;
-        for (let latR = 80; latR < r; latR += 70) {
+        for (let latR = 70; latR < r; latR += 65) {
           ctx.beginPath(); ctx.ellipse(cx, cy, r, latR, 0, 0, Math.PI * 2); ctx.stroke();
           ctx.beginPath(); ctx.ellipse(cx, cy, latR, r, 0, 0, Math.PI * 2); ctx.stroke();
         }
 
-        ctx.fillStyle = 'rgba(10, 14, 22, 0.65)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 2;
+
+        // Detailed East Asia Coastline + Taiwan + Japan Archipelago
         ctx.beginPath();
-        ctx.moveTo(240, 520); ctx.lineTo(350, 480); ctx.lineTo(410, 550);
-        ctx.lineTo(385, 650); ctx.lineTo(330, 740); ctx.lineTo(250, 780); ctx.closePath();
-        ctx.fill();
+        ctx.moveTo(240, 510); ctx.lineTo(310, 470); ctx.lineTo(360, 495);
+        ctx.lineTo(355, 550); ctx.lineTo(335, 610); ctx.lineTo(315, 675);
+        ctx.lineTo(290, 735); ctx.lineTo(245, 760); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Taiwan Island
+        ctx.beginPath(); ctx.ellipse(332, 725, 8, 18, 0.25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        // Japan Honshu / Kyushu
         ctx.beginPath();
-        ctx.ellipse(415, 620, 16, 48, 0.4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(385, 635); ctx.quadraticCurveTo(415, 605, 430, 560);
+        ctx.lineTo(442, 570); ctx.quadraticCurveTo(425, 620, 395, 648);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Detailed North America West Coast (Alaska -> California -> Baja)
         ctx.beginPath();
-        ctx.moveTo(640, 430); ctx.lineTo(840, 460); ctx.lineTo(830, 740);
-        ctx.lineTo(750, 720); ctx.lineTo(680, 620); ctx.closePath();
-        ctx.fill();
+        ctx.moveTo(610, 440); ctx.lineTo(710, 420); ctx.lineTo(840, 470);
+        ctx.lineTo(840, 760); ctx.lineTo(790, 755); ctx.lineTo(755, 700);
+        ctx.lineTo(735, 645); ctx.lineTo(700, 570); ctx.lineTo(645, 505);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
       }
 
+      // Great Circle Trajectory Arc
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 4.5;
       ctx.setLineDash([12, 10]);
       ctx.beginPath();
-      ctx.moveTo(340, 745);
-      ctx.quadraticCurveTo(540, 520, 745, 685);
+      ctx.moveTo(332, 725);
+      ctx.quadraticCurveTo(540, 495, 750, 680);
       ctx.stroke();
       ctx.setLineDash([]);
 
       ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.arc(340, 745, 9, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(745, 685, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(332, 725, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(750, 680, 9, 0, Math.PI * 2); ctx.fill();
 
       ctx.save();
-      ctx.translate(540, 618);
-      ctx.rotate(-0.08);
+      ctx.translate(540, 592);
+      ctx.rotate(-0.06);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '46px sans-serif';
+      ctx.font = '44px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('✈', 0, 0);
@@ -2921,76 +3391,97 @@
       ctx.fillStyle = '#FFFFFF';
       ctx.font = "700 40px 'DM Mono', monospace";
       ctx.textAlign = 'center';
-      ctx.fillText(from, 340, 800);
-      ctx.fillText(to, 745, 745);
-
-      ctx.font = "500 22px 'DM Mono', monospace";
-      ctx.fillStyle = 'rgba(255,255,255,0.82)';
-      ctx.fillText(ev.enSubtitle || 'GREAT CIRCLE TRACK', 540, 685);
+      ctx.fillText(from, 332, 782);
+      ctx.fillText(to, 750, 738);
       ctx.restore();
 
-      // Perforated Boarding Pass Ticket Stub (Paired with Theme Card & Ink)
-      const tx = 76, ty = 1055, tw = 928, th = 560;
+      // --- Clean Boarding Pass Ticket (Left Barcode ONLY, Spacious Columns, Zero Overlap) ---
+      const tx = 76, ty = 1045, tw = 928, th = 570;
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.16)';
       ctx.shadowBlur = 28;
       ctx.shadowOffsetY = 10;
-      ctx.fillStyle = P.cardBg;
+      ctx.fillStyle = IC.cardBg;
       ctx.beginPath();
       ctx.roundRect(tx, ty, tw, th, 20);
       ctx.fill();
       ctx.restore();
 
-      ctx.fillStyle = P.bg;
+      // Side Punch Notches
+      ctx.fillStyle = OP.bg;
       for (let ny = ty + 55; ny < ty + th - 30; ny += 42) {
         ctx.beginPath(); ctx.arc(tx, ny, 11, -Math.PI / 2, Math.PI / 2); ctx.fill();
         ctx.beginPath(); ctx.arc(tx + tw, ny, 11, Math.PI / 2, -Math.PI / 2); ctx.fill();
       }
 
-      drawVerticalBarcode(ctx, tx + 38, ty + 48, 46, th - 96, '', P.ink);
-
-      ctx.fillStyle = P.muted;
-      ctx.font = "500 22px 'DM Mono', monospace";
-      ctx.textAlign = 'left';
-      ctx.fillText('DEPART', tx + 115, ty + 78);
-      ctx.fillText('ARRIVE', tx + 395, ty + 78);
-
-      ctx.fillStyle = P.ink;
-      ctx.font = "700 50px 'DM Mono', monospace";
-      ctx.fillText(`${from} ${ev.time}`, tx + 115, ty + 142);
-      ctx.fillText(`/ ${to} ${ev.arrTime || '--:--'} ${flightMeta.dayShift}`, tx + 385, ty + 142);
-
-      ctx.font = "500 24px 'DM Mono', monospace";
-      ctx.fillStyle = P.muted;
-      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, tx + 115, ty + 205);
-
-      ctx.strokeStyle = P.ink;
-      ctx.globalAlpha = 0.25;
-      ctx.lineWidth = 2;
-      ctx.setLineDash([8, 8]);
-      ctx.beginPath(); ctx.moveTo(tx + 115, ty + 235); ctx.lineTo(tx + 720, ty + 235); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-
-      ctx.fillStyle = P.muted;
-      ctx.font = "500 22px 'DM Mono', monospace";
-      ctx.fillText('FLIGHT / ROUTE', tx + 115, ty + 285);
-      ctx.fillStyle = P.ink;
-      ctx.font = "800 46px 'Archivo', sans-serif";
-      ctx.fillText((ev.enSubtitle || ev.title).slice(0, 18), tx + 115, ty + 345);
-
-      ctx.strokeStyle = P.ink;
-      ctx.globalAlpha = 0.25;
-      ctx.setLineDash([10, 10]);
-      ctx.beginPath(); ctx.moveTo(tx + 755, ty + 24); ctx.lineTo(tx + 755, ty + th - 24); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-
+      // Single Left Barcode Strip (With Date-Timestamp Code)
       const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
       const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '2340'}`;
-      drawVerticalBarcode(ctx, tx + 785, ty + 48, 105, th - 96, stampCode, P.ink);
+      drawVerticalBarcode(ctx, tx + 38, ty + 48, 86, th - 96, stampCode, IC.ink);
 
-      drawCustomsStamp(ctx, tx + 555, ty + 395, `ADMITTED · ${to}`, `${ev.visitedAt || ev.arrTime || 'ARRIVAL'} · ${to} CUSTOMS`, P.stamp);
+      // Vertical Perforation Divider after Left Barcode
+      ctx.strokeStyle = IC.ink;
+      ctx.globalAlpha = 0.22;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath(); ctx.moveTo(tx + 148, ty + 24); ctx.lineTo(tx + 148, ty + th - 24); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+
+      // Spacious Depart & Arrive Columns (Never collide!)
+      const col1X = tx + 185;
+      const col2X = tx + 555;
+
+      ctx.fillStyle = IC.muted;
+      ctx.font = "500 22px 'DM Mono', monospace";
+      ctx.textAlign = 'left';
+      ctx.fillText('DEPARTURE', col1X, ty + 82);
+      ctx.fillText('ARRIVAL', col2X, ty + 82);
+
+      ctx.fillStyle = IC.ink;
+      ctx.font = "700 52px 'DM Mono', monospace";
+      ctx.fillText(`${from} ${ev.time}`, col1X, ty + 148);
+      ctx.fillText(`${to} ${ev.arrTime || '--:--'}`, col2X, ty + 148);
+
+      if (flightMeta.dayShift) {
+        ctx.font = "700 24px 'DM Mono', monospace";
+        ctx.fillStyle = IC.stamp;
+        ctx.fillText(flightMeta.dayShift, col2X + 275, ty + 115);
+      }
+
+      ctx.font = "500 23px 'DM Mono', monospace";
+      ctx.fillStyle = IC.muted;
+      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, col1X, ty + 208);
+
+      // Horizontal Divider
+      ctx.strokeStyle = IC.ink;
+      ctx.globalAlpha = 0.22;
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath(); ctx.moveTo(col1X, ty + 240); ctx.lineTo(tx + tw - 48, ty + 240); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+
+      // Left-side Flight / Aircraft Info (Strictly bounded to left half so right half is clear for Customs Stamp)
+      ctx.fillStyle = IC.muted;
+      ctx.font = "500 21px 'DM Mono', monospace";
+      ctx.fillText('FLIGHT / AIRCRAFT', col1X, ty + 292);
+
+      ctx.fillStyle = IC.ink;
+      ctx.font = "800 36px 'Archivo', 'Noto Sans TC', sans-serif";
+      drawWrappedText(ctx, ev.enSubtitle || ev.title, col1X, ty + 345, 340, 44, 2);
+
+      if (ev.note) {
+        ctx.fillStyle = IC.muted;
+        ctx.font = "500 22px 'Noto Sans TC', sans-serif";
+        const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        drawWrappedText(ctx, cleanNote, col1X, ty + 455, 340, 30, 2);
+      }
+
+      // Bottom-Right Customs Stamp in Dedicated Clear Zone
+      const st = ev.cancelledAt
+        ? { line1: `CANCELLED · ${from}`, line2: ev.cancelledAt, color: '#64748B' }
+        : { line1: `ADMITTED · ${to}`, line2: `${ev.visitedAt || ev.arrTime || 'ARRIVAL'} · ${to} CUSTOMS`, color: IC.stamp };
+      drawCustomsStamp(ctx, tx + 715, ty + 415, st.line1, st.line2, st.color);
     }
 
     function drawVerticalBarcode(ctx, x, y, w, h, label, inkColor) {
@@ -2998,10 +3489,11 @@
       const pattern = [6, 3, 2, 8, 3, 4, 2, 6, 3, 2, 5, 3, 7, 2, 4, 3];
       let cy = y;
       let idx = 0;
+      const barWidth = label ? w - 28 : w;
       while (cy < y + h - 8) {
         const barH = pattern[idx % pattern.length];
         if (idx % 2 === 0) {
-          ctx.fillRect(x, cy, label ? w - 28 : w, Math.min(barH, y + h - cy));
+          ctx.fillRect(x, cy, barWidth, Math.min(barH, y + h - cy));
         }
         cy += barH + 3;
         idx++;
@@ -3010,101 +3502,134 @@
         ctx.save();
         ctx.translate(x + w - 6, y + h / 2);
         ctx.rotate(-Math.PI / 2);
-        ctx.font = "500 21px 'DM Mono', monospace";
+        ctx.font = "500 20px 'DM Mono', monospace";
         ctx.textAlign = 'center';
         ctx.fillText(label, 0, 0);
         ctx.restore();
       }
     }
 
-    /* --- TEMPLATE C: DYNAMIC 3-POINT MINI METRO DIAGRAM & OFFICIAL LINE COLORS --- */
-    function drawMiniMetroOrFerryStory(ctx, W, H, ev, P) {
+    /* --- TEMPLATE C: MULTI-LEG MINI METRO DIAGRAM + TILTED PHOTO COLLAGE --- */
+    async function drawMiniMetroOrFerryStory(ctx, W, H, ev, OP, IC) {
       if (ev.type === 'ferry') {
-        drawDedicatedFerryTicket(ctx, W, H, ev, P);
+        drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC);
         return;
       }
 
-      const from = ev.fromCode || '起點站';
-      const via = ev.viaCode || '';
-      const to = ev.toCode || '終點站';
-
-      // Auto-detect or use saved official line colors
-      const parts = (ev.enSubtitle || ev.title).split(/➔|->|→/);
-      const color1 = ev.lineColor1 || detectLineColor(parts[0] || ev.enSubtitle, '#0F62B1').color;
-      const color2 = ev.lineColor2 || detectLineColor(parts[1] || parts[0] || ev.enSubtitle, '#D62865').color;
-
-      ctx.fillStyle = P.ink;
-      ctx.font = "700 30px 'DM Mono', monospace";
+      ctx.fillStyle = OP.ink;
+      ctx.font = "700 30px 'DM Mono', 'Noto Sans TC', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText(`02 TRANSIT ROUTE // ${ev.title.slice(0, 18)}`, 76, 360);
+      ctx.fillText(`02 TRANSIT ROUTE // ${ev.title.slice(0, 18)}`, 76, 358);
 
       const mx = 76, my = 400, mw = 928, mh = 860;
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.14)';
       ctx.shadowBlur = 26;
-      ctx.fillStyle = P.cardBg;
+      ctx.fillStyle = IC.cardBg;
       ctx.beginPath();
       ctx.roundRect(mx, my, mw, mh, 24);
       ctx.fill();
       ctx.clip();
 
-      // Subtle River Graphic Watermark
-      ctx.strokeStyle = P.river;
-      ctx.lineWidth = 64;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(mx - 40, my + 690);
-      ctx.lineTo(mx + 390, my + 690);
-      ctx.lineTo(mx + 570, my + 510);
-      ctx.lineTo(mx + mw + 60, my + 510);
-      ctx.stroke();
+      // Subtle Technical Dot Grid (Replaces the fake static river!)
+      ctx.fillStyle = IC.ink;
+      ctx.globalAlpha = 0.08;
+      for (let gx = mx + 48; gx < mx + mw; gx += 48) {
+        for (let gy = my + 48; gy < my + mh; gy += 48) {
+          ctx.beginPath(); ctx.arc(gx, gy, 2, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
 
-      // Project True 3-Station Coordinates into Unique Octilinear Geometry
-      const lat1 = parseFloat(ev.fromLat) || 35.6458;
-      const lng1 = parseFloat(ev.fromLng) || 139.8266;
-      const lat3 = parseFloat(ev.toLat) || 35.6630;
-      const lng3 = parseFloat(ev.toLng) || 139.7450;
+      // Build Stations Chain from Structured transitLegs
+      const legs = (Array.isArray(ev.transitLegs) && ev.transitLegs.length)
+        ? ev.transitLegs
+        : [{ from: ev.fromCode || '起點站', to: ev.toCode || '終點站', line: ev.enSubtitle || ev.title, color: '#0F62B1' }];
 
-      // Deterministic seed offset from station names when via coordinates aren't distinct
-      const hashSeed = (from + via + to).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-      const lat2 = parseFloat(ev.viaLat) || ((lat1 + lat3) / 2 + ((hashSeed % 5) - 2) * 0.015);
-      const lng2 = parseFloat(ev.viaLng) || ((lng1 + lng3) / 2 + (((hashSeed >> 2) % 5) - 2) * 0.015);
+      const stations = [];
+      legs.forEach((leg, i) => {
+        if (i === 0) {
+          const k0 = lookupKnownStationCoord(leg.from);
+          stations.push({
+            name: leg.from,
+            lat: leg.fromLat || (k0 ? k0.lat : null),
+            lng: leg.fromLng || (k0 ? k0.lng : null),
+            role: 'origin'
+          });
+        }
+        const kTo = lookupKnownStationCoord(leg.to);
+        stations.push({
+          name: leg.to,
+          lat: leg.toLat || (kTo ? kTo.lat : null),
+          lng: leg.toLng || (kTo ? kTo.lng : null),
+          role: (i === legs.length - 1) ? 'dest' : 'transfer',
+          inColor: leg.color || detectLineColor(leg.line, '#0F62B1').color,
+          lineName: leg.line
+        });
+      });
 
-      const lats = via ? [lat1, lat2, lat3] : [lat1, lat3];
-      const lngs = via ? [lng1, lng2, lng3] : [lng1, lng3];
+      // Fallback well-spaced coordinates if any station lacks lat/lng (Guarantees zero station stacking!)
+      const defaultPath = [
+        { lat: 25.16, lng: 121.44 },
+        { lat: 25.05, lng: 121.52 },
+        { lat: 25.05, lng: 121.56 },
+        { lat: 25.02, lng: 121.58 }
+      ];
+      stations.forEach((st, idx) => {
+        if (!st.lat || !st.lng) {
+          const fb = defaultPath[idx % defaultPath.length];
+          st.lat = fb.lat - idx * 0.02;
+          st.lng = fb.lng + idx * 0.03;
+        }
+      });
+
+      const lats = stations.map(s => s.lat);
+      const lngs = stations.map(s => s.lng);
       const minLat = Math.min(...lats), maxLat = Math.max(...lats);
       const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
-      const spanLat = Math.max(0.008, maxLat - minLat);
-      const spanLng = Math.max(0.008, maxLng - minLng);
+      const spanLat = Math.max(0.012, maxLat - minLat);
+      const spanLng = Math.max(0.012, maxLng - minLng);
 
-      const padX = 210, padY = 200;
+      const padX = 200, padY = 200;
       const boxW = mw - padX * 2;
       const boxH = mh - padY * 2;
 
-      const projectPt = (lat, lng) => ({
-        x: mx + padX + ((lng - minLng) / spanLng) * boxW,
-        y: my + padY + (1 - (lat - minLat) / spanLat) * boxH
-      });
+      const pts = stations.map(s => ({
+        ...s,
+        x: mx + padX + ((s.lng - minLng) / spanLng) * boxW,
+        y: my + padY + (1 - (s.lat - minLat) / spanLat) * boxH
+      }));
 
-      const p1 = projectPt(lat1, lng1);
-      const p3 = projectPt(lat3, lng3);
-      const p2 = via ? projectPt(lat2, lng2) : { x: (p1.x + p3.x) / 2, y: (p1.y + p3.y) / 2 };
+      // Enforce Minimum Pixel Separation between any two stations so labels & icons never collide
+      for (let iter = 0; iter < 4; iter++) {
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[j].x - pts[i].x;
+            const dy = pts[j].y - pts[i].y;
+            const dist = Math.hypot(dx, dy);
+            const minDist = 210;
+            if (dist < minDist) {
+              const angle = dist > 1 ? Math.atan2(dy, dx) : (j * 0.9);
+              const push = (minDist - dist) / 2;
+              pts[i].x -= Math.cos(angle) * push;
+              pts[i].y -= Math.sin(angle) * push;
+              pts[j].x += Math.cos(angle) * push;
+              pts[j].y += Math.sin(angle) * push;
+            }
+          }
+        }
+      }
 
-      // Helper to draw clean 45-degree octilinear Mini Metro segment between two points
+      // Draw Octilinear 45-degree Mini Metro Segments for Each Leg
       const drawOctilinearSegment = (a, b, strokeHex, bendFirst) => {
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const diag = Math.min(Math.abs(dx), Math.abs(dy));
         const sx = Math.sign(dx) || 1;
         const sy = Math.sign(dy) || 1;
-
-        let knee;
-        if (bendFirst) {
-          knee = { x: a.x + sx * diag, y: a.y + sy * diag };
-        } else {
-          knee = { x: b.x - sx * diag, y: b.y - sy * diag };
-        }
+        const knee = bendFirst
+          ? { x: a.x + sx * diag, y: a.y + sy * diag }
+          : { x: b.x - sx * diag, y: b.y - sy * diag };
 
         ctx.strokeStyle = strokeHex;
         ctx.lineWidth = 24;
@@ -3117,131 +3642,179 @@
         ctx.stroke();
       };
 
-      if (via) {
-        drawOctilinearSegment(p1, p2, color1, true);
-        drawOctilinearSegment(p2, p3, color2, false);
-      } else {
-        drawOctilinearSegment(p1, p3, color1, true);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const segColor = pts[i + 1].inColor || '#0F62B1';
+        drawOctilinearSegment(pts[i], pts[i + 1], segColor, i % 2 === 0);
       }
 
-      // Origin Station Square
-      ctx.fillStyle = P.cardBg;
-      ctx.strokeStyle = P.ink;
-      ctx.lineWidth = 9;
-      ctx.fillRect(p1.x - 24, p1.y - 24, 48, 48);
-      ctx.strokeRect(p1.x - 24, p1.y - 24, 48, 48);
+      // Draw Station Nodes & Non-Overlapping Labels
+      pts.forEach((p, idx) => {
+        ctx.fillStyle = IC.cardBg;
+        ctx.strokeStyle = IC.ink;
+        ctx.lineWidth = 9;
 
-      // Transfer Station Double Ring
-      if (via) {
-        ctx.fillStyle = P.cardBg;
-        ctx.beginPath(); ctx.arc(p2.x, p2.y, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = P.ink;
-        ctx.beginPath(); ctx.arc(p2.x, p2.y, 11, 0, Math.PI * 2); ctx.fill();
-      }
+        if (p.role === 'origin') {
+          ctx.fillRect(p.x - 24, p.y - 24, 48, 48);
+          ctx.strokeRect(p.x - 24, p.y - 24, 48, 48);
+        } else if (p.role === 'transfer') {
+          ctx.beginPath(); ctx.arc(p.x, p.y, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = IC.ink;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.beginPath(); ctx.arc(p.x, p.y, 25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
 
-      // Destination Station Circle
-      ctx.fillStyle = P.cardBg;
-      ctx.beginPath(); ctx.arc(p3.x, p3.y, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        // Smart Label Placement (Above or Below based on vertical position)
+        const placeAbove = (idx === 0) ? (p.y > my + 240) : (idx % 2 === 1);
+        const labelY = placeAbove ? (p.y - 46) : (p.y + 68);
+        const subY = placeAbove ? (p.y - 90) : (p.y + 104);
 
-      // Station Labels
-      ctx.fillStyle = P.ink;
-      ctx.font = "900 44px 'Zen Kaku Gothic New', sans-serif";
-      ctx.textAlign = 'center';
-      ctx.fillText(from, p1.x, p1.y - 46);
-      ctx.font = "500 24px 'DM Mono', monospace";
-      ctx.fillStyle = P.muted;
-      ctx.fillText(`DEP ${ev.time}`, p1.x, p1.y - 96);
+        ctx.fillStyle = IC.ink;
+        ctx.font = "900 40px 'Noto Sans TC', sans-serif";
+        ctx.textAlign = 'center';
+        ctx.fillText(p.name, p.x, labelY);
 
-      if (via) {
-        ctx.fillStyle = P.ink;
-        ctx.font = "900 40px 'Zen Kaku Gothic New', sans-serif";
-        ctx.fillText(via, p2.x, p2.y - 46);
         ctx.font = "500 22px 'DM Mono', monospace";
-        ctx.fillStyle = color1;
-        ctx.fillText('TRANSFER', p2.x, p2.y - 92);
-      }
+        if (p.role === 'origin') {
+          ctx.fillStyle = IC.muted;
+          ctx.fillText(`DEP ${ev.time}`, p.x, subY);
+        } else if (p.role === 'transfer') {
+          ctx.fillStyle = p.inColor || IC.stamp;
+          ctx.fillText('TRANSFER', p.x, subY);
+        } else if (ev.arrTime) {
+          ctx.fillStyle = p.inColor || IC.stamp;
+          ctx.fillText(`ARR ${ev.arrTime}`, p.x, subY);
+        }
+      });
 
-      ctx.fillStyle = P.ink;
-      ctx.font = "900 44px 'Zen Kaku Gothic New', sans-serif";
-      ctx.fillText(to, p3.x, p3.y + 68);
-      if (ev.arrTime) {
-        ctx.font = "500 24px 'DM Mono', monospace";
-        ctx.fillStyle = via ? color2 : color1;
-        ctx.fillText(`ARR ${ev.arrTime}`, p3.x, p3.y + 104);
-      }
-
-      // Official Line Badges at Top-Left & Bottom-Left of Map Card
+      // Official Line Legend Badges at Top-Left of Diagram Card
       ctx.textAlign = 'left';
-      ctx.fillStyle = color1;
-      ctx.beginPath(); ctx.roundRect(mx + 44, my + 40, 22, 34, 6); ctx.fill();
-      ctx.fillStyle = P.ink;
-      ctx.font = "700 28px 'Zen Kaku Gothic New', sans-serif";
-      ctx.fillText((parts[0] || ev.enSubtitle || ev.title).trim().slice(0, 24), mx + 80, my + 68);
+      legs.forEach((leg, i) => {
+        const badgeY = my + 38 + i * 48;
+        const c = leg.color || detectLineColor(leg.line, '#0F62B1').color;
+        ctx.fillStyle = c;
+        ctx.beginPath(); ctx.roundRect(mx + 40, badgeY, 22, 32, 6); ctx.fill();
+        ctx.fillStyle = IC.ink;
+        ctx.font = "700 26px 'Noto Sans TC', sans-serif";
+        ctx.fillText(`${leg.line} (${leg.from} ➔ ${leg.to})`.slice(0, 26), mx + 74, badgeY + 25);
+      });
 
-      if (via && parts[1]) {
-        ctx.fillStyle = color2;
-        ctx.beginPath(); ctx.roundRect(mx + 44, my + mh - 76, 22, 34, 6); ctx.fill();
-        ctx.fillStyle = P.ink;
-        ctx.fillText(parts[1].trim().slice(0, 24), mx + 80, my + mh - 48);
+      // Optional Tilted Photo Collage Sticker inside Transit Diagram!
+      const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
+      if (selectedPhoto && selectedPhoto.data) {
+        await new Promise((resPhoto) => {
+          const img = new Image();
+          img.onload = () => {
+            ctx.save();
+            const z = selectedPhoto.zoom || 1;
+            const ox = ((selectedPhoto.x || 0) / 100) * 360;
+            const oy = ((selectedPhoto.y || 0) / 100) * 360;
+            const stickerX = mx + mw - 230 + ox;
+            const stickerY = my + 240 + oy;
+            const tiltRad = -0.065; // Natural -3.7 deg collage tilt
+
+            ctx.translate(stickerX, stickerY);
+            ctx.rotate(tiltRad);
+            ctx.scale(z, z);
+
+            const pw = 280, ph = 320;
+            ctx.shadowColor = 'rgba(0,0,0,0.22)';
+            ctx.shadowBlur = 24;
+            ctx.shadowOffsetY = 10;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.roundRect(-pw / 2, -ph / 2, pw, ph, 10);
+            ctx.fill();
+            ctx.shadowColor = 'transparent';
+
+            // Washi Tape at top of tilted Polaroid
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.38)';
+            ctx.fillRect(-48, -ph / 2 - 12, 96, 26);
+
+            const imgW = pw - 28, imgH = ph - 64;
+            const s = Math.max(imgW / img.width, imgH / img.height);
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(-imgW / 2, -ph / 2 + 14, imgW, imgH);
+            ctx.clip();
+            ctx.drawImage(img, -(img.width * s) / 2, -ph / 2 + 14 + (imgH - img.height * s) / 2, img.width * s, img.height * s);
+            ctx.restore();
+
+            ctx.fillStyle = '#161616';
+            ctx.font = "500 18px 'DM Mono', monospace";
+            ctx.textAlign = 'center';
+            ctx.fillText(ev.time, 0, ph / 2 - 18);
+
+            ctx.restore();
+            resPhoto();
+          };
+          img.onerror = () => resPhoto();
+          img.src = selectedPhoto.data;
+        });
       }
+
       ctx.restore();
 
-      // Bottom Ticket Summary Card
-      ctx.fillStyle = P.subCardBg;
+      // Bottom Ticket Summary Card (Left Text Strictly Wrapped away from Right Stamp!)
+      ctx.fillStyle = IC.subCardBg;
       ctx.beginPath();
       ctx.roundRect(76, 1300, 928, 320, 20);
       ctx.fill();
 
-      ctx.fillStyle = P.ink;
-      ctx.font = "700 38px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillStyle = IC.ink;
+      ctx.font = "700 36px 'Noto Sans TC', sans-serif";
       ctx.textAlign = 'left';
-      ctx.fillText(ev.title.slice(0, 22), 124, 1385);
+      drawWrappedText(ctx, ev.title, 120, 1380, 440, 46, 2);
 
-      ctx.fillStyle = P.muted;
-      ctx.font = "500 25px 'Zen Kaku Gothic New', sans-serif";
-      ctx.fillText((ev.note || ev.enSubtitle || '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').slice(0, 32), 124, 1445);
+      ctx.fillStyle = IC.muted;
+      ctx.font = "500 23px 'Noto Sans TC', sans-serif";
+      const cleanNote = (ev.note || ev.enSubtitle || '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+      drawWrappedText(ctx, cleanNote, 120, 1480, 430, 32, 2);
 
-      drawCustomsStamp(ctx, 770, 1480, 'TRANSIT COMPLETED ✓', ev.visitedAt || `${ev.time} LOGGED`, P.stamp);
+      const st = getStampMetaForEvent(ev, IC);
+      const stampTitle = ev.cancelledAt ? 'TRANSIT CANCELLED ✕' : 'TRANSIT COMPLETED ✓';
+      drawCustomsStamp(ctx, 775, 1485, stampTitle, st.line2, st.color);
     }
 
-    function drawDedicatedFerryTicket(ctx, W, H, ev, P) {
-      ctx.fillStyle = P.ink;
+    function drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC) {
+      ctx.fillStyle = OP.ink;
       ctx.font = "700 30px 'DM Mono', monospace";
       ctx.textAlign = 'left';
-      ctx.fillText('02 MARITIME PASS // FERRY EMBARKATION', 76, 360);
+      ctx.fillText('02 MARITIME PASS // FERRY EMBARKATION', 76, 358);
 
       const tx = 76, ty = 410, tw = 928, th = 1200;
-      ctx.fillStyle = P.cardBg;
+      ctx.fillStyle = IC.cardBg;
       ctx.beginPath();
       ctx.roundRect(tx, ty, tw, th, 24);
       ctx.fill();
-      ctx.strokeStyle = P.ink;
+      ctx.strokeStyle = IC.ink;
       ctx.lineWidth = 4;
       ctx.stroke();
 
       ctx.fillStyle = '#1B4965';
       ctx.fillRect(tx, ty, tw, 130);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = "700 38px 'DM Mono', monospace";
-      ctx.fillText('⚓ PASSENGER FERRY TICKET · 乗船券', tx + 54, ty + 80);
+      ctx.font = "700 36px 'DM Mono', 'Noto Sans TC', monospace";
+      ctx.fillText('PASSENGER FERRY TICKET · 乗船券', tx + 54, ty + 80);
 
-      ctx.fillStyle = P.ink;
-      ctx.font = "900 64px 'Zen Kaku Gothic New', sans-serif";
+      ctx.fillStyle = IC.ink;
+      ctx.font = "900 60px 'Noto Sans TC', sans-serif";
       ctx.fillText(`${ev.fromCode || '高松港'}  ➔  ${ev.toCode || '豐島'}`, tx + 60, ty + 290);
 
-      ctx.font = "700 36px 'Zen Kaku Gothic New', sans-serif";
+      ctx.font = "700 34px 'Noto Sans TC', sans-serif";
       ctx.fillText(ev.enSubtitle || ev.title, tx + 60, ty + 375);
 
-      ctx.font = "500 32px 'DM Mono', monospace";
-      ctx.fillStyle = P.muted;
-      ctx.fillText(`SAILING TIME: ${ev.time}   /   ARRIVAL: ${ev.arrTime || '--:--'}`, tx + 60, ty + 455);
+      ctx.font = "500 30px 'DM Mono', monospace";
+      ctx.fillStyle = IC.muted;
+      ctx.fillText(`SAILING: ${ev.time}   /   ARRIVAL: ${ev.arrTime || '--:--'}`, tx + 60, ty + 455);
 
       if (ev.note) {
-        ctx.font = "500 26px 'Zen Kaku Gothic New', sans-serif";
-        ctx.fillText(ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').slice(0, 32), tx + 60, ty + 535);
+        ctx.font = "500 25px 'Noto Sans TC', sans-serif";
+        const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        drawWrappedText(ctx, cleanNote, tx + 60, ty + 535, 780, 36, 3);
       }
 
-      ctx.strokeStyle = P.ink;
+      ctx.strokeStyle = IC.ink;
       ctx.globalAlpha = 0.35;
       ctx.lineWidth = 3;
       ctx.setLineDash([16, 14]);
@@ -3249,8 +3822,12 @@
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
 
-      drawVerticalBarcode(ctx, tx + 60, ty + 880, 90, 250, '', P.ink);
-      drawCustomsStamp(ctx, tx + 650, ty + 1010, 'EMBARKED ✓', ev.visitedAt || ev.time, P.stamp);
+      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
+      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '0925'}`;
+      drawVerticalBarcode(ctx, tx + 60, ty + 870, 96, 260, stampCode, IC.ink);
+
+      const st = getStampMetaForEvent(ev, IC);
+      drawCustomsStamp(ctx, tx + 650, ty + 1010, ev.cancelledAt ? 'CANCELLED ✕' : 'EMBARKED ✓', st.line2, st.color);
     }
 
     function drawCustomsStamp(ctx, cx, cy, line1, line2, color) {
@@ -3269,10 +3846,10 @@
       ctx.roundRect(-187, -48, 374, 96, 8);
       ctx.stroke();
 
-      ctx.font = "700 24px 'DM Mono', monospace";
+      ctx.font = "700 23px 'DM Mono', monospace";
       ctx.textAlign = 'center';
       ctx.fillText(line1, 0, -8);
-      ctx.font = "500 20px 'DM Mono', monospace";
+      ctx.font = "500 19px 'DM Mono', monospace";
       ctx.fillText(line2, 0, 26);
       ctx.restore();
     }
@@ -3300,7 +3877,7 @@
     }
 
     /* ==========================================================================
-       14. Modal Helpers & JSON Import/Export
+       15. Modal Helpers & JSON Import/Export
        ========================================================================== */
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -3320,7 +3897,8 @@
         try {
           const parsed = JSON.parse(ev.target.result);
           if (parsed && Array.isArray(parsed.trips)) {
-            appState = parsed;
+            localStorage.setItem('tabi_note_state_v5', JSON.stringify(parsed));
+            appState = loadAndMigrateState();
             persist();
             renderAll();
             alert('匯入成功！');
@@ -3332,7 +3910,7 @@
       reader.readAsText(file);
     }
 
-    // Boot & Periodic NOW Status Refresh
+    // Boot
     window.addEventListener('resize', setupMobileScrollObserver);
     initFormSelects();
     generateRealPngAppIcon();
