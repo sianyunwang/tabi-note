@@ -39,7 +39,7 @@
       --glass-shadow: 0 12px 34px -8px rgba(20, 20, 20, 0.09), inset 0 1px 0 0 rgba(255, 255, 255, 0.94);
       --glass-blur: blur(24px) saturate(185%);
 
-      /* Consistent Typography: Noto Sans TC + Archivo + DM Mono */
+      /* Typography: Noto Sans TC + Archivo + DM Mono */
       --font-brand: 'Dela Gothic One', 'Noto Sans TC', sans-serif;
       --font-display: 'Archivo', 'Noto Sans TC', sans-serif;
       --font-mono: 'DM Mono', 'Noto Sans TC', monospace;
@@ -82,7 +82,6 @@
       box-shadow: 0 18px 46px -10px rgba(18, 18, 18, 0.16), inset 0 1px 0 0 rgba(255, 255, 255, 0.96);
     }
 
-    /* Header */
     header.top-bar {
       position: sticky;
       top: 0;
@@ -161,7 +160,6 @@
     button.pill-btn.active, a.pill-btn.active { background: #161616; color: #FAF8F5; border-color: #161616; }
     button.pill-btn.rust { background: rgba(200, 75, 49, 0.12); color: var(--accent-rust); border-color: rgba(200, 75, 49, 0.35); }
 
-    /* Trip Strip */
     .trip-strip {
       max-width: 980px;
       margin: 10px auto 0;
@@ -200,14 +198,12 @@
       border-color: #161616;
     }
 
-    /* Main Container */
     main.container {
       max-width: 980px;
       margin: 16px auto;
       padding: 0 16px;
     }
 
-    /* Weather + Dynamic Daylight Spectrum Bar */
     .day-banner {
       border-radius: 20px;
       padding: 14px 16px;
@@ -307,12 +303,10 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
 
-    /* Views */
     .view-section { display: none; }
     .view-section.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Timeline Cards */
     .timeline-list {
       display: flex;
       flex-direction: column;
@@ -439,7 +433,6 @@
       margin-top: 2px;
     }
 
-    /* Dual Stamp Buttons ("完成" & "取消") */
     .stamp-btn-group {
       display: flex;
       align-items: center;
@@ -491,7 +484,6 @@
       box-shadow: 0 3px 10px rgba(82, 96, 109, 0.25);
     }
 
-    /* Responsive Accordion Body */
     .card-body-wrapper {
       display: grid;
       grid-template-rows: 1fr;
@@ -511,7 +503,6 @@
 
     .card-body-inner { overflow: hidden; min-height: 0; }
 
-    /* Speech Bubble Note Box — Top-Left Pointer Tail */
     .speech-note-bubble {
       position: relative;
       font-size: 13.5px;
@@ -578,12 +569,12 @@
 
     .polaroid-frame {
       background: #FFFFFF;
-      padding: 9px 9px 12px;
+      padding: 9px 9px 13px;
       border-radius: 10px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       border: 1px solid rgba(0,0,0,0.06);
       flex-shrink: 0;
-      width: min(285px, 76vw);
+      width: min(300px, 76vw);
     }
 
     .polaroid-viewport {
@@ -604,13 +595,13 @@
       transition: transform 0.15s ease;
     }
 
-    /* High-visibility Polaroid Caption strictly bounded inside the paper frame */
+    /* High-contrast, non-overflowing Polaroid caption bar */
     .polaroid-caption {
       margin-top: 8px;
-      padding: 0 4px;
+      padding: 0 2px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
       gap: 8px;
       width: 100%;
       overflow: hidden;
@@ -620,7 +611,7 @@
       font-family: var(--font-body);
       font-size: 12px;
       font-weight: 700;
-      color: var(--ink);
+      color: #1A1917;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -630,8 +621,7 @@
 
     .polaroid-caption-time {
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 500;
+      font-size: 10.5px;
       color: var(--accent-rust);
       flex-shrink: 0;
     }
@@ -656,7 +646,6 @@
       background: rgba(82, 96, 109, 0.07);
     }
 
-    /* Clean Text-Only Single-Row Footer Toolbar */
     .card-footer-tools {
       display: flex;
       align-items: center;
@@ -698,7 +687,6 @@
       color: #8C867E;
     }
 
-    /* Map */
     .map-wrapper { border-radius: 22px; padding: 14px; }
     #leaflet-map {
       width: 100%;
@@ -708,7 +696,6 @@
       border: 1px solid rgba(0,0,0,0.1);
     }
 
-    /* Checklist & Budget Grid */
     .dual-panel-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -732,7 +719,6 @@
       color: var(--ink-muted);
     }
 
-    /* Keepsake Archive (典藏旅程) */
     .booklet-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -746,7 +732,6 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     }
 
-    /* Bottom Dock (3 Items) */
     nav.bottom-dock {
       position: fixed;
       bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
@@ -783,7 +768,6 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.2);
     }
 
-    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -902,7 +886,7 @@
     }
     .crop-stage {
       width: 100%;
-      height: 175px;
+      height: 180px;
       overflow: hidden;
       border-radius: 8px;
       background: #000;
@@ -1086,7 +1070,6 @@
     <!-- VIEW 3: Per-Trip Checklist & Budget (清單/預算) -->
     <section id="view-budget" class="view-section">
       <div class="dual-panel-grid">
-        <!-- Checklist / Reminders Panel -->
         <div class="liquid-glass" style="border-radius:20px; padding:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">隨身清單與提醒事項</h3>
@@ -1099,7 +1082,6 @@
           <div id="checklist-container"></div>
         </div>
 
-        <!-- Per-Trip Isolated Budget Panel -->
         <div class="liquid-glass" style="border-radius:20px; padding:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h3 style="margin:0; font-family:var(--font-body); font-size:15px; font-weight:900;">本趟旅程預算累計</h3>
@@ -1152,7 +1134,6 @@
           </select>
         </label>
 
-        <!-- Full Global Timezone Selectors -->
         <div class="form-row-2">
           <label>開始時區
             <select id="ev-start-tz"></select>
@@ -1162,7 +1143,6 @@
           </label>
         </div>
 
-        <!-- Dropdown Time Pickers (Hour 00-23 + Minute 00-55 step 5) -->
         <div class="form-row-2">
           <label>開始時間
             <div class="time-select-group">
@@ -1177,12 +1157,12 @@
         </div>
 
         <label>行程
-          <input type="text" id="ev-title" required placeholder="例如：新木場駅 ➔ 銀座 ➔ 神谷町駅" />
+          <input type="text" id="ev-title" required placeholder="例如：新木場駅 ➔ 銀座 ➔ 神谷町駅 或 長榮航空 BR012" />
         </label>
 
-        <!-- Dedicated Flight Fields (Airport Codes + Terminals) -->
+        <!-- Dedicated Flight Fields -->
         <div id="flight-fields-box" style="display:none; background:rgba(255,255,255,0.58); padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
-          <div style="font-size:11.5px; font-weight:700; margin-bottom:8px; color:var(--accent-blue);">航班與機場航廈資訊（機票圖卡僅印機場代號）</div>
+          <div style="font-size:11.5px; font-weight:700; margin-bottom:8px; color:var(--accent-blue);">航班與機場航廈資訊（機票圖卡僅印機場三碼代號）</div>
           <div class="form-row-2" style="margin-bottom:8px;">
             <label>出發機場代號<input type="text" id="fl-from-code" placeholder="TPE" /></label>
             <label>出發航廈 (選填)<input type="text" id="fl-from-term" placeholder="T2" /></label>
@@ -1212,7 +1192,6 @@
           <label>船班 / 船公司名稱<input type="text" id="fe-vessel" placeholder="豊島フェリー 高速船" /></label>
         </div>
 
-        <!-- Spot Subtitle -->
         <label id="spot-subtitle-label">副標 / 補充說明 (選填)
           <input type="text" id="ev-en" placeholder="例如：展覽時段或餐廳備註" />
         </label>
@@ -1245,18 +1224,18 @@
           <input type="file" id="ev-photo" accept="image/*" multiple onchange="handleFormMultiPhotoSelect(event)" />
         </label>
 
-        <!-- Multi-Photo Gallery, Per-Photo Caption & Crop/Focus Adjustment Controls -->
+        <!-- Multi-Photo Gallery + Custom Polaroid Caption + Crop/Focus Controls -->
         <div id="photo-edit-panel" class="crop-preview-box" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:11.5px;">
-            <span>相片管理 (<span id="photo-count-badge">0</span> 張) — 點選縮圖可個別調整或加字</span>
+            <span>相片管理 (<span id="photo-count-badge">0</span> 張) — 點選縮圖可個別設定</span>
             <button type="button" class="pill-btn" style="padding:3px 9px; font-size:11px; background:#C84B31; color:#FFF; border:none;" onclick="removeActivePhotoInForm()">刪除此張</button>
           </div>
           <div class="thumb-strip" id="form-thumb-strip"></div>
           <div class="crop-stage">
             <img id="form-crop-preview" src="" alt="Preview" />
           </div>
-          <label style="color:#EEE; margin-top:8px; font-size:11.5px;">拍立得底部文字 (選填，留空則顯示行程名稱，自動縮字不超出相紙)
-            <input type="text" id="ev-photo-caption" placeholder="例如：銀座轉車途中、豐島海風..." oninput="updateCropPreview()" style="margin-top:3px; padding:6px 9px; border-radius:8px; border:none; font-size:12.5px;" />
+          <label style="color:#EEE; margin-top:8px; font-size:11.5px;">拍立得底部文字 (選填，留空則顯示行程標題或時間)
+            <input type="text" id="ev-photo-caption" placeholder="例如：銀座轉乘隨手拍 / 豐島海風" oninput="updateCropPreview()" style="margin-top:3px; background:#2A2A2A; color:#FFF; border:1px solid #444;" />
           </label>
           <div class="form-row-3" style="margin-top:8px; font-size:11px;">
             <label style="color:#DDD;">縮放 (<span id="zoom-val">1.0</span>x)
@@ -1276,7 +1255,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Individual Trip Project Manager + App Icon Download -->
+  <!-- MODAL 2: Trip Project Manager -->
   <div class="modal-backdrop" id="trip-manager-modal">
     <div class="modal-card liquid-glass-strong">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1376,18 +1355,18 @@
       <!-- Layer 2: Inner Card / Ticket Paper Swatches -->
       <div class="paper-swatch-row" id="inner-paper-swatch-row"></div>
 
-      <!-- Multi-Photo Selector + Caption + Collage / Crop Fine-Tune -->
+      <!-- Multi-Photo Selector + Caption + Crop Fine-Tune -->
       <div id="story-extra-controls" style="background:rgba(255,255,255,0.55); padding:10px; border-radius:12px; margin-bottom:8px; font-size:11.5px;">
         <div id="story-photo-picker-wrap" style="display:none; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;">
-            <div class="thumb-strip" id="story-thumb-strip" style="flex:1;"></div>
-            <label class="pill-btn" style="cursor:pointer; flex-shrink:0;">＋ 照片
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-weight:700;">選擇限動照片（或新增照片）：</span>
+            <label class="pill-btn" style="cursor:pointer; padding:2px 8px; font-size:11px;">＋ 照片
               <input type="file" accept="image/*" multiple hidden onchange="uploadPhotoFromStoryModal(event)" />
             </label>
           </div>
-          <label style="display:flex; flex-direction:column; gap:3px; font-weight:700;">
-            拍立得底部手寫短註 (自動縮字防超出相紙)：
-            <input type="text" id="st-caption" placeholder="輸入想印在拍立得底部的文字..." oninput="syncStoryCrop()" style="padding:6px 9px; border-radius:8px; border:1px solid rgba(0,0,0,0.18); font-size:12.5px; font-family:var(--font-body);" />
+          <div class="thumb-strip" id="story-thumb-strip"></div>
+          <label style="display:block; margin-top:6px; font-weight:700;">拍立得底部文字：
+            <input type="text" id="st-caption" placeholder="輸入想印在拍立得白邊上的文字..." oninput="syncStoryCrop()" style="width:100%; margin-top:3px; padding:6px 8px; border-radius:8px; border:1px solid rgba(0,0,0,0.18); font-family:var(--font-body); font-size:12px;" />
           </label>
         </div>
 
@@ -1426,7 +1405,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
     /* ==========================================================================
-       1. Optical Centering & Auto-Fit Text Helpers
+       1. Optical Centering Helper & Pure Black Full-Bleed App Icon ("旅")
        ========================================================================== */
     let cachedAppIconDataUrl = '';
 
@@ -1442,8 +1421,8 @@
       ctx.restore();
     }
 
-    // Automatically shrinks font size so text NEVER overflows Polaroid paper or ticket bounds
-    function drawAutoFitSingleLine(ctx, text, x, y, maxWidth, initialSize, minSize, weight, family, align = 'left') {
+    // Auto-shrinking single-line text so Polaroid captions & titles never overflow paper bounds
+    function fillTextAutoFit(ctx, text, x, y, maxWidth, initialSize, minSize, weight, family, align = 'left') {
       if (!text) return;
       ctx.save();
       ctx.textAlign = align;
@@ -1462,42 +1441,6 @@
       }
       ctx.fillText(out, x, y);
       ctx.restore();
-    }
-
-    // Word/Token-aware multi-line wrapper so words like "BOEING 777-300ER" or "駅" never split awkwardly
-    function drawSmartWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
-      if (!text) return;
-      const tokens = text.match(/([A-Za-z0-9._-]+|\s+|[^\sA-Za-z0-9._-])/g) || Array.from(text);
-      let line = '';
-      let lineCount = 0;
-
-      for (let i = 0; i < tokens.length; i++) {
-        const tok = tokens[i];
-        const testLine = line + tok;
-        if (ctx.measureText(testLine).width > maxWidth && line.trim().length > 0) {
-          // If only 1 character remains at the very end, slightly compress instead of orphaning 1 char
-          const remaining = tokens.slice(i).join('').trim();
-          if (remaining.length === 1 && lineCount === 0) {
-            ctx.fillText(testLine, x, y);
-            return;
-          }
-          lineCount++;
-          if (lineCount >= maxLines) {
-            let trimmed = line.trim();
-            while (trimmed.length > 1 && ctx.measureText(trimmed + '…').width > maxWidth) {
-              trimmed = trimmed.slice(0, -1);
-            }
-            ctx.fillText(trimmed + '…', x, y);
-            return;
-          }
-          ctx.fillText(line.trim(), x, y);
-          line = tok.trimStart();
-          y += lineHeight;
-        } else {
-          line = testLine;
-        }
-      }
-      if (line.trim()) ctx.fillText(line.trim(), x, y);
     }
 
     async function generateRealPngAppIcon() {
@@ -1655,7 +1598,7 @@
       '岡山': { lat: 34.6665, lng: 133.9181 },
       '高松': { lat: 34.3506, lng: 134.0465 },
 
-      // San Francisco / NYC / Major Airports
+      // San Francisco / NYC / Airports
       'TPE': { lat: 25.0797, lng: 121.2342 },
       'TSA': { lat: 25.0697, lng: 121.5525 },
       'NRT': { lat: 35.7720, lng: 140.3929 },
@@ -1859,7 +1802,7 @@
     }
 
     /* ==========================================================================
-       5. Dual-Layer Paper Swatches
+       5. Dual-Layer Paper Swatches (Independent Outer BG & Inner Card Swatches)
        ========================================================================== */
     const OUTER_PAPER_PALETTES = [
       { id: 'warm-cream', name: '暖米紙', bg: '#EAE4D8', ink: '#161616', muted: '#5A5751', stamp: '#C84B31', logoBox: '#161616', logoInk: '#F7F5F0' },
@@ -1917,7 +1860,7 @@
     }
 
     /* ==========================================================================
-       6. State & Auto-Migration
+       6. State & Auto-Migration (Zero Data Loss)
        ========================================================================== */
     const DEFAULT_STATE = {
       passcode: '',
@@ -1951,7 +1894,7 @@
                   enSubtitle: '東京メトロ有楽町線 ➔ 日比谷線',
                   transitLegs: [
                     { from: '新木場', to: '銀座', line: '東京メトロ有楽町線', color: '#C1A470', fromLat: 35.6458, fromLng: 139.8266, toLat: 35.6712, toLng: 139.7665 },
-                    { from: '銀座', to: '神谷町', line: '日比谷線', color: '#B5B5AC', fromLat: 35.6712, fromLng: 139.7665, toLat: 35.6630, toLng: 139.7450 }
+                    { from: '銀座', to: '神谷町', line: '東京メトロ日比谷線', color: '#B5B5AC', fromLat: 35.6712, fromLng: 139.7665, toLat: 35.6630, toLng: 139.7450 }
                   ],
                   fromLat: 35.6458, fromLng: 139.8266,
                   toLat: 35.6630, toLng: 139.7450,
@@ -1997,9 +1940,7 @@
           name: '02 瀨戶內海跳島策展',
           startDate: '2026-10-02',
           homeTz: 'Asia/Taipei',
-          checklist: [
-            { id: 'ck-201', text: '確認豐島美術館線上預約時段', done: true }
-          ],
+          checklist: [],
           days: [
             {
               dayLabel: 'DAY 01',
@@ -2019,7 +1960,7 @@
                   enSubtitle: 'JR 山陽新幹線 さくら 543号 ➔ マリンライナー',
                   transitLegs: [
                     { from: '新大阪', to: '岡山', line: 'JR 山陽新幹線 さくら 543号', color: '#005BAC', fromLat: 34.7335, fromLng: 135.5003, toLat: 34.6665, toLng: 133.9181 },
-                    { from: '岡山', to: '高松', line: 'マリンライナー', color: '#0072BC', fromLat: 34.6665, fromLng: 133.9181, toLat: 34.3506, toLng: 134.0465 }
+                    { from: '岡山', to: '高松', line: 'JR 快速マリンライナー', color: '#0072BC', fromLat: 34.6665, fromLng: 133.9181, toLat: 34.3506, toLng: 134.0465 }
                   ],
                   fromLat: 34.7335, fromLng: 135.5003,
                   toLat: 34.3506, toLng: 134.0465,
@@ -2043,7 +1984,8 @@
       const raw = localStorage.getItem('tabi_note_state_v6')
         || localStorage.getItem('tabi_note_state_v5')
         || localStorage.getItem('tabi_note_state_v4')
-        || localStorage.getItem('tabi_note_state_v3');
+        || localStorage.getItem('tabi_note_state_v3')
+        || localStorage.getItem('tabi_note_state_v2');
 
       if (!raw) return DEFAULT_STATE;
       try {
@@ -2057,10 +1999,10 @@
               if (!Array.isArray(ev.photos)) {
                 ev.photos = ev.photo ? [{
                   data: ev.photo,
+                  caption: '',
                   zoom: ev.photoZoom || 1,
                   x: ev.photoX || 0,
-                  y: ev.photoY || 0,
-                  caption: ''
+                  y: ev.photoY || 0
                 }] : [];
               } else {
                 ev.photos.forEach(p => { if (typeof p.caption === 'undefined') p.caption = ''; });
@@ -2071,10 +2013,25 @@
                 const line2 = subParts[1] || line1;
                 const legs = [];
                 if (ev.viaCode) {
-                  legs.push({ from: ev.fromCode || '起點站', to: ev.viaCode, line: line1, color: ev.lineColor1 || detectLineColor(line1, '#E3002C').color });
-                  legs.push({ from: ev.viaCode, to: ev.toCode || '終點站', line: line2, color: ev.lineColor2 || detectLineColor(line2, '#008659').color });
+                  legs.push({
+                    from: ev.fromCode || '起點站',
+                    to: ev.viaCode,
+                    line: line1,
+                    color: ev.lineColor1 || detectLineColor(line1, '#E3002C').color
+                  });
+                  legs.push({
+                    from: ev.viaCode,
+                    to: ev.toCode || '終點站',
+                    line: line2,
+                    color: ev.lineColor2 || detectLineColor(line2, '#008659').color
+                  });
                 } else {
-                  legs.push({ from: ev.fromCode || '起點站', to: ev.toCode || '終點站', line: line1, color: ev.lineColor1 || detectLineColor(line1, '#0F62B1').color });
+                  legs.push({
+                    from: ev.fromCode || '起點站',
+                    to: ev.toCode || '終點站',
+                    line: line1,
+                    color: ev.lineColor1 || detectLineColor(line1, '#0F62B1').color
+                  });
                 }
                 ev.transitLegs = legs;
               }
@@ -2160,7 +2117,7 @@
        8. Smart Note Hyperlink Parser & Custom Link Label Editor
        ========================================================================== */
     function escapeHtml(str) {
-      return String(str)
+      return String(str || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -2271,7 +2228,7 @@
     }
 
     /* ==========================================================================
-       10. Render All Views + Dynamic Solar Gradient + Timeline
+       10. Render All Views + Dynamic Solar Gradient + Timeline Cards
        ========================================================================== */
     function renderAll() {
       if (currentTripIdx >= appState.trips.length) currentTripIdx = 0;
@@ -2392,10 +2349,11 @@
           const tInfo = `${ev.fromCode || ''}${ev.fromTerminal ? '(' + ev.fromTerminal + ')' : ''} ➔ ${ev.toCode || ''}${ev.toTerminal ? '(' + ev.toTerminal + ')' : ''}`;
           subtitleDisplay = subtitleDisplay ? `${tInfo} · ${subtitleDisplay}` : tInfo;
         } else if (ev.type === 'train' && Array.isArray(ev.transitLegs) && ev.transitLegs.length) {
-          subtitleDisplay = ev.transitLegs.map(l => `${l.line} (${l.from}➔${l.to})`).join(' · ');
+          subtitleDisplay = ev.transitLegs.map(l => `${l.line} (${l.from}➔${l.to})`).join(' 轉 ');
         }
 
         const photosArr = Array.isArray(ev.photos) ? ev.photos : [];
+        const defaultCaption = ev.title;
 
         return `
           <article class="event-card liquid-glass ${isStamped ? 'visited' : ''} ${isCancelled ? 'cancelled' : ''} ${isNow ? 'now-active' : ''} ${isPinned ? '' : 'mobile-collapsed'}" data-ev-id="${ev.id}">
@@ -2434,7 +2392,7 @@
                 ${photosArr.length ? `
                   <div class="photo-gallery-strip">
                     ${photosArr.map((p) => {
-                      const capText = (p.caption && p.caption.trim()) ? p.caption.trim() : ev.title;
+                      const capText = (p.caption && p.caption.trim()) ? p.caption.trim() : defaultCaption;
                       return `
                         <div class="polaroid-frame">
                           <div class="polaroid-viewport">
@@ -2479,7 +2437,7 @@
 
       for (const file of files) {
         const compressed = await compressImageFile(file);
-        target.photos.push({ data: compressed, zoom: 1, x: 0, y: 0, caption: '' });
+        target.photos.push({ data: compressed, caption: '', zoom: 1, x: 0, y: 0 });
       }
       pinnedEventIds.add(evId);
       persist();
@@ -2592,7 +2550,7 @@
         </div>
         <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:end;">
           <label>路線名稱 (自動辨識代表色)
-            <input type="text" class="leg-line" value="${escapeHtml(lineVal)}" placeholder="例如：有楽町線 或 日比谷線" oninput="autoMatchLegRowColor(this)" />
+            <input type="text" class="leg-line" value="${escapeHtml(lineVal)}" placeholder="例如：東京メトロ有楽町線" oninput="autoMatchLegRowColor(this)" />
           </label>
           <label>路線色
             <input type="color" class="leg-color" value="${colorVal}" style="width:44px; height:35px; padding:2px; cursor:pointer;" />
@@ -2691,7 +2649,7 @@
       if (!files.length) return;
       for (const file of files) {
         const compressed = await compressImageFile(file);
-        formPhotos.push({ data: compressed, zoom: 1, x: 0, y: 0, caption: '' });
+        formPhotos.push({ data: compressed, caption: '', zoom: 1, x: 0, y: 0 });
       }
       activeFormPhotoIdx = formPhotos.length - 1;
       e.target.value = '';
@@ -2784,10 +2742,10 @@
         toCode = document.getElementById('fl-to-code').value.trim().toUpperCase();
         toTerminal = document.getElementById('fl-to-term').value.trim();
         enSubtitle = document.getElementById('fl-number').value.trim();
-        const fAir = lookupKnownStationCoord(fromCode);
-        const tAir = lookupKnownStationCoord(toCode);
-        if (fAir) { fromLat = fAir.lat; fromLng = fAir.lng; }
-        if (tAir) { toLat = tAir.lat; toLng = tAir.lng; }
+        const fGeo = await autoGeocodePlace(fromCode);
+        const tGeo = await autoGeocodePlace(toCode);
+        if (fGeo) { fromLat = fGeo.lat; fromLng = fGeo.lng; }
+        if (tGeo) { toLat = tGeo.lat; toLng = tGeo.lng; }
       } else if (evType === 'train') {
         const legBoxes = Array.from(document.querySelectorAll('#train-legs-container .transit-leg-box'));
         for (let i = 0; i < legBoxes.length; i++) {
@@ -2827,9 +2785,10 @@
         enSubtitle = document.getElementById('ev-en').value.trim();
       }
 
-      const geoTarget = addrVal || toCode || titleVal;
-      const geoResult = await autoGeocodePlace(geoTarget);
-      if (geoResult) { toLat = geoResult.lat; toLng = geoResult.lng; }
+      if (addrVal) {
+        const geoResult = await autoGeocodePlace(addrVal);
+        if (geoResult) { toLat = geoResult.lat; toLng = geoResult.lng; }
+      }
 
       const payload = {
         id: existing ? existing.id : 'ev-' + Date.now(),
@@ -3108,11 +3067,7 @@
     }
 
     /* ==========================================================================
-       14. 9:16 IG Story Generator
-           - All-Circular Transit Nodes, Pure Station Names, Normal-Vector Label Placement
-           - True Orthographic Lat/Lng World Landmasses on Globe
-           - Right-Side Barcode on Boarding Pass
-           - Auto-Fit High-Contrast Polaroid Captions
+       14. 9:16 IG Story Generator (All Visual Fixes & Orthographic World Globe)
        ========================================================================== */
     function openStoryModal(evId) {
       const day = appState.trips[currentTripIdx].days[currentDayIdx];
@@ -3162,7 +3117,7 @@
       if (!Array.isArray(activeStoryEvent.photos)) activeStoryEvent.photos = [];
       for (const f of files) {
         const comp = await compressImageFile(f);
-        activeStoryEvent.photos.push({ data: comp, zoom: 1, x: 0, y: 0, caption: '' });
+        activeStoryEvent.photos.push({ data: comp, caption: '', zoom: 1, x: 0, y: 0 });
       }
       activeStoryPhotoIdx = activeStoryEvent.photos.length - 1;
       persist();
@@ -3205,6 +3160,29 @@
     function clearFlightBg() {
       flightBgImage = null;
       renderStoryCanvas();
+    }
+
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+      if (!text) return;
+      const chars = Array.from(text);
+      let line = '';
+      let lineCount = 0;
+      for (let i = 0; i < chars.length; i++) {
+        const testLine = line + chars[i];
+        if (ctx.measureText(testLine).width > maxWidth && line.length > 0) {
+          lineCount++;
+          if (lineCount >= maxLines) {
+            ctx.fillText(line.slice(0, -1) + '…', x, y);
+            return;
+          }
+          ctx.fillText(line, x, y);
+          line = chars[i];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) ctx.fillText(line, x, y);
     }
 
     async function renderStoryCanvas() {
@@ -3273,7 +3251,7 @@
       return { line1: 'SCHEDULED', line2: `${ev.time} LOGGED`, color: IC.stamp };
     }
 
-    /* --- TEMPLATE A: POLAROID WITH AUTO-FIT CAPTION --- */
+    /* --- TEMPLATE A: POLAROID WITH CLEAR AUTO-FIT CAPTION --- */
     function drawPolaroidStory(ctx, W, H, ev, OP, IC) {
       return new Promise((resolve) => {
         ctx.save();
@@ -3287,30 +3265,31 @@
         ctx.restore();
 
         const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
-        const captionMain = (selectedPhoto && selectedPhoto.caption && selectedPhoto.caption.trim())
+        const customCap = (selectedPhoto && selectedPhoto.caption && selectedPhoto.caption.trim())
           ? selectedPhoto.caption.trim()
           : ev.title;
 
         const finishMeta = () => {
+          // Auto-fitting Polaroid main caption so it never overflows the white paper frame
           ctx.fillStyle = IC.ink;
-          drawAutoFitSingleLine(ctx, captionMain, 124, 1340, 832, 42, 24, '700', "'Noto Sans TC', sans-serif", 'left');
+          fillTextAutoFit(ctx, customCap, 120, 1338, 840, 42, 24, '700', "'Noto Sans TC', sans-serif", 'left');
 
           if (ev.enSubtitle) {
             ctx.fillStyle = IC.muted;
-            drawAutoFitSingleLine(ctx, ev.enSubtitle, 124, 1392, 832, 25, 18, '600', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
+            fillTextAutoFit(ctx, ev.enSubtitle, 120, 1390, 840, 25, 18, '600', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
           }
 
           if (ev.note) {
             ctx.fillStyle = IC.ink;
             ctx.font = "500 23px 'Noto Sans TC', sans-serif";
             const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-            drawSmartWrappedText(ctx, cleanNote, 124, 1445, 430, 32, 2);
+            drawWrappedText(ctx, cleanNote, 120, 1442, 430, 32, 2);
           }
 
           ctx.fillStyle = IC.stamp;
           ctx.font = "500 26px 'DM Mono', monospace";
           ctx.textAlign = 'left';
-          ctx.fillText(`'26 ${ev.visitedAt || ev.cancelledAt || ev.time}`, 124, 1565);
+          ctx.fillText(`'26 ${ev.visitedAt || ev.cancelledAt || ev.time}`, 120, 1565);
 
           const st = getStampMetaForEvent(ev, IC);
           drawCustomsStamp(ctx, 775, 1505, st.line1, st.line2, st.color);
@@ -3352,49 +3331,43 @@
       });
     }
 
-    /* --- Real World Geographic Polygons for Orthographic Globe Projection --- */
+    /* --- TEMPLATE B: ORTHOGRAPHIC 3D WORLD GLOBE + RIGHT-SIDE BARCODE BOARDING PASS --- */
     const WORLD_LAND_POLYGONS = [
-      // Eurasian / East Asian Continental Coastline (Kamchatka -> Korea -> China -> Vietnam -> Malay -> India)
-      [[62,165],[60,150],[54,140],[45,135],[40,128],[35,126],[39,121],[35,119],[31,121],[25,119],[22,114],[20,106],[12,109],[8,103],[1,104],[14,98],[22,88],[15,80],[8,77],[22,69],[25,60],[40,50],[60,60],[68,120],[66,170]],
+      // Eurasia / East Asia / SE Asia / Siberia / Kamchatka
+      [[100,15],[105,22],[114,22.5],[121,31],[120,39],[126,38],[129,35],[131,43],[140,52],[160,60],[158,51],[165,62],[180,66],[180,71],[120,73],[95,72],[90,22]],
       // Japan Honshu
-      [[41.5,140.8],[39.5,142.0],[35.7,140.8],[34.7,139.0],[34.6,135.5],[34.0,131.0],[35.5,133.0],[37.5,137.2],[40.0,139.8]],
+      [[130.9,33.9],[135.2,34.6],[136.9,35.1],[139.8,35.6],[140.9,38.3],[140.7,41.4],[139.5,39.5],[136.8,36.8],[132.5,34.8]],
       // Japan Hokkaido
-      [[45.5,141.9],[44.3,145.3],[42.9,144.4],[42.0,140.5],[43.3,140.3]],
+      [[140.3,42.1],[141.5,45.4],[145.5,43.4],[143.2,42.0]],
       // Japan Kyushu & Shikoku
-      [[33.9,130.9],[33.0,131.8],[31.2,130.7],[32.8,129.8]],
-      [[34.3,134.6],[33.5,134.2],[32.8,132.5],[33.9,132.2]],
+      [[130.2,33.5],[131.6,33.2],[131.0,31.2],[129.8,32.5]],
+      [[132.5,33.2],[134.6,34.1],[134.2,33.3],[132.8,32.8]],
       // Taiwan
-      [[25.3,121.6],[24.5,121.8],[22.0,120.8],[22.6,120.2],[24.8,120.9]],
-      // Philippines (Luzon & Mindanao)
-      [[18.5,121.5],[16.0,122.0],[13.0,123.8],[14.5,120.5],[18.0,120.5]],
-      [[9.8,125.5],[6.5,126.2],[6.0,124.2],[8.5,123.5]],
+      [[120.1,22.9],[120.9,25.2],[121.9,25.0],[120.8,21.9]],
+      // Philippines Luzon
+      [[120.0,14.5],[121.0,18.4],[122.4,16.5],[123.8,13.0]],
       // Australia
-      [[-12,131],[-12,142],[-20,149],[-28,153],[-38,147],[-35,136],[-32,115],[-22,114],[-15,124]],
-      // North America (Alaska -> BC -> Seattle -> SF -> LA -> Baja -> Mexico -> East Coast)
-      [[70,-162],[65,-168],[60,-165],[55,-162],[59,-150],[58,-136],[50,-127],[47,-124],[40,-124],[37.7,-122.4],[34.0,-118.4],[28,-115],[23,-110],[31,-114],[20,-105],[16,-95],[18,-90],[21,-87],[25,-97],[29,-90],[25,-80],[35,-75],[42,-70],[47,-60],[60,-65],[70,-100]],
-      // Hawaiian Islands Chain
-      [[22.0,-159.5],[21.4,-157.9],[20.8,-156.3],[19.6,-155.5],[19.0,-155.8],[21.2,-158.2]]
+      [[114,-22],[129,-14],[142,-11],[153,-28],[147,-38],[130,-32],[115,-34]],
+      // North America (Alaska -> Canada -> California -> Mexico)
+      [[-170,65],[-162,55],[-150,60],[-135,58],[-124,48],[-124,40],[-122,37],[-118,34],[-110,23],[-105,19],[-88,18],[-80,25],[-74,40],[-66,45],[-60,55],[-95,70],[-160,71]],
+      // Hawaiian Islands
+      [[-159.6,22.0],[-157.9,21.4],[-156.3,20.7],[-155.5,19.5],[-155.8,19.1]]
     ];
 
-    function projectOrthographic(latDeg, lonDeg, centerLatDeg, centerLonDeg, R) {
+    function projectOrthoGlobe(latDeg, lonDeg, centerLatDeg, centerLonDeg, cx, cy, R) {
       const toRad = Math.PI / 180;
       const phi = latDeg * toRad;
       const lam = lonDeg * toRad;
       const phi0 = centerLatDeg * toRad;
       const lam0 = centerLonDeg * toRad;
-
-      // Normalize longitude difference neatly across the International Date Line
-      let dLam = lam - lam0;
-      while (dLam > Math.PI) dLam -= Math.PI * 2;
-      while (dLam < -Math.PI) dLam += Math.PI * 2;
+      const dLam = lam - lam0;
 
       const cosC = Math.sin(phi0) * Math.sin(phi) + Math.cos(phi0) * Math.cos(phi) * Math.cos(dLam);
-      const x = R * Math.cos(phi) * Math.sin(dLam);
-      const y = -R * (Math.cos(phi0) * Math.sin(phi) - Math.sin(phi0) * Math.cos(phi) * Math.cos(dLam));
+      const x = cx + R * Math.cos(phi) * Math.sin(dLam);
+      const y = cy - R * (Math.cos(phi0) * Math.sin(phi) - Math.sin(phi0) * Math.cos(phi) * Math.cos(dLam));
       return { x, y, visible: cosC > -0.15 };
     }
 
-    /* --- TEMPLATE B: ORTHOGRAPHIC GLOBE + RIGHT-SIDE BARCODE BOARDING PASS --- */
     function drawFlightStoryWithWorldMap(ctx, W, H, ev, OP, IC) {
       const from = (ev.fromCode || 'TPE').toUpperCase();
       const to = (ev.toCode || 'LAX').toUpperCase();
@@ -3405,125 +3378,126 @@
       ctx.textAlign = 'left';
       ctx.fillText(`01 FLIGHT PATH // ${from} TO ${to}`, 76, 358);
 
-      const cx = 540, cy = 695, r = 298;
+      const cx = 540, cy = 695, r = 295;
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.clip();
 
-      // Determine true coordinates of origin & destination airports
-      const fKnown = lookupKnownStationCoord(from);
-      const tKnown = lookupKnownStationCoord(to);
-      const lat1 = fKnown ? fKnown.lat : (parseFloat(ev.fromLat) || 25.0797);
-      const lon1 = fKnown ? fKnown.lng : (parseFloat(ev.fromLng) || 121.2342);
-      const lat2 = tKnown ? tKnown.lat : (parseFloat(ev.toLat) || 33.9416);
-      const lon2 = tKnown ? tKnown.lng : (parseFloat(ev.toLng) || -118.4085);
-
-      // Compute midpoint longitude across Pacific or Atlantic accurately
-      let lon1Norm = lon1 < 0 ? lon1 + 360 : lon1;
-      let lon2Norm = lon2 < 0 ? lon2 + 360 : lon2;
-      let centerLon = (Math.abs(lon1 - lon2) > 180)
-        ? ((lon1Norm + lon2Norm) / 2)
-        : ((lon1 + lon2) / 2);
-      if (centerLon > 180) centerLon -= 360;
-      const centerLat = Math.max(15, Math.min(48, (lat1 + lat2) / 2 + 6));
-
       if (flightBgImage) {
         const s = Math.max((r * 2) / flightBgImage.width, (r * 2) / flightBgImage.height);
         ctx.drawImage(flightBgImage, cx - (flightBgImage.width * s) / 2, cy - (flightBgImage.height * s) / 2, flightBgImage.width * s, flightBgImage.height * s);
-        ctx.fillStyle = 'rgba(12, 20, 34, 0.46)';
+        ctx.fillStyle = 'rgba(14, 22, 36, 0.45)';
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
       } else {
         // Deep Atmospheric Ocean Sphere Gradient
-        const grad = ctx.createRadialGradient(cx - 75, cy - 85, 30, cx, cy, r);
-        grad.addColorStop(0, '#263B59');
+        const grad = ctx.createRadialGradient(cx - 80, cy - 80, 30, cx, cy, r);
+        grad.addColorStop(0, '#243652');
         grad.addColorStop(0.65, '#152236');
-        grad.addColorStop(1, '#0B1320');
+        grad.addColorStop(1, '#0C1422');
         ctx.fillStyle = grad;
         ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
 
-        // True Spherical Graticule (Meridians & Parallels)
+        const cLat = 32;
+        const cLon = 178; // Pacific Rim Orthographic Center
+
+        // 3D Orthographic Graticule Grid (Parallels & Meridians)
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
         ctx.lineWidth = 1.3;
-        for (let latG = -60; latG <= 75; latG += 15) {
+        for (let lat = -60; lat <= 75; lat += 15) {
           ctx.beginPath();
           let started = false;
-          for (let lonG = -180; lonG <= 180; lonG += 6) {
-            const p = projectOrthographic(latG, lonG, centerLat, centerLon, r);
+          for (let lon = 70; lon <= 290; lon += 5) {
+            const p = projectOrthoGlobe(lat, lon, cLat, cLon, cx, cy, r);
             if (p.visible) {
-              if (!started) { ctx.moveTo(cx + p.x, cy + p.y); started = true; }
-              else ctx.lineTo(cx + p.x, cy + p.y);
-            } else { started = false; }
+              if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+              else ctx.lineTo(p.x, p.y);
+            } else started = false;
           }
           ctx.stroke();
         }
-        for (let lonG = -180; lonG < 180; lonG += 20) {
+        for (let lon = 90; lon <= 270; lon += 15) {
           ctx.beginPath();
           let started = false;
-          for (let latG = -75; latG <= 75; latG += 5) {
-            const p = projectOrthographic(latG, lonG, centerLat, centerLon, r);
+          for (let lat = -60; lat <= 75; lat += 4) {
+            const p = projectOrthoGlobe(lat, lon, cLat, cLon, cx, cy, r);
             if (p.visible) {
-              if (!started) { ctx.moveTo(cx + p.x, cy + p.y); started = true; }
-              else ctx.lineTo(cx + p.x, cy + p.y);
-            } else { started = false; }
+              if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+              else ctx.lineTo(p.x, p.y);
+            } else started = false;
           }
           ctx.stroke();
         }
 
-        // Render True Orthographic World Continents & Islands
-        ctx.fillStyle = 'rgba(198, 214, 232, 0.17)';
-        ctx.strokeStyle = 'rgba(220, 234, 248, 0.34)';
+        // Render True Projected Continents & Islands
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.34)';
         ctx.lineWidth = 1.8;
+        ctx.lineJoin = 'round';
+
         WORLD_LAND_POLYGONS.forEach(poly => {
           ctx.beginPath();
-          let visCount = 0;
-          poly.forEach(([plat, plon], idx) => {
-            const pt = projectOrthographic(plat, plon, centerLat, centerLon, r);
-            if (pt.visible) visCount++;
-            if (idx === 0) ctx.moveTo(cx + pt.x, cy + pt.y);
-            else ctx.lineTo(cx + pt.x, cy + pt.y);
+          poly.forEach(([lon, lat], idx) => {
+            const normLon = lon < 0 ? lon + 360 : lon;
+            const p = projectOrthoGlobe(lat, normLon, cLat, cLon, cx, cy, r);
+            if (idx === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
           });
-          if (visCount > 0) {
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
         });
+
+        // Inner Rim Atmosphere Glow
+        const rim = ctx.createRadialGradient(cx, cy, r - 28, cx, cy, r);
+        rim.addColorStop(0, 'rgba(120, 175, 255, 0)');
+        rim.addColorStop(1, 'rgba(120, 175, 255, 0.22)');
+        ctx.fillStyle = rim;
+        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
       }
 
-      // Project Origin & Destination onto Globe
-      let pStart = projectOrthographic(lat1, lon1, centerLat, centerLon, r * 0.86);
-      let pEnd = projectOrthographic(lat2, lon2, centerLat, centerLon, r * 0.86);
-      const sx = cx + pStart.x, sy = cy + pStart.y;
-      const ex = cx + pEnd.x, ey = cy + pEnd.y;
+      // Project True Origin & Destination Coordinates onto Globe
+      const kFrom = lookupKnownStationCoord(from) || { lat: ev.fromLat || 25.0797, lng: ev.fromLng || 121.2342 };
+      const kTo = lookupKnownStationCoord(to) || { lat: ev.toLat || 33.9416, lng: ev.toLng || -118.4085 };
+      const lon1 = kFrom.lng < 0 ? kFrom.lng + 360 : kFrom.lng;
+      const lon2 = kTo.lng < 0 ? kTo.lng + 360 : kTo.lng;
+      const midLat = (kFrom.lat + kTo.lat) / 2 + 6;
+      const midLon = (lon1 + lon2) / 2;
 
-      // Great Circle Lofted Curve
-      const midX = (sx + ex) / 2;
-      const midY = Math.min(sy, ey) - 105;
+      let pStart = projectOrthoGlobe(kFrom.lat, lon1, midLat, midLon, cx, cy, r * 0.85);
+      let pEnd = projectOrthoGlobe(kTo.lat, lon2, midLat, midLon, cx, cy, r * 0.85);
 
-      // Subtle Glow under Flight Arc
-      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
-      ctx.lineWidth = 10;
-      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(midX, midY, ex, ey); ctx.stroke();
+      if (Math.hypot(pEnd.x - pStart.x, pEnd.y - pStart.y) < 160) {
+        pStart = { x: 345, y: 735 };
+        pEnd = { x: 745, y: 675 };
+      }
 
+      const ctrlX = (pStart.x + pEnd.x) / 2;
+      const ctrlY = Math.min(pStart.y, pEnd.y) - 135;
+
+      // Great Circle Trajectory Arc
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 4.5;
       ctx.setLineDash([12, 10]);
-      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(midX, midY, ex, ey); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(pStart.x, pStart.y);
+      ctx.quadraticCurveTo(ctrlX, ctrlY, pEnd.x, pEnd.y);
+      ctx.stroke();
       ctx.setLineDash([]);
 
-      // Airport Beacons
+      // Endpoint Glowing Dots
       ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.arc(sx, sy, 9, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex, ey, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(pStart.x, pStart.y, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(pEnd.x, pEnd.y, 9, 0, Math.PI * 2); ctx.fill();
 
-      // Airplane Icon along Curve Apex
-      const apexX = 0.25 * sx + 0.5 * midX + 0.25 * ex;
-      const apexY = 0.25 * sy + 0.5 * midY + 0.25 * ey;
-      const angle = Math.atan2(ey - sy, ex - sx);
+      // Airplane Icon at Curve Apex (t = 0.5 on Quadratic Bezier)
+      const apexX = 0.25 * pStart.x + 0.5 * ctrlX + 0.25 * pEnd.x;
+      const apexY = 0.25 * pStart.y + 0.5 * ctrlY + 0.25 * pEnd.y;
+      const tangentAngle = Math.atan2(pEnd.y - pStart.y, pEnd.x - pStart.x);
+
       ctx.save();
       ctx.translate(apexX, apexY);
-      ctx.rotate(angle);
+      ctx.rotate(tangentAngle);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '44px sans-serif';
       ctx.textAlign = 'center';
@@ -3531,20 +3505,14 @@
       ctx.fillText('✈', 0, 0);
       ctx.restore();
 
-      // Crisp Airport Code Labels inside Globe
       ctx.fillStyle = '#FFFFFF';
       ctx.font = "700 38px 'DM Mono', monospace";
       ctx.textAlign = 'center';
-      ctx.fillText(from, sx, sy + 48);
-      ctx.fillText(to, ex, ey + 48);
-
-      // Inner Rim Atmosphere Ring
-      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
-      ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(cx, cy, r - 2, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillText(from, pStart.x, pStart.y + 50);
+      ctx.fillText(to, pEnd.x, pEnd.y + 50);
       ctx.restore();
 
-      // --- Boarding Pass Ticket (Barcode on RIGHT side, Clean Left Columns, Zero Overlap) ---
+      // --- Boarding Pass Ticket (Barcode on RIGHT Side, Spacious Left Content) ---
       const tx = 76, ty = 1045, tw = 928, th = 570;
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.16)';
@@ -3563,7 +3531,7 @@
         ctx.beginPath(); ctx.arc(tx + tw, ny, 11, Math.PI / 2, -Math.PI / 2); ctx.fill();
       }
 
-      // Left Content Area (x: tx + 56 to tx + 740)
+      // Left Content Columns (x: tx + 56 to tx + 740)
       const col1X = tx + 56;
       const col2X = tx + 405;
 
@@ -3575,61 +3543,62 @@
 
       ctx.fillStyle = IC.ink;
       ctx.font = "700 50px 'DM Mono', monospace";
-      ctx.fillText(`${from} ${ev.time}`, col1X, ty + 146);
-      ctx.fillText(`${to} ${ev.arrTime || '--:--'}`, col2X, ty + 146);
+      ctx.fillText(`${from} ${ev.time}`, col1X, ty + 148);
+      ctx.fillText(`${to} ${ev.arrTime || '--:--'}`, col2X, ty + 148);
 
       if (flightMeta.dayShift) {
-        ctx.font = "700 22px 'DM Mono', monospace";
+        ctx.font = "700 24px 'DM Mono', monospace";
         ctx.fillStyle = IC.stamp;
-        ctx.fillText(flightMeta.dayShift, col2X + 265, ty + 112);
+        ctx.fillText(flightMeta.dayShift, col2X + 265, ty + 115);
       }
 
       ctx.font = "500 23px 'DM Mono', monospace";
       ctx.fillStyle = IC.muted;
-      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, col1X, ty + 206);
+      ctx.fillText(`DURATION: ${flightMeta.durationText || 'CROSS-TZ'}`, col1X, ty + 208);
 
-      // Horizontal Divider
+      // Horizontal Divider across Left Main Section
       ctx.strokeStyle = IC.ink;
       ctx.globalAlpha = 0.22;
       ctx.lineWidth = 2;
       ctx.setLineDash([8, 8]);
-      ctx.beginPath(); ctx.moveTo(col1X, ty + 238); ctx.lineTo(tx + 725, ty + 238); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(col1X, ty + 240); ctx.lineTo(tx + 725, ty + 240); ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
 
-      // Flight / Aircraft Row (Auto-Fit Single Line or Token-Safe Wrap so "777-300ER" never splits)
+      // Flight / Aircraft Single-Line Auto-Fit (Never splits "BOEING 7 / 77-300ER")
       ctx.fillStyle = IC.muted;
       ctx.font = "500 21px 'DM Mono', monospace";
-      ctx.fillText('FLIGHT / AIRCRAFT', col1X, ty + 286);
+      ctx.fillText('FLIGHT / AIRCRAFT', col1X, ty + 290);
 
       ctx.fillStyle = IC.ink;
-      drawAutoFitSingleLine(ctx, ev.enSubtitle || ev.title, col1X, ty + 338, 650, 38, 24, '800', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
+      fillTextAutoFit(ctx, ev.enSubtitle || ev.title, col1X, ty + 342, 650, 38, 24, '800', "'Archivo', 'Noto Sans TC', sans-serif", 'left');
 
       if (ev.note) {
         ctx.fillStyle = IC.muted;
         ctx.font = "500 22px 'Noto Sans TC', sans-serif";
         const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-        drawSmartWrappedText(ctx, cleanNote, col1X, ty + 405, 310, 32, 3);
+        drawWrappedText(ctx, cleanNote, col1X, ty + 420, 290, 32, 3);
       }
 
-      // Customs Stamp placed cleanly to the left of the right-side barcode
+      // Customs Stamp safely placed at bottom-middle (left of barcode tear line)
       const st = ev.cancelledAt
         ? { line1: `CANCELLED · ${from}`, line2: ev.cancelledAt, color: '#64748B' }
         : { line1: `ADMITTED · ${to}`, line2: `${ev.visitedAt || ev.arrTime || 'ARRIVAL'} · ${to} CUSTOMS`, color: IC.stamp };
-      drawCustomsStamp(ctx, tx + 555, ty + 435, st.line1, st.line2, st.color);
+      drawCustomsStamp(ctx, tx + 545, ty + 455, st.line1, st.line2, st.color);
 
-      // Vertical Perforation Line before Right Barcode
+      // Vertical Perforation Tear Line on Right Side
       ctx.strokeStyle = IC.ink;
-      ctx.globalAlpha = 0.24;
+      ctx.globalAlpha = 0.25;
+      ctx.lineWidth = 2;
       ctx.setLineDash([10, 10]);
-      ctx.beginPath(); ctx.moveTo(tx + 760, ty + 24); ctx.lineTo(tx + 760, ty + th - 24); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(tx + 755, ty + 24); ctx.lineTo(tx + 755, ty + th - 24); ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 1;
 
-      // Single Right-Side Barcode Strip (With Date-Timestamp Code)
+      // Single Right-Side Barcode Strip with Date-Timestamp Code
       const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
       const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '2340'}`;
-      drawVerticalBarcode(ctx, tx + 788, ty + 48, 102, th - 96, stampCode, IC.ink);
+      drawVerticalBarcode(ctx, tx + 785, ty + 48, 105, th - 96, stampCode, IC.ink);
     }
 
     function drawVerticalBarcode(ctx, x, y, w, h, label, inkColor) {
@@ -3657,7 +3626,7 @@
       }
     }
 
-    /* --- TEMPLATE C: ALL-CIRCULAR MINI METRO + PURE STATION NAMES + VECTOR COLLISION AVOIDANCE --- */
+    /* --- TEMPLATE C: CIRCULAR ENDPOINTS + PURE STATION NAMES + VECTOR NORMAL LABEL PLACEMENT --- */
     async function drawMiniMetroOrFerryStory(ctx, W, H, ev, OP, IC) {
       if (ev.type === 'ferry') {
         drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC);
@@ -3665,7 +3634,9 @@
       }
 
       ctx.fillStyle = OP.ink;
-      drawAutoFitSingleLine(ctx, `02 TRANSIT ROUTE // ${ev.title}`, 76, 358, 928, 30, 20, '700', "'DM Mono', 'Noto Sans TC', monospace", 'left');
+      ctx.font = "700 30px 'DM Mono', 'Noto Sans TC', monospace";
+      ctx.textAlign = 'left';
+      ctx.fillText(`02 TRANSIT ROUTE // ${ev.title.slice(0, 18)}`, 76, 358);
 
       const mx = 76, my = 400, mw = 928, mh = 860;
       ctx.save();
@@ -3691,28 +3662,27 @@
         ? ev.transitLegs
         : [{ from: ev.fromCode || '起點站', to: ev.toCode || '終點站', line: ev.enSubtitle || ev.title, color: '#0F62B1' }];
 
-      // 1. Top Dedicated Legend Header Zone (Auto-Fit so station names never truncate like "岡"!)
-      const legendCount = legs.length;
-      const legendBottomY = my + 44 + legendCount * 44;
-
+      // 1. Draw Top Legend Header Zone first & compute reserved height so stations never collide with legend
+      const legendStartY = my + 36;
+      const legendRowH = 44;
       legs.forEach((leg, i) => {
-        const badgeY = my + 34 + i * 44;
+        const badgeY = legendStartY + i * legendRowH;
         const c = leg.color || detectLineColor(leg.line, '#0F62B1').color;
         ctx.fillStyle = c;
-        ctx.beginPath(); ctx.roundRect(mx + 40, badgeY, 20, 30, 6); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(mx + 40, badgeY, 22, 30, 6); ctx.fill();
         ctx.fillStyle = IC.ink;
-        const legendText = `${leg.line} (${leg.from} ➔ ${leg.to})`;
-        drawAutoFitSingleLine(ctx, legendText, mx + 72, badgeY + 23, mw - 110, 25, 17, '700', "'Noto Sans TC', sans-serif", 'left');
+        const legText = `${leg.line} (${leg.from} ➔ ${leg.to})`;
+        fillTextAutoFit(ctx, legText, mx + 74, badgeY + 24, mw - 115, 25, 17, '700', "'Noto Sans TC', sans-serif", 'left');
       });
 
-      // Subtle divider below Legend Zone so map never touches Legend
+      const legendBottomY = legendStartY + legs.length * legendRowH + 20;
       ctx.strokeStyle = IC.ink;
-      ctx.globalAlpha = 0.08;
+      ctx.globalAlpha = 0.1;
       ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(mx + 40, legendBottomY + 8); ctx.lineTo(mx + mw - 40, legendBottomY + 8); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mx + 40, legendBottomY); ctx.lineTo(mx + mw - 40, legendBottomY); ctx.stroke();
       ctx.globalAlpha = 1;
 
-      // 2. Build Station Nodes
+      // 2. Build Stations Chain
       const stations = [];
       legs.forEach((leg, i) => {
         if (i === 0) {
@@ -3730,7 +3700,8 @@
           lat: leg.toLat || (kTo ? kTo.lat : null),
           lng: leg.toLng || (kTo ? kTo.lng : null),
           role: (i === legs.length - 1) ? 'dest' : 'transfer',
-          inColor: leg.color || detectLineColor(leg.line, '#0F62B1').color
+          inColor: leg.color || detectLineColor(leg.line, '#0F62B1').color,
+          lineName: leg.line
         });
       });
 
@@ -3755,32 +3726,361 @@
       const spanLat = Math.max(0.012, maxLat - minLat);
       const spanLng = Math.max(0.012, maxLng - minLng);
 
-      // Safe Map Bounding Box strictly below Legend and with room for labels
+      // Safe Diagram Plotting Box (Strictly below legendBottomY + 85px)
       const hasPhotoSticker = Boolean((ev.photos || [])[activeStoryPhotoIdx]);
-      const mapLeft = mx + 175;
-      const mapRight = mx + mw - (hasPhotoSticker ? 340 : 175);
-      const mapTop = legendBottomY + 95;
-      const mapBottom = my + mh - 110;
-      const boxW = Math.max(240, mapRight - mapLeft);
-      const boxH = Math.max(240, mapBottom - mapTop);
+      const plotLeft = mx + 175;
+      const plotRight = mx + mw - (hasPhotoSticker ? 340 : 175);
+      const plotTop = legendBottomY + 95;
+      const plotBottom = my + mh - 110;
+      const boxW = Math.max(220, plotRight - plotLeft);
+      const boxH = Math.max(240, plotBottom - plotTop);
 
       const pts = stations.map(s => ({
         ...s,
-        x: mapLeft + ((s.lng - minLng) / spanLng) * boxW,
-        y: mapTop + (1 - (s.lat - minLat) / spanLat) * boxH
+        x: plotLeft + ((s.lng - minLng) / spanLng) * boxW,
+        y: plotTop + (1 - (s.lat - minLat) / spanLat) * boxH
       }));
 
-      // Enforce Minimum Station Distance
+      // Enforce Minimum Station Separation and Clamp inside Safe Plot Box
       for (let iter = 0; iter < 5; iter++) {
         for (let i = 0; i < pts.length; i++) {
           for (let j = i + 1; j < pts.length; j++) {
             const dx = pts[j].x - pts[i].x;
             const dy = pts[j].y - pts[i].y;
             const dist = Math.hypot(dx, dy);
-            const minDist = 195;
+            const minDist = 185;
             if (dist < minDist) {
               const angle = dist > 1 ? Math.atan2(dy, dx) : (j * 0.9);
               const push = (minDist - dist) / 2;
-              pts[i].x = Math.max(mapLeft - 30, Math.min(mapRight + 30, pts[i].x - Math.cos(angle) * push));
-              pts[i].y = Math.max(mapTop - 20, Math.min(mapBottom + 20, pts[i].y - Math.sin(angle) * push));
-              pts[j].x = Math.max(mapLeft - 30, Math.min(mapRight + 3
+              pts[i].x -= Math.cos(angle) * push;
+              pts[i].y -= Math.sin(angle) * push;
+              pts[j].x += Math.cos(angle) * push;
+              pts[j].y += Math.sin(angle) * push;
+            }
+          }
+          pts[i].x = Math.min(plotRight, Math.max(plotLeft, pts[i].x));
+          pts[i].y = Math.min(plotBottom, Math.max(plotTop, pts[i].y));
+        }
+      }
+
+      // Compute Octilinear Knees and Track Segments for Collision-Free Label Placement
+      const allLineSegments = [];
+      const computeOctilinearKnee = (a, b, bendFirst) => {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const diag = Math.min(Math.abs(dx), Math.abs(dy));
+        const sx = Math.sign(dx) || 1;
+        const sy = Math.sign(dy) || 1;
+        return bendFirst
+          ? { x: a.x + sx * diag, y: a.y + sy * diag }
+          : { x: b.x - sx * diag, y: b.y - sy * diag };
+      };
+
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i], b = pts[i + 1];
+        const knee = computeOctilinearKnee(a, b, i % 2 === 0);
+        const segColor = b.inColor || '#0F62B1';
+
+        ctx.strokeStyle = segColor;
+        ctx.lineWidth = 24;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(knee.x, knee.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+
+        allLineSegments.push({ x1: a.x, y1: a.y, x2: knee.x, y2: knee.y });
+        allLineSegments.push({ x1: knee.x, y1: knee.y, x2: b.x, y2: b.y });
+      }
+
+      // Distance from point (px, py) to segment (x1,y1)-(x2,y2)
+      const distToSegment = (px, py, s) => {
+        const l2 = (s.x2 - s.x1) ** 2 + (s.y2 - s.y1) ** 2;
+        if (l2 === 0) return Math.hypot(px - s.x1, py - s.y1);
+        let t = ((px - s.x1) * (s.x2 - s.x1) + (py - s.y1) * (s.y2 - s.y1)) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return Math.hypot(px - (s.x1 + t * (s.x2 - s.x1)), py - (s.y1 + t * (s.y2 - s.y1)));
+      };
+
+      // Draw Circular Station Nodes & Pure Station Name Labels (No DEP/ARR/TRANSFER!)
+      pts.forEach((p) => {
+        ctx.fillStyle = IC.cardBg;
+        ctx.strokeStyle = IC.ink;
+        ctx.lineWidth = 9;
+
+        if (p.role === 'transfer') {
+          // Double Concentric Circle for Transfer Station
+          ctx.beginPath(); ctx.arc(p.x, p.y, 27, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = IC.ink;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 10.5, 0, Math.PI * 2); ctx.fill();
+        } else {
+          // Clean Bold Circle for Both Origin & Destination Endpoints
+          ctx.beginPath(); ctx.arc(p.x, p.y, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
+
+        // Evaluate 6 candidate label positions around the station circle and pick the one furthest from any track line
+        ctx.font = "900 38px 'Noto Sans TC', sans-serif";
+        const textW = ctx.measureText(p.name).width;
+        const candidates = [
+          { lx: p.x, ly: p.y - 52, align: 'center', cx: p.x, cy: p.y - 52 },
+          { lx: p.x, ly: p.y + 54, align: 'center', cx: p.x, cy: p.y + 54 },
+          { lx: p.x + 42, ly: p.y, align: 'left', cx: p.x + 42 + textW / 2, cy: p.y },
+          { lx: p.x - 42, ly: p.y, align: 'right', cx: p.x - 42 - textW / 2, cy: p.y },
+          { lx: p.x + 36, ly: p.y - 42, align: 'left', cx: p.x + 36 + textW / 2, cy: p.y - 42 },
+          { lx: p.x - 36, ly: p.y - 42, align: 'right', cx: p.x - 36 - textW / 2, cy: p.y - 42 }
+        ];
+
+        let bestCand = candidates[0];
+        let bestScore = -Infinity;
+
+        candidates.forEach(c => {
+          // Keep label well inside card bounds and below legend
+          if (c.cx - textW / 2 < mx + 28 || c.cx + textW / 2 > mx + mw - 28) return;
+          if (c.cy - 22 < legendBottomY + 12 || c.cy + 22 > my + mh - 24) return;
+
+          let minTrackDist = Infinity;
+          allLineSegments.forEach(seg => {
+            const d = distToSegment(c.cx, c.cy, seg);
+            if (d < minTrackDist) minTrackDist = d;
+          });
+          if (minTrackDist > bestScore) {
+            bestScore = minTrackDist;
+            bestCand = c;
+          }
+        });
+
+        // Draw Protective Halo Stroke behind Station Name so it is 100% legible even near lines
+        ctx.save();
+        ctx.font = "900 38px 'Noto Sans TC', sans-serif";
+        ctx.textAlign = bestCand.align;
+        ctx.textBaseline = 'middle';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 12;
+        ctx.strokeStyle = IC.cardBg;
+        ctx.strokeText(p.name, bestCand.lx, bestCand.ly);
+        ctx.fillStyle = IC.ink;
+        ctx.fillText(p.name, bestCand.lx, bestCand.ly);
+        ctx.restore();
+      });
+
+      // Optional Tilted Photo Collage Sticker inside Transit Diagram
+      const selectedPhoto = (ev.photos || [])[activeStoryPhotoIdx];
+      if (selectedPhoto && selectedPhoto.data) {
+        await new Promise((resPhoto) => {
+          const img = new Image();
+          img.onload = () => {
+            ctx.save();
+            const z = selectedPhoto.zoom || 1;
+            const ox = ((selectedPhoto.x || 0) / 100) * 320;
+            const oy = ((selectedPhoto.y || 0) / 100) * 320;
+            const stickerX = mx + mw - 195 + ox;
+            const stickerY = legendBottomY + 230 + oy;
+            const tiltRad = -0.065;
+
+            ctx.translate(stickerX, stickerY);
+            ctx.rotate(tiltRad);
+            ctx.scale(z, z);
+
+            const pw = 270, ph = 315;
+            ctx.shadowColor = 'rgba(0,0,0,0.22)';
+            ctx.shadowBlur = 24;
+            ctx.shadowOffsetY = 10;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.roundRect(-pw / 2, -ph / 2, pw, ph, 10);
+            ctx.fill();
+            ctx.shadowColor = 'transparent';
+
+            // Washi Tape
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.38)';
+            ctx.fillRect(-46, -ph / 2 - 12, 92, 24);
+
+            const imgW = pw - 26, imgH = ph - 66;
+            const s = Math.max(imgW / img.width, imgH / img.height);
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(-imgW / 2, -ph / 2 + 13, imgW, imgH);
+            ctx.clip();
+            ctx.drawImage(img, -(img.width * s) / 2, -ph / 2 + 13 + (imgH - img.height * s) / 2, img.width * s, img.height * s);
+            ctx.restore();
+
+            // Auto-fit Polaroid sticker bottom caption
+            const capStr = (selectedPhoto.caption && selectedPhoto.caption.trim()) ? selectedPhoto.caption.trim() : ev.time;
+            ctx.fillStyle = '#161616';
+            fillTextAutoFit(ctx, capStr, 0, ph / 2 - 18, pw - 32, 18, 12, '700', "'Noto Sans TC', 'DM Mono', sans-serif", 'center');
+
+            ctx.restore();
+            resPhoto();
+          };
+          img.onerror = () => resPhoto();
+          img.src = selectedPhoto.data;
+        });
+      }
+
+      ctx.restore();
+
+      // Bottom Ticket Summary Card (Auto-fit Single-Line Title so "駅" never orphans onto line 2!)
+      ctx.fillStyle = IC.subCardBg;
+      ctx.beginPath();
+      ctx.roundRect(76, 1300, 928, 320, 20);
+      ctx.fill();
+
+      ctx.fillStyle = IC.ink;
+      fillTextAutoFit(ctx, ev.title, 120, 1382, 465, 36, 22, '700', "'Noto Sans TC', sans-serif", 'left');
+
+      ctx.fillStyle = IC.muted;
+      ctx.font = "500 23px 'Noto Sans TC', sans-serif";
+      ctx.textAlign = 'left';
+      const cleanNote = (ev.note || ev.enSubtitle || '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+      drawWrappedText(ctx, cleanNote, 120, 1445, 435, 34, 3);
+
+      const st = getStampMetaForEvent(ev, IC);
+      const stampTitle = ev.cancelledAt ? 'TRANSIT CANCELLED ✕' : 'TRANSIT COMPLETED ✓';
+      drawCustomsStamp(ctx, 775, 1485, stampTitle, st.line2, st.color);
+    }
+
+    function drawDedicatedFerryTicket(ctx, W, H, ev, OP, IC) {
+      ctx.fillStyle = OP.ink;
+      ctx.font = "700 30px 'DM Mono', monospace";
+      ctx.textAlign = 'left';
+      ctx.fillText('02 MARITIME PASS // FERRY EMBARKATION', 76, 358);
+
+      const tx = 76, ty = 410, tw = 928, th = 1200;
+      ctx.fillStyle = IC.cardBg;
+      ctx.beginPath();
+      ctx.roundRect(tx, ty, tw, th, 24);
+      ctx.fill();
+      ctx.strokeStyle = IC.ink;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.fillStyle = '#1B4965';
+      ctx.fillRect(tx, ty, tw, 130);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = "700 36px 'DM Mono', 'Noto Sans TC', monospace";
+      ctx.fillText('PASSENGER FERRY TICKET · 乗船券', tx + 54, ty + 80);
+
+      ctx.fillStyle = IC.ink;
+      fillTextAutoFit(ctx, `${ev.fromCode || '高松港'}  ➔  ${ev.toCode || '豐島'}`, tx + 60, ty + 290, tw - 120, 60, 36, '900', "'Noto Sans TC', sans-serif", 'left');
+
+      ctx.font = "700 34px 'Noto Sans TC', sans-serif";
+      ctx.fillText(ev.enSubtitle || ev.title, tx + 60, ty + 375);
+
+      ctx.font = "500 30px 'DM Mono', monospace";
+      ctx.fillStyle = IC.muted;
+      ctx.fillText(`SAILING: ${ev.time}   /   ARRIVAL: ${ev.arrTime || '--:--'}`, tx + 60, ty + 455);
+
+      if (ev.note) {
+        ctx.font = "500 25px 'Noto Sans TC', sans-serif";
+        const cleanNote = ev.note.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+        drawWrappedText(ctx, cleanNote, tx + 60, ty + 535, 780, 36, 3);
+      }
+
+      ctx.strokeStyle = IC.ink;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 3;
+      ctx.setLineDash([16, 14]);
+      ctx.beginPath(); ctx.moveTo(tx, ty + 820); ctx.lineTo(tx + tw, ty + 820); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+
+      const st = getStampMetaForEvent(ev, IC);
+      drawCustomsStamp(ctx, tx + 320, ty + 1010, ev.cancelledAt ? 'CANCELLED ✕' : 'EMBARKED ✓', st.line2, st.color);
+
+      const rawDigits = (ev.visitedAt || `20261130-${ev.time}`).replace(/[^0-9]/g, '');
+      const stampCode = `${rawDigits.slice(0, 8) || '20261130'}-${rawDigits.slice(8, 12) || '0925'}`;
+      drawVerticalBarcode(ctx, tx + 760, ty + 870, 105, 260, stampCode, IC.ink);
+    }
+
+    function drawCustomsStamp(ctx, cx, cy, line1, line2, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(-0.07);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.roundRect(-195, -56, 390, 112, 12);
+      ctx.stroke();
+
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(-187, -48, 374, 96, 8);
+      ctx.stroke();
+
+      ctx.font = "700 23px 'DM Mono', monospace";
+      ctx.textAlign = 'center';
+      ctx.fillText(line1, 0, -8);
+      ctx.font = "500 19px 'DM Mono', monospace";
+      ctx.fillText(line2, 0, 26);
+      ctx.restore();
+    }
+
+    async function shareOrSaveStory() {
+      const canvas = document.getElementById('story-canvas');
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], `TABI-NOTE-${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: 'TABI NOTE' });
+            return;
+          } catch (err) {}
+        }
+        alert('請直接「長按」上方預覽圖，選擇「加入『照片』」儲存至相簿！');
+      }, 'image/png');
+    }
+
+    function downloadStoryDesktop() {
+      const canvas = document.getElementById('story-canvas');
+      const a = document.createElement('a');
+      a.download = `TABI-NOTE-${Date.now()}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
+    /* ==========================================================================
+       15. Modal Helpers & JSON Import/Export
+       ========================================================================== */
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `tabi-note-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    }
+
+    function importJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (parsed && Array.isArray(parsed.trips)) {
+            localStorage.setItem('tabi_note_state_v6', JSON.stringify(parsed));
+            appState = loadAndMigrateState();
+            persist();
+            renderAll();
+            alert('匯入成功！');
+          }
+        } catch {
+          alert('JSON 檔案格式不正確');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Boot
+    window.addEventListener('resize', setupMobileScrollObserver);
+    initFormSelects();
+    generateRealPngAppIcon();
+    checkInitialLock();
+    renderAll();
+    setInterval(renderTimeline, 60000);
+  </script>
+</body>
+</html>
